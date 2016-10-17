@@ -1,8 +1,54 @@
-<div class="container">
+<!--  -->
+<!-- USER WITH NO RESTAURANT -->
+<!--  -->
+<!-- show if the user has no restaurant -->
+<div class="container" ng-if="noRestaurant">
 
   <div>
     <h1>User Profile</h1>
     <hr>
+  </div>
+
+</div>
+
+<!--  -->
+<!-- USER WITH RESTAURANT -->
+<!--  -->
+<!-- show if the user has a restaurant -->
+<div class="container" ng-if="userHasRestaurant">
+
+  <div class="row">
+
+    <div class="col-md-12 col-md-6 col-md-offset-3">
+      <div class="panel">
+        <div class="panel-heading">
+          <h3 class="panel-title">Restaurant Application Status</h3>
+        </div>
+        <div class="panel-body text-justify">
+          <ul class="list-inline">
+            <li>
+              <span class="glyphicon glyphicon-check text-success" aria-hidden="true"></span>
+              Application Received
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
+              Proccessing
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
+              Restaurant Registered
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>

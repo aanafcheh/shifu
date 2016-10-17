@@ -6,22 +6,13 @@
   </div>
 
   <!-- restaurant application form -->
-  <div class="row" ng-repeat="user in profile">
+  <div class="row">
     <div class="col-md-8">
-      <form name="restaurantApplication" ng-submit="submitApplication()" novalidate>
-
-        <!-- error if the form is invalid -->
-        <div class="alert alert-danger alert-dismissible" role="alert" ng-show="restaurantApplication.$invalid">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <strong>Oh snap!</strong>
-          There was an error in the form. Please review the form again.
-        </div>
+      <form name="restaurantApplication" role="form" ng-submit="newRestaurant()" novalidate>
 
         <!-- check if this is a restaurant -->
         <div class="form-group">
-          <label for="restaurantOwner">Do you own a restaurant?</label>
+          <label for="restaurantOwner">Do you want to open an account for your existing restaurant?</label>
           <p class="help-block">
             <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
             Choose "Yes" if you would like to create an account for your current restaurant.
@@ -31,61 +22,73 @@
         </div>
         <div class="form-group">
           <!-- ng-init is used to set the default value of restaurant. The restaurant value and the No radio value are the same so it is checked by default. Using html attribute checked does not work when using ng-model -->
-          <label class="radio-inline" ng-init="application.restaurant = 'No'">
-            <input type="radio" name="restaurantOwner" id="restaurantOwner1" value="No" ng-model="application.restaurant">
+          <label class="radio-inline" ng-init="application.hasRestaurant = 'false'">
+            <input type="radio" name="restaurantOwner" id="restaurantOwner1" value="false" ng-model="application.hasRestaurant" ng-click="uploader1.clearQueue()">
             No
           </label>
           <label class="radio-inline">
-            <input type="radio" name="restaurantOwner" id="restaurantOwner2" value="Yes" ng-model="application.restaurant">
+            <input type="radio" name="restaurantOwner" id="restaurantOwner2" value="true" ng-model="application.hasRrestaurant" ng-click="uploader1.clearQueue()">
             Yes
           </label>
         </div>
 
         <hr>
 
-        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.nameInput.$error.required}">
+        <!-- full name -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.nameInput.$error.required && !restaurantApplication.nameInput.$pristine}">
           <label for="nameInput">Full Name</label>
-          <input type="text" class="form-control" name="nameInput" id="nameInput" placeholder="Full Name" ng-model="user.profile.displayName" required>
-          <span ng-show="restaurantApplication.nameInput.$error.required" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <input type="text" class="form-control" name="nameInput" id="nameInput" placeholder="Full Name" ng-model="application.fullName" change-case required>
+          <span ng-show="restaurantApplication.nameInput.$error.required && !restaurantApplication.nameInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
-        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.ssnInput.$error.required}">
+        <!-- social security number -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.ssnInput.$error.required && !restaurantApplication.ssnInput.$pristine}">
           <label for="ssnInput">Social Security Number</label>
           <input type="text" class="form-control" name="ssnInput" id="ssnInput" placeholder="000000-000A" ng-model="application.ssn" required>
-          <span ng-show="restaurantApplication.ssnInput.$error.required" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <span ng-show="restaurantApplication.ssnInput.$error.required && !restaurantApplication.ssnInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
-        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.emailInput.$error.required}">
+        <!-- email address -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.emailInput.$error.email && restaurantApplication.emailInput.$touched}">
           <label for="emailInput">Email</label>
-          <input type="email" class="form-control" name="emailInput" id="emailInput" placeholder="Email" ng-model="user.profile._json.email" required>
-          <span ng-show="restaurantApplication.emailInput.$error.required" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <input type="email" class="form-control" name="emailInput" id="emailInput" placeholder="Email" ng-model="application.email" change-case required>
+          <span ng-show="restaurantApplication.emailInput.$error.email && restaurantApplication.emailInput.$touched" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <p class="text-danger" ng-show="restaurantApplication.emailInput.$error.email && restaurantApplication.emailInput.$touched">
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+            Please enter a valid email address.</p>
         </div>
 
-        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.phoneInput.$error.required}">
+        <!-- phone number -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.phoneInput.$error.required && !restaurantApplication.phoneInput.$pristine}">
           <label for="phoneInput">Phone Number</label>
-          <input type="tel" class="form-control" name="phoneInput" id="phoneInput" placeholder="0401348745" ng-model="application.phoneNumber" required>
-          <span ng-show="restaurantApplication.phoneInput.$error.required" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <input type="number" class="form-control" name="phoneInput" id="phoneInput" placeholder="0401348745" ng-model="application.phoneNumber" required>
+          <span ng-show="restaurantApplication.phoneInput.$error.required && !restaurantApplication.phoneInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
-        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required}">
+        <!-- restaurant address -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine}">
           <label for="addressInput">Restaurant Address</label>
-          <input type="text" class="form-control" name="addressInput" id="addressInput" placeholder="Restaurant Street Address" ng-model="application.address" required>
-          <span ng-show="restaurantApplication.addressInput.$error.required" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <input type="text" class="form-control" name="addressInput" id="addressInput" placeholder="Restaurant Street Address" ng-model="application.address" change-case required>
+          <span ng-show="restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
+
+        <!-- city -->
         <div class="form-group">
           <div class="form-inline">
-            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.cityInput.$error.required}">
-              <input type="text" class="form-control" name="cityInput" id="cityInput" placeholder="City" ng-model="application.city" required>
-              <span ng-show="restaurantApplication.cityInput.$error.required" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine}">
+              <input type="text" class="form-control" name="cityInput" id="cityInput" placeholder="City" ng-model="application.city" change-case required>
+              <span ng-show="restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
             </div>
-            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.zipCodeInput.$error.required}">
+
+            <!-- zipcode -->
+            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine}">
               <input type="number" class="form-control" name="zipCodeInput" id="zipCodeInput" placeholder="Zip Code" ng-model="application.zipcode" required>
-              <span ng-show="restaurantApplication.zipCodeInput.$error.required" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              <span ng-show="restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
             </div>
           </div>
         </div>
 
-        <div class="form-group" ng-show="application.restaurant !== 'Yes'" ng-hide="application.restaurant == 'Yes'">
+        <div class="form-group" ng-show="application.hasRestaurant !== 'true'" ng-hide="application.hasRestaurant == 'true'">
           <label for="propertyOwner">Are you the real estate owner of the restaurant address above?</label>
           <p class="help-block">
             <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
@@ -93,18 +96,17 @@
         </div>
 
         <!-- property owner -->
-        <div class="form-group" ng-init="application.propertyOwner='No'" ng-show="application.restaurant !== 'Yes'" ng-hide="application.restaurant == 'Yes'">
+        <div class="form-group" ng-init="application.propertyOwner='false'" ng-if="application.hasRestaurant !== 'true'" ng-hide="application.hasRestaurant == 'true'">
           <label class="radio-inline">
-            <input type="radio" name="propertyOwner" id="propertyOwner1" value="No" ng-model="application.propertyOwner">
+            <input type="radio" name="propertyOwner" id="propertyOwner1" value="false" ng-model="application.propertyOwner" ng-click="uploader1.clearQueue()">
             No
           </label>
           <label class="radio-inline">
-            <input type="radio" name="propertyOwner" id="propertyOwner2" value="Yes" ng-model="application.propertyOwner">
+            <input type="radio" name="propertyOwner" id="propertyOwner2" value="true" ng-model="application.propertyOwner" ng-click="uploader1.clearQueue()">
             Yes
           </label>
         </div>
 
-        <!-- file inputs -->
         <!-- file inputs -->
         <h2>Attachments</h2>
         <p class="help-block">
@@ -115,93 +117,92 @@
         <hr>
 
         <div class="row">
-          <div>
-            <div class="row">
-              <div class="col-md-8">
-                <!-- Health Certificate -->
-                <div class="form-inline" ng-show="application.restaurant !== 'Yes'">
-                  <label class="btn btn-default" role="button" for="healthCertInputFile">Choose File
-                  <input type="file" id="healthCertInputFile" style="display: none;" nv-file-select uploader="uploader" filters="queueLimit,imageFilter" required>
-                  </label>
-                  <label for="healthCertInputFile">Health Certificate</label>
-                </div>
-              </div>
-              <!-- <div class="col-md-2">
-                <label for="healthCertInputFile">Health Certificate</label>
-              </div> -->
-              <div class="col-md-4">
-                <ul class="list-unstyled">
+          <div class="col-md-6">
 
-                  <li ng-repeat="item in uploader.queue">
-                    <p class="help-block">
-                      <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                      {{ item.file.name }}</p>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-success" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }">
-                        {{uploader.progress + '%'}}
-                      </div>
-                    </div>
-                  </li>
-                </ul>
+            <!-- Health Certificate -->
+            <div class="row">
+              <div>
+                <div class="form-group" ng-if="application.hasRestaurant !== 'true'">
+                  <label class="btn btn-default" role="button" for="healthCertInputFile">Choose File
+                    <input type="file" name="healthCertInputFile" id="healthCertInputFile" class="hidden" nv-file-select uploader="uploader1" ng-click="uploader1.clearQueue()" ng-model="application.healthCert" valid-file required>
+                  </label>
+                  <label for="healthCertInputFile">Health Certificate
+                    <span class="text-danger" ng-show="restaurantApplication.healthCertInputFile.$invalid && !restaurantApplication.healthCertInputFile.$pristine">
+                      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>Required</span>
+                  </label>
+                </div>
               </div>
             </div>
 
-
             <!-- Real State Owner Permission -->
-            <div class="form-group" ng-show="application.propertyOwner !== 'Yes' && application.restaurant !== 'Yes'" ng-hide="application.propertyOwner == 'Yes'">
-              <label for="realStatePerInputFile">Real State Owner Permission</label>
-              <label class="btn btn-default" role="button" for="realStatePerInputFile">Choose File
-              <input type="file" id="realStatePerInputFile" style="display: none;" nv-file-select uploader="uploader" filters="queueLimit,imageFilter" required>
-              </label>
+            <!-- uses uploader number 2 -->
+            <div class="row">
+              <div>
+                <div class="form-group" ng-if="application.propertyOwner !== 'true' && application.hasRestaurant !== 'true'" ng-hide="application.propertyOwner == 'true'">
+                  <label class="btn btn-default" role="button" for="realStatePerInputFile">Choose File
+                    <input type="file" name="realStatePerInputFile" id="realStatePerInputFile" class="hidden" nv-file-select uploader="uploader2" ng-click="uploader2.clearQueue()" ng-model="application.realStatePer" valid-file required>
+                  </label>
+                  <label for="realStatePerInputFile">Real State Owner Permission
+                    <span class="text-danger" ng-show="restaurantApplication.realStatePerInputFile.$invalid && !restaurantApplication.realStatePerInputFile.$pristine">
+                      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>Required</span>
+                  </label>
+                </div>
+              </div>
             </div>
 
             <!-- Food Authority Report -->
-            <div class="form-group" ng-show="application.restaurant == 'Yes'" ng-hide="application.restaurant !== 'Yes'">
-              <label for="foodAuthReportInputFile">Food Authority Report</label>
-              <label class="btn btn-default" role="button" for="foodAuthReportInputFile">Choose File
-              <input type="file" id="foodAuthReportInputFile" style="display: none;" nv-file-select uploader="uploader" filters="imageFilter" ng-click="uploader.clearQueue()" required>
-              </label>
+            <div class="row">
+              <div>
+                <div class="form-group" ng-if="application.hasRestaurant == 'true'" ng-hide="application.hasRestaurant !== 'true'">
+                  <label class="btn btn-default" role="button" for="foodAuthReportInputFile">Choose File
+                    <input type="file" name="foodAuthReportInputFile" id="foodAuthReportInputFile" class="hidden" nv-file-select uploader="uploader1" ng-click="uploader1.clearQueue()" ng-model="application.foodAuthReport" valid-file required>
+                  </label>
+                  <label for="foodAuthReportInputFile">Food Authority Report
+                    <span class="text-danger" ng-show="restaurantApplication.foodAuthReportInputFile.$invalid && !restaurantApplication.foodAuthReportInputFile.$pristine">
+                      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>Required</span>
+                  </label>
+                </div>
+              </div>
             </div>
 
-            <div class="btn-group btn-group-xs" role="group">
-              <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
-                <span class="glyphicon glyphicon-upload"></span>
-                Upload
-              </button>
-              <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
-                <span class="glyphicon glyphicon-trash"></span>
-                Remove
-              </button>
-            </div>
           </div>
 
-          <!-- <div class="col-md-4">
-
-            <table class="table table-condensed" ng-show="application.propertyOwner !== 'Yes' && application.restaurant !== 'Yes'" ng-hide="application.propertyOwner == 'Yes'">
-              <thead>
-                <tr>
-                  <th class="text-center">Progress</th>
-                </tr>
-              </thead>
-              <tbody ng-repeat="item in uploader.queue">
-                <tr>
-                  <td>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-success" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }">
-                        {{uploader.progress + '%'}}
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-          </div> -->
+          <div class="col-md-6">
+            <ul class="list-unstyled text-success">
+              <!-- uploader 1 -->
+              <dl ng-repeat="item in uploader1.queue">
+                <dd>
+                  <span>
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </span>
+                  {{ item.file.name }}
+                </dd>
+              </dl>
+              <!-- uploader 2 -->
+              <dl ng-repeat="item in uploader2.queue">
+                <dd>
+                  <span>
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </span>
+                  {{item.file.name }}
+                </dd>
+              </dl>
+            </ul>
+          </div>
 
         </div>
 
         <hr>
-        <button type="submit" id="submit" value="Submit" class="btn btn-success btn-lg">Submit</button>
+
+
+
+
+          <!-- error if a the restaurant address is not unique -->
+          <div  uib-alert class="alert alert-danger" ng-if="addressExists" dismiss-on-timeout="5000" close="closeAlert()">A restaurant with the same address exists already.</div>
+
+
+        <button type="submit" id="submit" value="Submit" class="btn btn-success" ng-disabled="restaurantApplication.$invalid">Submit</button>
+
       </form>
     </div>
   </div>

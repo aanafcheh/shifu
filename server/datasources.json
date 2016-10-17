@@ -1,12 +1,7 @@
 {
   "MongoDB": {
-    "host": "localhost",
-    "port": 27017,
-    "url": "",
-    "database": "shifu",
-    "password": "",
+    "url": "mongodb://shifu:Shifu@ds039271.mlab.com:39271/shifu",
     "name": "MongoDB",
-    "user": "",
     "connector": "mongodb"
   },
   "storage": {

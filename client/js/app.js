@@ -6,7 +6,8 @@ angular
     'lbServices',
     'ui.router',
     'ui.bootstrap',
-    'angularFileUpload'
+    'angularFileUpload',
+    'ngImgCrop'
   ])
   .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
       $urlRouterProvider) {
@@ -17,9 +18,15 @@ angular
         controller: 'ProfileController'
       })
 
-      .state('restaurant', {
+      .state('application', {
         url: '',
         templateUrl: 'views/application.html',
+        controller: 'ApplicationController'
+      })
+
+      .state('restaurant', {
+        url: '',
+        templateUrl: 'views/restaurant.html',
         controller: 'RestaurantController'
       });
 

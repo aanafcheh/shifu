@@ -45,5 +45,13 @@
   "container": {
     "dataSource": "storage",
     "public": true
+  },
+  "restaurant": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+  "menu": {
+    "dataSource": "MongoDB",
+    "public": true
   }
 }

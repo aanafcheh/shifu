@@ -28,6 +28,16 @@
       "type": "hasMany",
       "model": "container",
       "foreignKey": "userId"
+    },
+    "restaurants": {
+      "type": "hasMany",
+      "model": "restaurant",
+      "foreignKey": "userId"
+    },
+    "menus": {
+      "type": "hasMany",
+      "model": "menu",
+      "foreignKey": "userId"
     }
   },
   "acls": [],
