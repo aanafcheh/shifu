@@ -1,0 +1,31 @@
+{
+  "name": "Shifu",
+  "description": "Restaurants Platform",
+  "main": "server/server.js",
+  "authors": [
+    "Ali Anafcheh <aanafcheh@hotmail.com>"
+  ],
+  "license": "UNLICENSED",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "client/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-animate": "^1.5.8",
+    "angular-bootstrap": "^2.0.2",
+    "angular-resource": "^1.5.8",
+    "angular-file-upload": "^2.3.4",
+    "angular-touch": "^1.5.8",
+    "angular-ui-router": "^0.3.1",
+    "bootstrap": "^3.3.7",
+    "font-awesome": "fontawesome#^4.6.3",
+    "trianglify": "^1.0.0",
+    "ng-img-crop": "ngImgCrop#^0.3.2"
+  }
+}
