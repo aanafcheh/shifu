@@ -19,13 +19,13 @@ angular
       })
 
       .state('application', {
-        url: '',
+        url: '/application',
         templateUrl: 'views/application.html',
         controller: 'ApplicationController'
       })
 
       .state('restaurant', {
-        url: '',
+        url: '/restaurant',
         templateUrl: 'views/restaurant.html',
         controller: 'RestaurantController'
       });

@@ -45,3 +45,9 @@ img-crop canvas {
   position: absolute;
   top: 50%;
 }
+
+/*rating*/
+
+.glyphicon-star, .glyphicon-star-empty {
+  color: #FFDC00;
+}

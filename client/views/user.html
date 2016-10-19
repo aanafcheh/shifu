@@ -51,4 +51,52 @@
 
   </div>
 
+  <!-- restaurant profile badge -->
+  <div class="row" ng-repeat="restaurant in restaurants">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="col-md-6">
+          <div class="media">
+            <div class="media-left media-middle">
+              <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="open('lg')">
+                <i class="fa fa-cutlery" aria-hidden="true"></i>
+              </button>
+              <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              {{restaurant.address}}
+              <br>
+              {{restaurant.zipcode}},
+              {{restaurant.city}}
+              <br>
+              <i class="fa fa-mobile" aria-hidden="true"></i>
+              {{restaurant.phoneNumber}}
+              <br>
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+              {{restaurant.email}}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <h4>
+          <span class="label label-success">Open</span>
+          <span class="label label-primary">Delivery from 5$</span>
+          <span class="label label-default">7AM-12PM Daily</span>
+        </h4>
+        </div>
+      </div>
+
+      <!-- rating -->
+      <div ng-controller="RatingController">
+        <span style="font-size:20px" uib-rating ng-model="rate" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null" titles="['one','two','three']" aria-labelledby="default-rating" ng-class="text-warning"></span>
+        <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overStar && !isReadonly">{{percent}}%</span>
+      </div>
+
+    </div>
+
+  </div>
+
 </div>

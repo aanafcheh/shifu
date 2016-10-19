@@ -10,14 +10,18 @@ angular.module('shifuProfile')
     id: 'me'
   });
 
+  $scope.restaurants = User.restaurants({
+    id: 'me'
+  });
+
   $scope.userHasRestaurant = false;
   $scope.noRestaurant = false;
-  $scope.restaurant = User.restaurants.count({
+  $scope.restaurantCount = User.restaurants.count({
     id: 'me'
   }).$promise.then(
     function(response) {
-      $scope.restaurant = response;
-      if ($scope.restaurant.count === 0) {
+      $scope.restaurantCount = response;
+      if ($scope.restaurantCount.count === 0) {
         $scope.userHasRestaurant = false;
         $scope.noRestaurant = true;
       } else {
@@ -145,13 +149,17 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', '$state', '$uibModal', 'User', 'Restaurant', function($scope, $state, $uibModal, User, Restaurant) {
+.controller('RestaurantController', ['$scope', '$state', '$uibModal','Menu', 'User', 'Restaurant', function($scope, $state, $uibModal, Menu, User, Restaurant) {
 
   $scope.application = {};
   $scope.menu = {};
+  $scope.restaurant = {};
 
-  $scope.restaurant = User.find({include: ['restaurants']});
-  console.log($scope.restaurant);
+  $scope.restaurant = User.restaurants({ id: 'me', filter: { fields: { id: true }} }).$promise.then(function(response){
+      $scope.restaurant = response[0].id;
+
+  });
+
 
   // time picker
   $scope.hstep = 1;
@@ -186,23 +194,17 @@ angular.module('shifuProfile')
 
 // submit info
 $scope.newRestaurant = function() {
-  User.restaurants.save({
-    id: 'me'
+  Restaurant.prototype$updateAttributes({
+    id: $scope.restaurant
   }, $scope.application);
-console.log($scope.application);
-  // $state.go('restaurant');
-};
 
-$scope.newMenuItem = function() {
-  User.restaurants.prototype$updateAttributes({
-    id: 'me'
-  }, $scope.application);
-console.log($scope.application);
-  // $state.go('restaurant');
+  Restaurant.menus.create({ id: $scope.restaurant }, $scope.menu);
+  $state.go('app');
+  console.log($scope.menu);
 };
-
 
 }])
+
 
 .controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance','User', function($scope, $state, FileUploader, $uibModalInstance, User) {
 
@@ -283,6 +285,24 @@ console.log($scope.application);
   };
 
 }])
+
+.controller('RatingController', function ($scope) {
+  $scope.max = 5;
+  $scope.isReadonly = false;
+
+  $scope.hoveringOver = function(value) {
+    $scope.overStar = value;
+    $scope.percent = 100 * (value / $scope.max);
+  };
+
+  $scope.ratingStates = [
+    {stateOn: 'glyphicon-ok-sign', stateOff: 'glyphicon-ok-circle'},
+    {stateOn: 'glyphicon-star', stateOff: 'glyphicon-star-empty'},
+    {stateOn: 'glyphicon-heart', stateOff: 'glyphicon-ban-circle'},
+    {stateOn: 'glyphicon-heart'},
+    {stateOff: 'glyphicon-off'}
+  ];
+})
 
 //
 // directives

@@ -12,6 +12,11 @@
       "type": "belongsTo",
       "model": "user",
       "foreignKey": "userId"
+    },
+    "menus": {
+      "type": "hasOne",
+      "model": "menu",
+      "foreignKey": "restaurantId"
     }
   },
   "acls": [],
