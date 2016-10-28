@@ -6,6 +6,7 @@ angular.module('shifuProfile')
 
 .controller('ProfileController', ['$scope', '$state', 'User', function($scope, $state, User) {
 
+
   $scope.profile = User.identities({
     id: 'me'
   });
@@ -149,14 +150,21 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', '$state', '$uibModal','Menu', 'User', 'Restaurant', function($scope, $state, $uibModal, Menu, User, Restaurant) {
+.controller('RestaurantController', ['$scope','$state', '$filter','$uibModal','Menu', 'User', 'Restaurant',
+  function($scope, $state, filter, $uibModal, Menu, User, Restaurant) {
 
   $scope.application = {};
   $scope.menu = {};
   $scope.restaurant = {};
 
-  $scope.restaurant = User.restaurants({ id: 'me', filter: { fields: { id: true }} }).$promise.then(function(response){
+  $scope.restaurant = User.restaurants({ id: 'me', filter: { fields: { id: true ,workFrom:true,workTo:true}} }).$promise.then(function(response){
       $scope.restaurant = response[0].id;
+    var workfrom=response[0].workFrom;
+    var workto= response[0].workTo;
+    var splicedWorkfrom=workfrom.substring(0,workfrom.indexOf(":",workfrom.indexOf(":")+1));
+    var splicedWorkTo=workto.substring(0,workto.indexOf(":",workto.indexOf(":")+1));
+
+    
 
   });
 
@@ -164,9 +172,20 @@ angular.module('shifuProfile')
   // time picker
   $scope.hstep = 1;
    $scope.mstep = 15;
+    var d = new Date();
+    console.log("the date is "+d);
+    d.setHours( 14 );
+    d.setMinutes( 00 );
+    var timeZone=d.getTimezoneOffset();
+
+    $scope.application.workFrom = d;
+    $scope.application.workTo = d;
+
+
 
   // change the tab view
   $scope.tab = 1;
+
   $scope.select = function(setTab) {
     $scope.tab = setTab;
   };
@@ -194,13 +213,30 @@ angular.module('shifuProfile')
 
 // submit info
 $scope.newRestaurant = function() {
+  $scope.application.workFrom = filter('date')($scope.application.workFrom, "H:mm:Z");
+  console.log("the workFrom "+ $scope.application.workFrom );
+  $scope.application.workTo = filter('date')($scope.application.workTo, "H:mm:Z");
+  var date= filter('date')($scope.application.workFrom, "H:mm");
+  console.log(date.substring(0,date.indexOf("+")));
+
+
+
+
+
+
+
+
+
+
   Restaurant.prototype$updateAttributes({
     id: $scope.restaurant
   }, $scope.application);
 
   Restaurant.menus.create({ id: $scope.restaurant }, $scope.menu);
   $state.go('app');
-  console.log($scope.menu);
+  console.log($scope.application);
+
+
 };
 
 }])

@@ -6,6 +6,8 @@ var PassportConfigurator = require('loopback-component-passport').PassportConfig
 
 var app = module.exports = loopback();
 
+
+
 // We need flash messages to see passport errors
 app.use(flash());
 
@@ -27,13 +29,15 @@ app.start = function() {
   });
 };
 
+
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
+
 boot(app, __dirname, function(err) {
   if (err) throw err;
-
   // The access token is only available after boot
   app.middleware('auth', loopback.token({
+
     model: app.models.accessToken,
     // specify the name of the logged in user id
     currentUserLiteral: 'me'
