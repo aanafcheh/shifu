@@ -2,6 +2,7 @@
 // APP 1 Controllers - shifuProfile
 //
 //
+
 angular.module('shifuProfile')
 
 .controller('ProfileController', ['$scope', '$state', 'User', function($scope, $state, User) {
@@ -159,12 +160,21 @@ angular.module('shifuProfile')
 
   $scope.restaurant = User.restaurants({ id: 'me', filter: { fields: { id: true ,workFrom:true,workTo:true}} }).$promise.then(function(response){
       $scope.restaurant = response[0].id;
-    var workfrom=response[0].workFrom;
-    var workto= response[0].workTo;
-    var splicedWorkfrom=workfrom.substring(0,workfrom.indexOf(":",workfrom.indexOf(":")+1));
-    var splicedWorkTo=workto.substring(0,workto.indexOf(":",workto.indexOf(":")+1));
+    var now=moment().format("H:mm:ZZ");
+    var timeNow=moment(now,"H:mm:ZZ");
+   var workingFrom= moment(response[0].workFrom,"H:mm:ZZ");
+    var workingTo= moment(response[0].workTo,"H:mm:ZZ");
+   
 
-    
+
+    if(timeNow.isBefore(workingFrom)||timeNow.isAfter(workingTo) ){
+      $scope.openOrClosed="The shop is closed";
+    }
+    else{
+      $scope.openOrClosed="The shop is open";
+    }
+
+
 
   });
 
@@ -217,7 +227,7 @@ $scope.newRestaurant = function() {
   console.log("the workFrom "+ $scope.application.workFrom );
   $scope.application.workTo = filter('date')($scope.application.workTo, "H:mm:Z");
   var date= filter('date')($scope.application.workFrom, "H:mm");
-  console.log(date.substring(0,date.indexOf("+")));
+  //console.log(date.substring(0,date.indexOf("+")));
 
 
 
