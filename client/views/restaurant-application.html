@@ -198,7 +198,7 @@
 
 
           <!-- error if a the restaurant address is not unique -->
-          <div  uib-alert class="alert alert-danger" ng-if="addressExists" dismiss-on-timeout="5000" close="closeAlert()">A restaurant with the same address exists already.</div>
+          <div  uib-alert class="alert alert-danger" ng-if="addressExists" dismiss-on-timeout="5000" close="closeAlert()">A restaurant with the same address exists already. Please change the restaurant's address.</div>
 
 
         <button type="submit" id="submit" value="Submit" class="btn btn-success" ng-disabled="restaurantApplication.$invalid">Submit</button>

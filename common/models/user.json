@@ -6,7 +6,13 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "properties": {
+    "restaurant": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    }
+  },
   "validations": [],
   "relations": {
     "accessTokens": {
@@ -37,6 +43,11 @@
     "menus": {
       "type": "hasMany",
       "model": "menu",
+      "foreignKey": "userId"
+    },
+    "feedbacks": {
+      "type": "hasMany",
+      "model": "feedback",
       "foreignKey": "userId"
     }
   },

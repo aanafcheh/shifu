@@ -1,4 +1,5 @@
 var loopback = require('loopback');
+var LoopBackContext = require('loopback-context');
 var boot = require('loopback-boot');
 var path = require('path');
 var flash = require('express-flash');
@@ -8,6 +9,28 @@ var app = module.exports = loopback();
 
 // We need flash messages to see passport errors
 app.use(flash());
+
+//put the current user in the current context so it is accessable by remote methods
+app.use(LoopBackContext.perRequest());
+app.use(loopback.token());
+app.use(function setCurrentUser(req, res, next) {
+  if (!req.accessToken) {
+    return next();
+  }
+  app.models.user.findById(req.accessToken.userId, function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return next(new Error('No user with this access token was found.'));
+    }
+    var loopbackContext = LoopBackContext.getCurrentContext();
+    if (loopbackContext) {
+      loopbackContext.set('currentUser', user);
+    }
+    next();
+  });
+});
 
 // view engine
 app.set('views', path.join(__dirname, '../client'));
@@ -36,9 +59,8 @@ boot(app, __dirname, function(err) {
   app.middleware('auth', loopback.token({
     model: app.models.accessToken,
     // specify the name of the logged in user id
-    currentUserLiteral: 'me'
+    currentUserLiteral: 'me',
   }));
-
 
   // start the server if `$ node server.js`
   if (require.main === module)

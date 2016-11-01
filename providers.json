@@ -5,7 +5,7 @@
     "usernameField": "username",
     "passwordField": "password",
     "authPath": "/auth/local",
-    "successRedirect": "/profile",
+    "successRedirect": "/",
     "failureRedirect": "/login",
     "failureFlash": true
   },
@@ -17,7 +17,7 @@
     "callbackURL": "/auth/facebook/callback",
     "authPath": "/auth/facebook",
     "callbackPath": "/auth/facebook/callback",
-    "successRedirect": "/profile",
+    "successRedirect": "/",
     "failureRedirect": "/login",
     "scope": ["email"],
     "authType": "rerequest",

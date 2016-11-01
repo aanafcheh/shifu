@@ -1,27 +1,27 @@
 {
-  "name": "restaurant",
+  "name": "feedback",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "properties": {
+    "rate": {
+      "type": "number",
+      "default": 0
+    }
+  },
   "validations": [],
   "relations": {
+    "restaurant": {
+      "type": "belongsTo",
+      "model": "restaurant",
+      "foreignKey": "restaurantId"
+    },
     "user": {
       "type": "belongsTo",
       "model": "user",
       "foreignKey": "userId"
-    },
-    "menus": {
-      "type": "hasOne",
-      "model": "menu",
-      "foreignKey": "restaurantId"
-    },
-    "feedbacks": {
-      "type": "hasMany",
-      "model": "feedback",
-      "foreignKey": "restaurantId"
     }
   },
   "acls": [],

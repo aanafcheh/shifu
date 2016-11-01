@@ -4,8 +4,9 @@
 //
 angular.module('shifuProfile')
 
-.controller('ProfileController', ['$scope', '$state', 'User', function($scope, $state, User) {
+.controller('ProfileController', ['$scope', '$rootScope', '$state', '$filter', 'User', 'Restaurant', function($scope, $rootScope, $state, $filter, User, Restaurant) {
 
+  // query all the needed information
   $scope.profile = User.identities({
     id: 'me'
   });
@@ -14,43 +15,14 @@ angular.module('shifuProfile')
     id: 'me'
   });
 
-  $scope.userHasRestaurant = false;
-  $scope.noRestaurant = false;
-  $scope.restaurantCount = User.restaurants.count({
-    id: 'me'
-  }).$promise.then(
-    function(response) {
-      $scope.restaurantCount = response;
-      if ($scope.restaurantCount.count === 0) {
-        $scope.userHasRestaurant = false;
-        $scope.noRestaurant = true;
-      } else {
-        $scope.userHasRestaurant = true;
-        $scope.noRestaurant = false;
-      }
-    },
-    function(error) {
-      console.log("no restaurants");
-    }
-  );
-
-
+  // Check if the user has a restaurant yet or not, and display content depending on that
+  $scope.user = User.hasRestaurant();
 
 }])
 
-.controller('ApplicationController', ['$scope', '$state', 'User', 'Restaurant', 'FileUploader', function($scope, $state, User, Restaurant, FileUploader) {
+.controller('ApplicationController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', 'FileUploader', function($scope, $state, $stateParams, User, Restaurant, FileUploader) {
 
-  // create the object that will store the ng-models values
   $scope.application = {};
-
-  // query the database for the required models
-  $scope.profile = User.identities({
-    id: 'me'
-  });
-  $scope.restaurant = User.restaurants({
-    id: 'me'
-  });
-
 
   //
   //  Uploader
@@ -115,7 +87,7 @@ angular.module('shifuProfile')
   // in this function we query restaurants with the same address as the application form, on success an error will be shown that a restaurant with the same address exists otherwise the applicaiton will be submitted
   $scope.newRestaurant = function() {
 
-    $scope.allRestaurants = Restaurant.findOne({
+    $scope.restaurant = Restaurant.findOne({
       filter: {
         where: {
           address: $scope.application.address,
@@ -124,19 +96,31 @@ angular.module('shifuProfile')
       }
     }).$promise.then(
       function(response) {
-        $scope.allRestaurants = response;
+        $scope.restaurant = response;
         $scope.addressExists = true;
         $scope.restaurantApplication.$setPristine();
       },
       function(error) {
-        // the restaurant was queried first at the beginning of the controller, so we can create an instance now.
+        // create the restaurant
         User.restaurants.create({
           id: 'me'
         }, $scope.application);
+
+        // update the user to be a restaurant
+        User.prototype$updateAttributes({
+          id: 'me'
+        }, {
+          restaurant: true
+        });
+
+        // upload the documents and go to the restaurant wizard
         $scope.uploader1.uploadAll();
         $scope.uploader2.uploadAll();
         $scope.restaurantApplication.$setPristine();
-        $state.go('restaurant');
+        $state.go('restaurantwizard', {
+          'address': $scope.application.address,
+          'zipcode': $scope.application.zipcode
+        });
       }
     );
   };
@@ -149,21 +133,34 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', '$state', '$uibModal','Menu', 'User', 'Restaurant', function($scope, $state, $uibModal, Menu, User, Restaurant) {
+.controller('RestaurantWizardController', ['$scope', '$state', '$stateParams', '$filter', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $uibModal, Menu, User, Restaurant) {
 
   $scope.application = {};
   $scope.menu = {};
-  $scope.restaurant = {};
 
-  $scope.restaurant = User.restaurants({ id: 'me', filter: { fields: { id: true }} }).$promise.then(function(response){
-      $scope.restaurant = response[0].id;
-
+  //get the latest restaurantId of the user
+  $scope.restaurantId = User.restaurants({
+    id: 'me',
+    filter: {
+      "fields": {
+        "id": true
+      },
+      "order": "id DESC",
+      "limit": 1,
+    }
+  }).$promise.then(function(response) {
+    $scope.restaurantId = response[0].id;
   });
 
-
   // time picker
+  var time = new Date();
+  time.setHours(9);
+  time.setMinutes(0);
+  $scope.application.workFrom = time;
+  $scope.application.workTo = time;
+
   $scope.hstep = 1;
-   $scope.mstep = 15;
+  $scope.mstep = 15;
 
   // change the tab view
   $scope.tab = 1;
@@ -187,26 +184,30 @@ angular.module('shifuProfile')
       size: size
     });
 
-    modalInstance.result.then(function (image) {
+    modalInstance.result.then(function(image) {
       $scope.image = image;
     });
   };
 
-// submit info
-$scope.newRestaurant = function() {
-  Restaurant.prototype$updateAttributes({
-    id: $scope.restaurant
-  }, $scope.application);
+  // submit info
+  $scope.newRestaurant = function() {
+    $scope.application.workFrom = $filter('date')($scope.application.workFrom, 'HH:mm:Z');
+    $scope.application.workTo = $filter('date')($scope.application.workTo, 'HH:mm:Z');
+    Restaurant.prototype$updateAttributes({
+      id: $scope.restaurantId
+    }, $scope.application);
 
-  Restaurant.menus.create({ id: $scope.restaurant }, $scope.menu);
-  $state.go('app');
-  console.log($scope.menu);
-};
+    Restaurant.menus.create({
+      id: $scope.restaurantId
+    }, $scope.menu);
+    $scope.restaurantProfile.$setPristine();
+    $state.go('app');
+  };
 
 }])
 
 
-.controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance','User', function($scope, $state, FileUploader, $uibModalInstance, User) {
+.controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', function($scope, $state, FileUploader, $uibModalInstance, User) {
 
   // cropped image will be saved here
   $scope.image = "";
@@ -265,10 +266,10 @@ $scope.newRestaurant = function() {
   // Upload Blob(cropped image) instead of file.
   // https: //developer.mozilla.org/en-US/docs/Web/API/FormData
   //   https: //github.com/nervgh/angular-file-upload/issues/208
-    uploader.onBeforeUploadItem = function(item) {
-      var blob = dataURItoBlob(item.croppedImage);
-      item._file = blob;
-    };
+  uploader.onBeforeUploadItem = function(item) {
+    var blob = dataURItoBlob(item.croppedImage);
+    item._file = blob;
+  };
 
   // Converts data uri to Blob. Necessary for uploading.
   // http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata
@@ -286,7 +287,7 @@ $scope.newRestaurant = function() {
 
 }])
 
-.controller('RatingController', function ($scope) {
+.controller('RatingController', ['$scope', '$state', 'User', 'Restaurant', 'Feedback', function($scope, $state, User, Restaurant, Feedback) {
   $scope.max = 5;
   $scope.isReadonly = false;
 
@@ -295,14 +296,80 @@ $scope.newRestaurant = function() {
     $scope.percent = 100 * (value / $scope.max);
   };
 
-  $scope.ratingStates = [
-    {stateOn: 'glyphicon-ok-sign', stateOff: 'glyphicon-ok-circle'},
-    {stateOn: 'glyphicon-star', stateOff: 'glyphicon-star-empty'},
-    {stateOn: 'glyphicon-heart', stateOff: 'glyphicon-ban-circle'},
-    {stateOn: 'glyphicon-heart'},
-    {stateOff: 'glyphicon-off'}
-  ];
-})
+  // query restaurant id
+  $scope.restaurantId = User.restaurants({
+    id: 'me',
+    filter: {
+      fields: {
+        id: true
+      }
+    }
+  }).$promise.then(function(response) {
+    $scope.restaurantId = response[0].id;
+  });
+
+  //restaurant rating
+  $scope.newfeedback = function() {
+
+    User.feedbacks({
+      id: 'me',
+      filter: {
+        where: {
+          restaurantId: $scope.restaurantId
+        }
+      }
+    }).$promise.then(
+      function(response) {
+        if (response[0]) {
+          response[0].rate = $scope.rate;
+          response[0].$save();
+        } else {
+          User.feedbacks.create({
+            id: 'me'
+          }, {
+            rate: $scope.rate,
+            restaurantId: $scope.restaurantId
+          });
+        }
+
+      },
+      function(error) {
+        User.feedbacks.create({
+          id: 'me'
+        }, {
+          rate: $scope.rate,
+          restaurantId: $scope.restaurantId
+        });
+      }
+    );
+  };
+
+}])
+
+.controller('RestaurantController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
+
+  // query all the needed information
+  $scope.profile = User.identities({
+    id: 'me'
+  });
+
+  $scope.restaurant = User.restaurants({
+    id: 'me',
+    filter: {
+      where: {
+        city: $stateParams.city,
+        restaurantName: $stateParams.name
+      }
+    }
+  }).$promise.then(function(response) {
+    $scope.restaurant = response;
+    $scope.state = Restaurant.openOrClosed(response[0].id);
+    console.log($scope.state);
+
+  });
+
+
+}])
 
 //
 // directives
@@ -334,6 +401,13 @@ $scope.newRestaurant = function() {
         return str.toLowerCase();
       });
     }
+  };
+})
+
+// filters
+.filter('capitalize', function() {
+  return function(input) {
+    return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
   };
 });
 

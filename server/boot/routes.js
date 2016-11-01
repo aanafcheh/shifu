@@ -17,19 +17,19 @@ module.exports = function(app) {
     }
   });
 
-  app.get('/profile', ensureLoggedIn('/'), function(req, res, next) {
-    res.render('profile', {
-      user: req.user,
-      url: req.url,
-    });
-  });
-
-  app.get('/profile.html', ensureLoggedIn('/'), function(req, res, next) {
-    res.render('profile', {
-      user: req.user,
-      url: req.url,
-    });
-  });
+  // app.get('/profile', ensureLoggedIn('/'), function(req, res, next) {
+  //   res.render('profile', {
+  //     user: req.user,
+  //     url: req.url,
+  //   });
+  // });
+  //
+  // app.get('/profile.html', ensureLoggedIn('/'), function(req, res, next) {
+  //   res.render('profile', {
+  //     user: req.user,
+  //     url: req.url,
+  //   });
+  // });
 
   // app.get('/local', function(req, res, next) {
   //   res.render('pages/local', {
@@ -74,7 +74,7 @@ module.exports = function(app) {
   // });
 
   app.get('/login', function(req, res, next) {
-    res.render('login', {
+    res.render('login-error', {
       user: req.user,
       url: req.url,
     });

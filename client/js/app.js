@@ -20,12 +20,18 @@ angular
 
       .state('application', {
         url: '/application',
-        templateUrl: 'views/application.html',
+        templateUrl: 'views/restaurant-application.html',
         controller: 'ApplicationController'
       })
 
+      .state('restaurantwizard', {
+        url: '/wizard/:address/:zipcode',
+        templateUrl: 'views/restaurant-wizard.html',
+        controller: 'RestaurantWizardController'
+      })
+
       .state('restaurant', {
-        url: '/restaurant',
+        url: '/:city/:name',
         templateUrl: 'views/restaurant.html',
         controller: 'RestaurantController'
       });

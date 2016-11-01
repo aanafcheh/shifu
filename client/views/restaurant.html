@@ -1,211 +1,80 @@
 <div class="container">
 
-  <div class="alert alert-success alert-dismissible" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <strong>Application Sent!</strong>
-    Let's set up your restaurant profile now.
-  </div>
+  <div class="row">
 
-  <div class="well">
-    <!-- restaurant setup wizard -->
-    <ul class="nav nav-tabs nav-justified lead" role="tablist">
-      <!-- restaurant profile -->
-      <li role="presentation" ng-class="{active:isSelected(1)}">
-        <a>
-          <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-          Restaurant Profile</a>
-      </li>
-      <!-- menu setup -->
-      <li role="presentation" ng-class="{active:isSelected(2)}">
-        <a>
-          <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>
-          Menu</a>
-      </li>
-    </ul>
-
-    <!-- tab content -->
-    <form name="restaurantProfile" role="form" ng-submit="newRestaurant()" novalidate>
-      <div class="tab-content">
-        <div id="restaurant" class="tab-pane fade in active">
-          <ng-form name="restaurantInfo">
-          <!-- restaurant profile -->
-          <div style="margin:50px;">
-            <div class="page-header">
-              <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <small>You may change these settings later.</small>
-            </div>
-
-              <!-- restaurat name -->
-              <div class="form-group has-feedback" ng-class="{'has-error': restaurantProfile.restaurantInfo.restaurantName.$error.required && !restaurantProfile.restaurantInfo.restaurantName.$pristine}">
-                <label for="restaurantName">Restaurant Name</label>
-                <input type="text" class="form-control" name="restaurantName" id="restaurantName" placeholder="Restaurant Name" ng-model="application.restaurantName" change-case required>
-                <span ng-show="restaurantProfile.restaurantInfo.restaurantName.$error.required && !restaurantProfile.restaurantInfo.restaurantName.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-              </div>
-
-              <!-- Delivery -->
-              <div class="form-group">
-                <label for="delivery">Are you able to deliver your food?</label><br>
-                <label class="radio-inline" ng-init="application.delivery = 'false'">
-                  <input type="radio" name="delivery" id="delivery1" value="false" ng-model="application.delivery">
-                  No, pickup only
-                </label>
-                <label class="radio-inline">
-                  <input type="radio" name="delivery" id="delivery2" value="true" ng-model="application.delivery">
-                  Yes
-                </label>
-              </div>
-
-              <!-- delivery fee -->
-              <div class="form-group" ng-if="application.delivery == 'true'" ng-class="{'has-error': restaurantProfile.restaurantInfo.deliveryFee.$error.required && !restaurantProfile.restaurantInfo.deliveryFee.$pristine}">
-                <label for="deliveryFee">Delivery Fee</label>
-                <p class="help-block">
-                  <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-                  Type in the number zero if you would like to offer free delivery.
-                </p>
-                <div class="input-group">
-                  <div class="input-group-addon">€</div>
-                  <input type="number" class="form-control" name="deliveryFee" id="deliveryFee" placeholder="Amount" ng-model="application.deliveryFee" required>
-                  <span ng-show="restaurantProfile.restaurantInfo.deliveryFee.$error.required && !restaurantProfile.restaurantInfo.deliveryFee.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-                </div>
-              </div>
-
-              <!-- working hours -->
-              <div class="form-inline">
-                <label for="workFrom">Working Hours</label>
-                <div class="row">
-                  <div class="col-md-6">
-                    <em>From</em>
-                    <div uib-timepicker name="workFrom" id="workFrom" ng-model="application.workFrom" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian" required></div>
-                  </div>
-                  <div class="col-md-6">
-                    <em>To</em>
-                    <div uib-timepicker name="workTo" id="workTo" ng-model="application.workTo" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian" required></div>
-                  </div>
-                </div>
-              </div>
-
-          </div>
-
-          <button type="button" class="btn btn-primary" data-toggle="tab" ng-click="select(2)" ng-href="#menu" ng-disabled="restaurantProfile.restaurantInfo.$invalid">Next</button>
-        </ng-form>
+    <div class="col-md-12 col-md-6 col-md-offset-3">
+      <div class="panel">
+        <div class="panel-heading">
+          <h3 class="panel-title">Restaurant Application Status</h3>
         </div>
-
-
-        <!--  -->
-        <!-- Menu -->
-        <!--  -->
-        <div id="menu" class="tab-pane fade">
-          <ng-form name="menuForm">
-          <div style="margin:50px;">
-            <div class="page-header">
-              <h3>Add your first menu item (optional):</h3>
-            </div>
-
-              <div class="media">
-                <div class="row">
-
-                  <!-- item image -->
-                  <div class="col-md-1">
-                    <div class="media-left media-middle">
-                      <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="open('lg')">
-                        <i class="fa fa-camera"></i>
-                      </button>
-                      <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
-                    </div>
-                  </div>
-
-                  <!-- menu item info -->
-                  <div class="col-md-4">
-                    <div class="media-body">
-                      <h5 class="media-heading">
-                        <div class="form-group">
-                          <input type="text" class="form-control input-sm" name="itemName" id="itemName" placeholder="Item Name" ng-model="menu.item" change-case required>
-                        </div>
-                      </h5>
-                      <div class="form-group">
-                        <input type="text" class="form-control input-sm" name="allergies" id="allergies" placeholder="Allergies" ng-model="menu.allergies" change-case required>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- category -->
-                  <div class="col-md-2">
-                    <select class="form-control input-sm">
-                      <option value="mains">Main Meal</option>
-                      <option value="dessert">Dessert</option>
-                      <option value="appetizer">Appetizer</option>
-                      <option value="beverage">Beverage</option>
-                    </select>
-                  </div>
-
-                </div>
-              </div>
-
-          </div>
-
-
-        </ng-form>
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary" data-toggle="tab" ng-click="select(1)" ng-href="#restaurant">Back</button>
-            <button type="submit" id="submit" value="Submit" class="btn btn-success">Save</button>
-          </div>
+        <div class="panel-body text-justify">
+          <ul class="list-inline">
+            <li>
+              <span class="glyphicon glyphicon-check text-success" aria-hidden="true"></span>
+              Application Received
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
+              Proccessing
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
+              Restaurant Registered
+            </li>
+          </ul>
         </div>
-
       </div>
-      </form>
+    </div>
 
   </div>
 
-  <!-- image upload model -->
-  <div>
-    <script type="text/ng-template" id="addImage.html">
-      <div class="modal-header">
-        <h3>Add an Image:</h3>
-      </div>
-      <div class="modal-body">
-
-        <div class="form-group">
-          <label class="btn btn-default" role="button" for="menuItemImage">Choose File
-            <input type="file" name="menuItemImage" id="menuItemImage" class="hidden" nv-file-select uploader="uploader" ng-click="uploader.clearQueue()" ng-model="menu.image" valid-file required>
-          </label>
-        </div>
-
-        <div class="row" style="margin:50px" ng-repeat="item in uploader.queue">
-
-          <div class="col-md-6">
-            <strong>Crop:</strong>
-            <div class="cropArea">
-              <img-crop image="item.image" result-image="item.croppedImage"></img-crop>
+  <!-- restaurant profile badge -->
+  <div class="row" ng-repeat="shifu in restaurant">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="col-md-6">
+          <div class="media">
+            <div class="media-left media-middle">
+              <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="open('lg')">
+                <i class="fa fa-cutlery" aria-hidden="true"></i>
+              </button>
+              <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading">{{shifu.restaurantName}}</h4>
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              {{shifu.address | capitalize}}
+              <br>
+              {{shifu.zipcode}},
+              {{shifu.city | capitalize}}
+              <br>
+              <i class="fa fa-mobile" aria-hidden="true"></i>
+              {{shifu.phoneNumber}}
+              <br>
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+              {{shifu.email}}
             </div>
           </div>
-
-          <div class="col-md-6">
-            <strong>Preview:</strong>
-            <div><img class="img-circle" ng-src="{{item.croppedImage}}"/></div>
-          </div>
-
         </div>
 
-      </div>
-      <div class="modal-footer">
-
-        <div class="row">
-          <div class="col-md-6 col-md-offset-3">
-            <div class="btn-group btn-group-justified" role="group">
-              <div class="btn-group" role="group">
-                <button class="btn btn-primary" ng-click="ok()">Save</button>
-              </div>
-              <div class="btn-group" role="group">
-                <button class="btn btn-default" ng-click="cancel()">Cancel</button>
-              </div>
-            </div>
-          </div>
-
+        <div class="col-md-6">
+          <h4>
+          <span class="label label-success">Open</span>
+          <span class="label label-primary">Delivery from 5$</span>
+          <span class="label label-default">7AM-12PM Daily</span>
+          {{getDatetime}}
+        </h4>
         </div>
-
       </div>
-    </script>
+
+    </div>
+
   </div>
 
 </div>

@@ -53,5 +53,9 @@
   "menu": {
     "dataSource": "MongoDB",
     "public": true
+  },
+  "feedback": {
+    "dataSource": "MongoDB",
+    "public": true
   }
 }
