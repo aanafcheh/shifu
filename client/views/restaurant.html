@@ -35,7 +35,7 @@
   </div>
 
   <!-- restaurant profile badge -->
-  <div class="row" ng-repeat="shifu in restaurant">
+  <div class="row" ng-repeat="restaurant in restaurants">
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="col-md-6">
@@ -47,28 +47,27 @@
               <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
             </div>
             <div class="media-body">
-              <h4 class="media-heading">{{shifu.restaurantName}}</h4>
+              <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
               <i class="fa fa-map-marker" aria-hidden="true"></i>
-              {{shifu.address | capitalize}}
+              {{restaurant.address | capitalize}}
               <br>
-              {{shifu.zipcode}},
-              {{shifu.city | capitalize}}
+              {{restaurant.zipcode}},
+              {{restaurant.city | capitalize}}
               <br>
               <i class="fa fa-mobile" aria-hidden="true"></i>
-              {{shifu.phoneNumber}}
+              {{restaurant.phoneNumber}}
               <br>
               <i class="fa fa-envelope" aria-hidden="true"></i>
-              {{shifu.email}}
+              {{restaurant.email}}
             </div>
           </div>
         </div>
 
         <div class="col-md-6">
           <h4>
-          <span class="label label-success">Open</span>
-          <span class="label label-primary">Delivery from 5$</span>
-          <span class="label label-default">7AM-12PM Daily</span>
-          {{getDatetime}}
+          <span class="label label-success">{{state.openOrClosed}}</span>
+          <span class="label label-primary">Delivery from &euro;{{restaurant.deliveryFee}}</span>
+          <span class="label label-default">{{restaurant.workFrom | formatTime}} - {{restaurant.workTo | formatTime}} Daily</span>
         </h4>
         </div>
       </div>

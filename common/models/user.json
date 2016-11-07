@@ -40,11 +40,6 @@
       "model": "restaurant",
       "foreignKey": "userId"
     },
-    "menus": {
-      "type": "hasMany",
-      "model": "menu",
-      "foreignKey": "userId"
-    },
     "feedbacks": {
       "type": "hasMany",
       "model": "feedback",

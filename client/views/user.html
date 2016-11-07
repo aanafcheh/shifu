@@ -5,7 +5,7 @@
 <div class="container" ng-if="!user.hasRestaurant">
 
   <div>
-    <h1>User Profile</h1>
+    <h1 id="cutomer">User Profile</h1>
     <hr>
   </div>
 
@@ -82,10 +82,9 @@
 
         <div class="col-md-6">
           <h4>
-          <span class="label label-success">{{openOrClosed}}</span>
-          <span class="label label-primary">Delivery from 5$</span>
-          <span class="label label-default">7AM-12PM Daily</span>
-          {{getDatetime}}
+          <span class="label label-success" ng-repeat="ole in state"></span>
+          <span class="label label-primary">Delivery from &euro;{{restaurant.deliveryFee}}</span>
+          <span class="label label-default">{{restaurant.workFrom | formatTime}} - {{restaurant.workTo | formatTime}} Daily</span>
         </h4>
         </div>
       </div>

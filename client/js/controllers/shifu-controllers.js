@@ -4,7 +4,7 @@
 //
 angular.module('shifuProfile')
 
-.controller('ProfileController', ['$scope', '$rootScope', '$state', '$filter', 'User', 'Restaurant', function($scope, $rootScope, $state, $filter, User, Restaurant) {
+.controller('ProfileController', ['$scope', '$rootScope', '$state', '$http', '$filter', 'User', 'Restaurant', function($scope, $rootScope, $state, $http, $filter, User, Restaurant) {
 
   // query all the needed information
   $scope.profile = User.identities({
@@ -13,6 +13,18 @@ angular.module('shifuProfile')
 
   $scope.restaurants = User.restaurants({
     id: 'me'
+  }).$promise.then(function(response) {
+    $scope.restaurants = response;
+
+    angular.forEach(response, function(value, key) {
+
+      //check if the restaurant is open or closed
+      $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data){
+      $scope.state = data;
+      });
+    });
+
+
   });
 
   // Check if the user has a restaurant yet or not, and display content depending on that
@@ -160,7 +172,7 @@ angular.module('shifuProfile')
   $scope.application.workTo = time;
 
   $scope.hstep = 1;
-  $scope.mstep = 15;
+  $scope.mstep = 30;
 
   // change the tab view
   $scope.tab = 1;
@@ -201,7 +213,7 @@ angular.module('shifuProfile')
       id: $scope.restaurantId
     }, $scope.menu);
     $scope.restaurantProfile.$setPristine();
-    $state.go('app');
+    $state.go('app', { reload: true });
   };
 
 }])
@@ -346,14 +358,14 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
+.controller('RestaurantController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
 
   // query all the needed information
   $scope.profile = User.identities({
     id: 'me'
   });
 
-  $scope.restaurant = User.restaurants({
+  $scope.restaurants = User.restaurants({
     id: 'me',
     filter: {
       where: {
@@ -362,10 +374,12 @@ angular.module('shifuProfile')
       }
     }
   }).$promise.then(function(response) {
-    $scope.restaurant = response;
-    $scope.state = Restaurant.openOrClosed(response[0].id);
-    console.log($scope.state);
+    $scope.restaurants = response;
 
+    //check if the restaurant is open or closed
+    $http.get('api/restaurants/' + response[0].id + '/openOrClosed').success(function(data){
+    $scope.state = data;
+    });
   });
 
 
@@ -409,6 +423,13 @@ angular.module('shifuProfile')
   return function(input) {
     return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
   };
+})
+
+.filter('formatTime', function ($filter) {
+return function (time) {
+    var date = time.substring(0,5);
+    return date;
+};
 });
 
 //

@@ -4,6 +4,7 @@ var LoopBackContext = require('loopback-context');
 var modelUtils = require('../../server/boot/clear-acl.js');
 var moment = require('moment');
 
+
 module.exports = function(Restaurant) {
 
   // get the restaurant id at /restaurants/restaurantId
@@ -15,7 +16,6 @@ module.exports = function(Restaurant) {
     Restaurant.findOne({where: {userId: currentUser.id}}, function (err, instance) {
         response = instance.id;
         cb(null, response);
-        console.log(response);
     });
   };
 
@@ -59,8 +59,7 @@ module.exports = function(Restaurant) {
         var now = moment().format("H:mm:ZZ");
         var timeNow = moment(now,"H:mm:ZZ");
 
-        Restaurant.findById( restaurantId, function (err, instance) {
-          console.log(instance);
+        Restaurant.findById(restaurantId, function (err, instance) {
           var workingFrom= moment(instance.workFrom,"H:mm:ZZ");
           var workingTo= moment(instance.workTo,"H:mm:ZZ");
 
@@ -78,32 +77,9 @@ module.exports = function(Restaurant) {
       Restaurant.remoteMethod (
             'openOrClosed',
             {
+              http: {path: '/:restaurantId/openOrClosed', verb: 'get'},
               accepts: {arg: 'restaurantId', type: 'string', required: true},
-              http: {path: '/openOrClosed', verb: 'get'},
               returns: {arg: 'openOrClosed', type: 'string'}
             }
         );
-
-
-
-        // Restaurant.afterInitialize = function () {
-        //   var now = moment().format("H:mm:ZZ");
-        //   var timeNow = moment(now,"H:mm:ZZ");
-        //
-        //   Restaurant.find(function (err, instance) {
-        //     var workingFrom= moment(instance.workFrom,"H:mm:ZZ");
-        //     var workingTo= moment(instance.workTo,"H:mm:ZZ");
-        //
-        //     if(timeNow.isBefore(workingFrom) || timeNow.isAfter(workingTo)) {
-        //       response ="Closed";
-        //     }
-        //     else{
-        //       response = "Open";
-        //     }
-        //
-        //     cb(null, response);
-        //   });
-        //
-        // };
-
 };
