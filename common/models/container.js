@@ -6,7 +6,7 @@ module.exports = function(Container) {
 
   Container.beforeRemote('upload', function(ctx, unused, next) {
     log('Container > beforeRemote > upload');
-    var userId = ctx.req.params.container; // TODO: validate userId basedon accessToken
+    var userId = ctx.req.params.container; // TODO:0 validate userId basedon accessToken id:77
     log('Container > beforeRemote > upload > userId', userId);
     Container.getContainer(userId, function(err1, container1){
       if (err1) {

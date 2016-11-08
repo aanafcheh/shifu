@@ -31,7 +31,7 @@ function clickHook(el, $state, $timeout, type, current) {
     var button = e.which || e.button, target = current();
 
     if (!(button > 1 || e.ctrlKey || e.metaKey || e.shiftKey || el.attr('target'))) {
-      // HACK: This is to allow ng-clicks to be processed before the transition is initiated:
+      // HACK:0 This is to allow ng-clicks to be processed before the transition is initiated: id:5
       var transition = $timeout(function() {
         $state.go(target.state, target.params, target.options);
       });

@@ -1273,7 +1273,7 @@ function $UrlMatcherFactory() {
     "string": {
       encode: valToString,
       decode: valFromString,
-      // TODO: in 1.0, make string .is() return false if value is undefined/null by default.
+      // TODO:0 in 1.0, make string .is() return false if value is undefined/null by default. id:19
       // In 0.2.x, string params are optional by default for backwards compat
       is: function(val) { return val == null || !isDefined(val) || typeof val === "string"; },
       pattern: /[^/]*/
@@ -2029,12 +2029,12 @@ function $UrlRouterProvider(   $locationProvider,   $urlMatcherFactory) {
       return url;
     }
 
-    // TODO: Optimize groups of rules with non-empty prefix into some sort of decision tree
+    // TODO:0 Optimize groups of rules with non-empty prefix into some sort of decision tree id:0
     function update(evt) {
       if (evt && evt.defaultPrevented) return;
       var ignoreUpdate = lastPushedUrl && $location.url() === lastPushedUrl;
       lastPushedUrl = undefined;
-      // TODO: Re-implement this in 1.0 for https://github.com/angular-ui/ui-router/issues/1573
+      // TODO:0 Re-implement this in 1.0 for https://github.com/angular-ui/ui-router/issues/1573 id:1
       //if (ignoreUpdate) return true;
 
       function check(rule) {
@@ -3217,7 +3217,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
 
       // If we're going to the same state and all locals are kept, we've got nothing to do.
       // But clear 'transition', as we still want to cancel any other pending transitions.
-      // TODO: We may not want to bump 'transition' if we're called from a location change
+      // TODO:0 We may not want to bump 'transition' if we're called from a location change id:2
       // that we've initiated ourselves, because we might accidentally abort a legitimate
       // transition initiated from code?
       if (shouldSkipReload(to, toParams, from, fromParams, locals, options)) {
@@ -4154,7 +4154,7 @@ function clickHook(el, $state, $timeout, type, current) {
     var button = e.which || e.button, target = current();
 
     if (!(button > 1 || e.ctrlKey || e.metaKey || e.shiftKey || el.attr('target'))) {
-      // HACK: This is to allow ng-clicks to be processed before the transition is initiated:
+      // HACK:0 This is to allow ng-clicks to be processed before the transition is initiated: id:3
       var transition = $timeout(function() {
         $state.go(target.state, target.params, target.options);
       });

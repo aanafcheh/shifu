@@ -9,21 +9,21 @@ module.exports = function(User) {
 
 
   // check if the user has a restaurant
-  User.hasRestaurant = function(cb) {
-    var ctx = LoopBackContext.getCurrentContext();
-    var currentUser = ctx && ctx.get('currentUser');
-
-    User.findById(currentUser.id, function (err, instance) {
-        response = instance.restaurant;
-        cb(null, response);
-    });
-  };
-
-  User.remoteMethod (
-        'hasRestaurant',
-        {
-          http: {path: '/hasRestaurant', verb: 'get'},
-          returns: {arg: 'hasRestaurant', type: 'boolean'}
-        }
-    );
+  // User.hasRestaurant = function(cb) {
+  //   var ctx = LoopBackContext.getCurrentContext();
+  //   var currentUser = ctx && ctx.get('currentUser');
+  //
+  //   User.findById(currentUser.id, function (err, instance) {
+  //       response = instance.restaurant;
+  //       cb(null, response);
+  //   });
+  // };
+  //
+  // User.remoteMethod (
+  //       'hasRestaurant',
+  //       {
+  //         http: {path: '/hasRestaurant', verb: 'get'},
+  //         returns: {arg: 'hasRestaurant', type: 'boolean'}
+  //       }
+  //   );
 };

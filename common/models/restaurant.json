@@ -5,7 +5,32 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "properties": {
+    "workFrom": {
+      "type": {
+        "Monday": "date",
+        "Tuesday": "date",
+        "Wednesday": "date",
+        "Thursday": "date",
+        "Friday": "date",
+        "Saturday": "date",
+        "Sunday": "date"
+      },
+      "required": false
+    },
+    "workTo": {
+      "type": {
+        "Monday": "date",
+        "Tuesday": "date",
+        "Wednesday": "date",
+        "Thursday": "date",
+        "Friday": "date",
+        "Saturday": "date",
+        "Sunday": "date"
+      },
+      "required": false
+    }
+  },
   "validations": [],
   "relations": {
     "user": {

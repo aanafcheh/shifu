@@ -6,13 +6,7 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {
-    "restaurant": {
-      "type": "boolean",
-      "required": true,
-      "default": false
-    }
-  },
+  "properties": {},
   "validations": [],
   "relations": {
     "accessTokens": {

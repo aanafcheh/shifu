@@ -54,23 +54,31 @@ module.exports = function(Restaurant) {
       );
 
       // check if the restaurant is open or closed
+      // TODO: if the restaurant works till midnight and the workTo is smaller than workFrom then the restaurant is closed, so this needs to be fixed
       Restaurant.openOrClosed = function(restaurantId, cb) {
 
-        var now = moment().format("H:mm:ZZ");
-        var timeNow = moment(now,"H:mm:ZZ");
+        var now = moment();
+        var today = moment().format("dddd");
+        var day = today;
 
         Restaurant.findById(restaurantId, function (err, instance) {
-          var workingFrom= moment(instance.workFrom,"H:mm:ZZ");
-          var workingTo= moment(instance.workTo,"H:mm:ZZ");
 
-          if(timeNow.isBefore(workingFrom) || timeNow.isAfter(workingTo)) {
-            response ="Closed";
+          if (instance.workFrom[today]) {
+            var workingFrom= moment(instance.workFrom[today]);
+            var workingTo= moment(instance.workTo[today]);
+
+            if(now.isBefore(workingFrom) || now.isAfter(workingTo)) {
+              openOrClosed ="Closed";
+            }
+            else{
+              openOrClosed = "Open";
+            }
           }
-          else{
-            response = "Open";
+          else {
+            openOrClosed ="Closed";
           }
 
-          cb(null, response);
+          cb(null, day, openOrClosed);
         });
       };
 
@@ -79,7 +87,10 @@ module.exports = function(Restaurant) {
             {
               http: {path: '/:restaurantId/openOrClosed', verb: 'get'},
               accepts: {arg: 'restaurantId', type: 'string', required: true},
-              returns: {arg: 'openOrClosed', type: 'string'}
+              returns: [
+                {arg: 'day', type: 'string'},
+                {arg: 'openOrClosed', type: 'string'}
+              ]
             }
         );
 };

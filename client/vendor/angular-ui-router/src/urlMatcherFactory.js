@@ -602,7 +602,7 @@ function $UrlMatcherFactory() {
     "string": {
       encode: valToString,
       decode: valFromString,
-      // TODO: in 1.0, make string .is() return false if value is undefined/null by default.
+      // TODO:0 in 1.0, make string .is() return false if value is undefined/null by default. id:6
       // In 0.2.x, string params are optional by default for backwards compat
       is: function(val) { return val == null || !isDefined(val) || typeof val === "string"; },
       pattern: /[^/]*/

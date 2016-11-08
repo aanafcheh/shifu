@@ -1573,7 +1573,7 @@ if (typeof jQuery === 'undefined') {
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
-      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
+      if (that.$element) { // TODO:0 Check whether guarding this code with this `if` is really necessary. id:37
         that.$element
           .removeAttr('aria-describedby')
           .trigger('hidden.bs.' + that.type)
@@ -1806,7 +1806,7 @@ if (typeof jQuery === 'undefined') {
   })
 
 
-  // NOTE: POPOVER EXTENDS tooltip.js
+  // NOTE:0 POPOVER EXTENDS tooltip.js id:38
   // ================================
 
   Popover.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype)

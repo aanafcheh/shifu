@@ -1032,7 +1032,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
 
       // If we're going to the same state and all locals are kept, we've got nothing to do.
       // But clear 'transition', as we still want to cancel any other pending transitions.
-      // TODO: We may not want to bump 'transition' if we're called from a location change
+      // TODO:0 We may not want to bump 'transition' if we're called from a location change id:4
       // that we've initiated ourselves, because we might accidentally abort a legitimate
       // transition initiated from code?
       if (shouldSkipReload(to, toParams, from, fromParams, locals, options)) {

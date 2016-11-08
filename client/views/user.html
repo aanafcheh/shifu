@@ -2,10 +2,10 @@
 <!-- USER WITH NO RESTAURANT -->
 <!--  -->
 <!-- show if the user has no restaurant -->
-<div class="container" ng-if="!user.hasRestaurant">
+<div class="container" ng-if="restaurantCount == 0">
 
   <div>
-    <h1 id="cutomer">User Profile</h1>
+    <h1>User Profile</h1>
     <hr>
   </div>
 
@@ -15,7 +15,7 @@
 <!-- USER WITH RESTAURANT -->
 <!--  -->
 <!-- show if the user has a restaurant -->
-<div class="container" ng-if="user.hasRestaurant">
+<div class="container" ng-if="restaurantCount !== 0">
 
   <div class="row">
 
@@ -82,9 +82,9 @@
 
         <div class="col-md-6">
           <h4>
-          <span class="label label-success" ng-repeat="ole in state"></span>
+          <span class="label label-success" id="{{restaurant.id}}"></span>
           <span class="label label-primary">Delivery from &euro;{{restaurant.deliveryFee}}</span>
-          <span class="label label-default">{{restaurant.workFrom | formatTime}} - {{restaurant.workTo | formatTime}} Daily</span>
+          <span class="label label-default">{{restaurant.workFrom[today] | date:'shortTime'}} - {{restaurant.workTo[today] | date:'shortTime'}}</span>
         </h4>
         </div>
       </div>

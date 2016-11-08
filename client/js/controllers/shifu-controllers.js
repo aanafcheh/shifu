@@ -4,7 +4,10 @@
 //
 angular.module('shifuProfile')
 
-.controller('ProfileController', ['$scope', '$rootScope', '$state', '$http', '$filter', 'User', 'Restaurant', function($scope, $rootScope, $state, $http, $filter, User, Restaurant) {
+.controller('ProfileController', ['$scope', '$filter', '$state', '$http', 'User', 'Restaurant', function($scope, $filter, $state, $http, User, Restaurant) {
+
+  // get the name of today to show the working hours accordingly
+  $scope.today = $filter('date')(new Date(), 'EEEE');
 
   // query all the needed information
   $scope.profile = User.identities({
@@ -16,19 +19,19 @@ angular.module('shifuProfile')
   }).$promise.then(function(response) {
     $scope.restaurants = response;
 
+    // check the status of a list of restaurants in a user profile or in search results
     angular.forEach(response, function(value, key) {
-
-      //check if the restaurant is open or closed
       $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data){
-      $scope.state = data;
+        angular.element(document).find("#"+value.id).append(data.openOrClosed);
       });
     });
-
-
   });
 
   // Check if the user has a restaurant yet or not, and display content depending on that
-  $scope.user = User.hasRestaurant();
+  $http.get('api/users/me/restaurants/count').success(function(data){
+    $scope.restaurantCount = data.count;
+  });
+
 
 }])
 
@@ -118,13 +121,6 @@ angular.module('shifuProfile')
           id: 'me'
         }, $scope.application);
 
-        // update the user to be a restaurant
-        User.prototype$updateAttributes({
-          id: 'me'
-        }, {
-          restaurant: true
-        });
-
         // upload the documents and go to the restaurant wizard
         $scope.uploader1.uploadAll();
         $scope.uploader2.uploadAll();
@@ -145,12 +141,15 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantWizardController', ['$scope', '$state', '$stateParams', '$filter', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $uibModal, Menu, User, Restaurant) {
+.controller('RestaurantWizardController', ['$scope', '$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope, $state, $stateParams, $uibModal, Menu, User, Restaurant) {
 
   $scope.application = {};
-  $scope.menu = {};
+  $scope.application.workFrom = {};
+  $scope.application.workTo = {};
 
-  //get the latest restaurantId of the user
+  $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+  //get the latest restaurantId of the user, because the user might have multiple restaurants
   $scope.restaurantId = User.restaurants({
     id: 'me',
     filter: {
@@ -165,16 +164,40 @@ angular.module('shifuProfile')
   });
 
   // time picker
-  var time = new Date();
-  time.setHours(9);
-  time.setMinutes(0);
-  $scope.application.workFrom = time;
-  $scope.application.workTo = time;
-
   $scope.hstep = 1;
   $scope.mstep = 30;
+  var timeFrom = new Date();
+  var timeTo = new Date();
+  timeFrom.setHours(9);
+  timeFrom.setMinutes(0);
+  timeTo.setHours(18);
+  timeTo.setMinutes(0);
 
-  // change the tab view
+  //funtion to set the default time if a day is checked, if unchecked the day will be set to zero
+  $scope.setDefaultTime = function (day, checked) {
+    if (checked) {
+      $scope.application.workFrom[day] = timeFrom;
+      $scope.application.workTo[day] = timeTo;
+    }
+    else {
+      $scope.application.workFrom[day] = null;
+      $scope.application.workTo[day] = null;
+    }
+  };
+
+  // function to validate the business time
+  $scope.validateTime = function (day) {
+    if ($scope.application.workFrom[day] > $scope.application.workTo[day]) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  };
+
+
+
+  // function to change the tab view
   $scope.tab = 1;
   $scope.select = function(setTab) {
     $scope.tab = setTab;
@@ -203,11 +226,10 @@ angular.module('shifuProfile')
 
   // submit info
   $scope.newRestaurant = function() {
-    $scope.application.workFrom = $filter('date')($scope.application.workFrom, 'HH:mm:Z');
-    $scope.application.workTo = $filter('date')($scope.application.workTo, 'HH:mm:Z');
     Restaurant.prototype$updateAttributes({
       id: $scope.restaurantId
     }, $scope.application);
+    console.log($scope.application.workFrom);
 
     Restaurant.menus.create({
       id: $scope.restaurantId
@@ -423,14 +445,14 @@ angular.module('shifuProfile')
   return function(input) {
     return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
   };
-})
-
-.filter('formatTime', function ($filter) {
-return function (time) {
-    var date = time.substring(0,5);
-    return date;
-};
 });
+
+// .filter('formatTime', function ($filter) {
+// return function (time) {
+//     var date = time.substring(0,5);
+//     return date;
+// };
+// });
 
 //
 // APP 2 Controllers - shifu

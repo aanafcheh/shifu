@@ -3420,7 +3420,7 @@ forEach({
         return this;
       } else {
         // we are a read, so read the first child.
-        // TODO: do we still need this?
+        // TODO:0 do we still need this? id:9
         var value = fn.$dv;
         // Only if we have $dv do we iterate over all, otherwise it is just the first element.
         var jj = (isUndefined(value)) ? Math.min(nodeCount, 1) : nodeCount;
@@ -3487,7 +3487,7 @@ function createEventHandler(element, events) {
     }
   };
 
-  // TODO: this is a hack for angularMocks/clearDataCache that makes it possible to deregister all
+  // TODO:0 this is a hack for angularMocks/clearDataCache that makes it possible to deregister all id:21
   //       events on `element`
   eventHandler.elem = element;
   return eventHandler;
@@ -3916,7 +3916,7 @@ function stringifyFn(fn) {
   // Support: Chrome 50-51 only
   // Creating a new string by adding `' '` at the end, to hack around some bug in Chrome v50/51
   // (See https://github.com/angular/angular.js/issues/14487.)
-  // TODO (gkalpak): Remove workaround when Chrome v52 is released
+  // TODO:0 (gkalpak): Remove workaround when Chrome v52 is released id:22
   return Function.prototype.toString.call(fn) + ' ';
 }
 
@@ -4227,7 +4227,7 @@ function annotate(fn, strictDi, name) {
  * which lets you specify whether the {@link ng.$log $log} service will log debug messages to the
  * console or not.
  *
- * @param {string} name The name of the instance. NOTE: the provider will be available under `name +
+ * @param {string} name The name of the instance. NOTE:0 the provider will be available under `name + id:23
                         'Provider'` key.
  * @param {(Object|function())} provider If the provider is:
  *
@@ -6161,7 +6161,7 @@ function Browser(window, document, $log, $sniffer) {
    *
    * The listener gets called with new url as parameter.
    *
-   * NOTE: this api is intended for use only by the $location service. Please use the
+   * NOTE:0 this api is intended for use only by the $location service. Please use the id:24
    * {@link ng.$location $location service} to monitor url changes in angular apps.
    *
    * @param {function(string)} listener Listener function to be called when url changes.
@@ -6190,7 +6190,7 @@ function Browser(window, document, $log, $sniffer) {
    * @private
    * Remove popstate and hashchange handler from window.
    *
-   * NOTE: this api is intended for use only by $rootScope.
+   * NOTE:0 this api is intended for use only by $rootScope. id:25
    */
   self.$$applicationDestroyed = function() {
     jqLite(window).off('hashchange popstate', cacheStateAndFireUrlChange);
@@ -8213,7 +8213,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {string=} attrName Optional none normalized name. Defaults to key.
        */
       $set: function(key, value, writeAttr, attrName) {
-        // TODO: decide whether or not to throw an error if "class"
+        // TODO:0 decide whether or not to throw an error if "class" id:26
         //is set through this function since it may cause $updateClass to
         //become unstable.
 
@@ -8503,7 +8503,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
     function detectNamespaceForChildElements(parentElement) {
-      // TODO: Make this detect MathML as well...
+      // TODO:0 Make this detect MathML as well... id:27
       var node = parentElement && parentElement[0];
       if (!node) {
         return 'html';
@@ -8990,7 +8990,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             // being referenced by the `parentNode` property of all of the child nodes.  By adding
             // a reference to the fragment via a different property, we can avoid that incorrect
             // behavior.
-            // TODO: remove this line after Chrome 50 has been released
+            // TODO:0 remove this line after Chrome 50 has been released id:28
             $template[0].$$parentNode = $template[0].parentNode;
 
             childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn, terminalPriority,
@@ -12201,7 +12201,7 @@ function $InterpolateProvider() {
       return value;
     }
 
-    //TODO: this is the same as the constantWatchDelegate in parse.js
+    //TODO:0 this is the same as the constantWatchDelegate in parse.js id:29
     function constantWatchDelegate(scope, listener, objectEquality, constantInterp) {
       var unwatch;
       return unwatch = scope.$watch(function constantInterpolateWatch(scope) {
@@ -13398,7 +13398,7 @@ forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url], fun
    * Change the history state object when called with one parameter and return `$location`.
    * The state object is later passed to `pushState` or `replaceState`.
    *
-   * NOTE: This method is supported only in HTML5 mode and only in browsers supporting
+   * NOTE:0 This method is supported only in HTML5 mode and only in browsers supporting id:30
    * the HTML5 History API (i.e. methods `pushState` and `replaceState`). If you need to support
    * older browsers (like IE9 or Android < 4.0), don't use this method.
    *
@@ -14490,7 +14490,7 @@ AST.prototype = {
   },
 
   constant: function() {
-    // TODO check that it is a constant
+    // TODO:0 check that it is a constant id:31
     return { type: AST.Literal, value: this.consume().value };
   },
 
@@ -19653,7 +19653,7 @@ function $TimeoutProvider() {
   }];
 }
 
-// NOTE:  The usage of window and document instead of $window and $document here is
+// NOTE:0 The usage of window and document instead of $window and $document here is id:32
 // deliberate.  This service depends on the specific behavior of anchor nodes created by the
 // browser (resolving and parsing URLs) that is unlikely to be provided by mock objects and
 // cause us to break tests.  In addition, when the browser resolves a URL for XHR, it
@@ -21692,7 +21692,7 @@ function orderByFilter($parse) {
     return array;
 
     function getComparisonObject(value, index) {
-      // NOTE: We are adding an extra `tieBreaker` value based on the element's index.
+      // NOTE:0 We are adding an extra `tieBreaker` value based on the element's index. id:33
       // This will be used to keep the sort stable when none of the input predicates can
       // distinguish between two elements.
       return {
@@ -28997,7 +28997,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       function updateOptionElement(option, element) {
         option.element = element;
         element.disabled = option.disabled;
-        // NOTE: The label must be set before the value, otherwise IE10/11/EDGE create unresponsive
+        // NOTE:0 The label must be set before the value, otherwise IE10/11/EDGE create unresponsive id:34
         // selects in certain circumstances when multiple selects are next to each other and display
         // the option list in listbox style, i.e. the select is [multiple], or specifies a [size].
         // See https://github.com/angular/angular.js/issues/11314 for more info.
@@ -30791,7 +30791,7 @@ var SelectController =
 
   // The "unknown" option is one that is prepended to the list if the viewValue
   // does not match any of the options. When it is rendered the value of the unknown
-  // option is '? XXX ?' where XXX is the hashKey of the value that is not known.
+  // option is '? XXX:0 ?' where XXX is the hashKey of the value that is not known. id:35
   //
   // We can't just jqLite('<option>') since jqLite is not smart enough
   // to create it in <select> and IE barfs otherwise.

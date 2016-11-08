@@ -53,7 +53,7 @@ gulp.task('browser-test', ['jshint'], function() {
 });
 
 // Check source for syntax errors and style issues
-// TODO notifications. Probably need to look into switching to gulp-notify
+// TODO:0 notifications. Probably need to look into switching to gulp-notify id:76
 gulp.task('jshint', function() {
   return gulp.src(['lib/**/*.js', 'test/**/*.js', '!test/test.browserify.js', 'gulpfile.js'])
     .pipe(jshint())

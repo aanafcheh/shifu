@@ -30,11 +30,12 @@
       <div class="tab-content">
         <div id="restaurant" class="tab-pane fade in active">
           <ng-form name="restaurantInfo">
-          <!-- restaurant profile -->
-          <div style="margin:50px;">
-            <div class="page-header">
-              <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <small>You may change these settings later.</small>
-            </div>
+            <!-- restaurant profile -->
+            <div style="margin:50px;">
+              <div class="page-header">
+                <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                <small>You may change these settings later.</small>
+              </div>
 
               <!-- restaurat name -->
               <div class="form-group has-feedback" ng-class="{'has-error': restaurantProfile.restaurantInfo.restaurantName.$error.required && !restaurantProfile.restaurantInfo.restaurantName.$pristine}">
@@ -71,36 +72,51 @@
               </div>
 
               <!-- working hours -->
-              <div class="form-inline">
+              <div class="form-group">
                 <label for="workFrom">Working Hours</label>
-                <div class="row">
-                  <div class="col-md-6">
-                    <em>From</em>
-                    <div uib-timepicker name="workFrom" id="workFrom" ng-model="application.workFrom" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian" required></div>
+                <div class="row" ng-repeat="day in weekdays">
+
+                  <div class="form-group">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" id="{{day}}" name="{{day}}" ng-model="workDay[day]" ng-true-value="true" ng-false-value="false" ng-click="setDefaultTime(day, workDay[day])">
+                        {{day}}
+                      </label>
+                    </div>
                   </div>
-                  <div class="col-md-6">
-                    <em>To</em>
-                    <div uib-timepicker name="workTo" id="workTo" ng-model="application.workTo" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian" required></div>
+
+                  <div class="row" ng-if="workDay[day]">
+                    <div class="form-group col-xs-4 col-md-offset-2">
+                      <em>From</em>
+                      <div uib-timepicker name="{{day}}From" id="{{day}}From" ng-model="application.workFrom[day]" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian" required></div>
+                    </div>
+                    <div class="form-group col-xs-6">
+                      <em>To</em>
+                      <div uib-timepicker ng-class="{'has-error': validateTime(day)}" name="{{day}}To" id="{{day}}To" ng-model="application.workTo[day]" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian" required></div>
+                    </div>
                   </div>
+
+                  <!-- invalid business time alert -->
+                  <div  uib-alert class="alert alert-danger" ng-if="validateTime(day)"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> This business time is invalid. Please ensure that you are selecting today's business time only. If you are working after midnight, enter the business time for the next day.</div>
+
                 </div>
               </div>
 
-          </div>
+            </div>
 
-          <button type="button" class="btn btn-primary" data-toggle="tab" ng-click="select(2)" ng-href="#menu" ng-disabled="restaurantProfile.restaurantInfo.$invalid">Next</button>
-        </ng-form>
+            <button type="button" class="btn btn-primary" data-toggle="tab" ng-click="select(2)" ng-href="#menu" ng-disabled="restaurantProfile.restaurantInfo.$invalid">Next</button>
+          </ng-form>
         </div>
-
 
         <!--  -->
         <!-- Menu -->
         <!--  -->
         <div id="menu" class="tab-pane fade">
           <ng-form name="menuForm">
-          <div style="margin:50px;">
-            <div class="page-header">
-              <h3>Add your first menu item (optional):</h3>
-            </div>
+            <div style="margin:50px;">
+              <div class="page-header">
+                <h3>Add your first menu item (optional):</h3>
+              </div>
 
               <div class="media">
                 <div class="row">
@@ -142,10 +158,9 @@
                 </div>
               </div>
 
-          </div>
+            </div>
 
-
-        </ng-form>
+          </ng-form>
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-primary" data-toggle="tab" ng-click="select(1)" ng-href="#restaurant">Back</button>
             <button type="submit" id="submit" value="Submit" class="btn btn-success">Save</button>
@@ -153,7 +168,7 @@
         </div>
 
       </div>
-      </form>
+    </form>
 
   </div>
 
