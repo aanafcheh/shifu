@@ -1,4 +1,3 @@
-
 var loopback = require('loopback');
 var LoopBackContext = require('loopback-context');
 var modelUtils = require('../../server/boot/clear-acl.js');
@@ -13,84 +12,118 @@ module.exports = function(Restaurant) {
     var ctx = LoopBackContext.getCurrentContext();
     var currentUser = ctx && ctx.get('currentUser');
 
-    Restaurant.findOne({where: {userId: currentUser.id}}, function (err, instance) {
-        response = instance.id;
-        cb(null, response);
+    Restaurant.findOne({
+      where: {
+        userId: currentUser.id
+      }
+    }, function(err, instance) {
+      response = instance.id;
+      cb(null, response);
     });
   };
 
-  Restaurant.remoteMethod (
-        'restaurantId',
-        {
-          http: {path: '/restaurantId', verb: 'get'},
-          returns: {arg: 'restaurantId', type: 'string'}
+  Restaurant.remoteMethod(
+    'restaurantId', {
+      http: {
+        path: '/restaurantId',
+        verb: 'get'
+      },
+      returns: {
+        arg: 'restaurantId',
+        type: 'string'
+      }
+    }
+  );
+
+  // a method to check if a similar restaurant exists when registering a new restaurant
+  Restaurant.checkRestaurant = function(address, zipcode, cb) {
+
+    Restaurant.findOne({
+      where: {
+        address: address,
+        zipcode: zipcode
+      }
+    }, function(err, instance) {
+      if (instance) {
+        response = true;
+      } else {
+        response = false;
+      }
+      cb(null, response);
+    });
+  };
+
+  Restaurant.remoteMethod(
+    'checkRestaurant', {
+      http: {
+        path: '/checkRestaurant',
+        verb: 'get'
+      },
+      accepts: [{
+        arg: 'address',
+        type: 'string',
+        http: {
+          source: 'query'
         }
-    );
+      }, {
+        arg: 'zipcode',
+        type: 'number',
+        http: {
+          source: 'query'
+        }
+      }],
+      returns: {
+        arg: 'checkRestaurant',
+        type: 'boolean'
+      }
+    }
+  );
 
-    // a method to check if a similar restaurant exists when registering a new restaurant
-    Restaurant.checkRestaurant = function(address, zipcode, cb) {
+  // check if the restaurant is open or closed
+  Restaurant.openOrClosed = function(restaurantId, cb) {
 
-      Restaurant.findOne({where: {address: address, zipcode: zipcode}}, function (err, instance) {
-          if (instance) {
-            response = true;
-          }
-          else {
-            response = false;
-          }
-          cb(null, response);
-      });
-    };
+    var now = moment();
+    var today = moment().format("dddd");
+    var day = today;
 
-    Restaurant.remoteMethod (
-          'checkRestaurant',
-          {
-            http: {path: '/checkRestaurant', verb: 'get'},
-            accepts: [
-              {arg: 'address', type: 'string', http: { source: 'query' } },
-              {arg: 'zipcode', type: 'number', http: { source: 'query' } }
-            ],
-            returns: {arg: 'checkRestaurant', type: 'boolean'}
-          }
-      );
+    Restaurant.findById(restaurantId, function(err, instance) {
 
-      // check if the restaurant is open or closed
-      // TODO: if the restaurant works till midnight and the workTo is smaller than workFrom then the restaurant is closed, so this needs to be fixed
-      Restaurant.openOrClosed = function(restaurantId, cb) {
+      if (instance.workFrom[today]) {
+        var workingFrom = moment(instance.workFrom[today]);
+        var workingTo = moment(instance.workTo[today]);
 
-        var now = moment();
-        var today = moment().format("dddd");
-        var day = today;
+        if (now.isBefore(workingFrom) || now.isAfter(workingTo)) {
+          openOrClosed = "Closed";
+        } else {
+          openOrClosed = "Open";
+        }
+      } else {
+        openOrClosed = "Closed";
+      }
 
-        Restaurant.findById(restaurantId, function (err, instance) {
+      cb(null, day, openOrClosed);
+    });
+  };
 
-          if (instance.workFrom[today]) {
-            var workingFrom= moment(instance.workFrom[today]);
-            var workingTo= moment(instance.workTo[today]);
+  Restaurant.remoteMethod(
+    'openOrClosed', {
+      http: {
+        path: '/:restaurantId/openOrClosed',
+        verb: 'get'
+      },
+      accepts: {
+        arg: 'restaurantId',
+        type: 'string',
+        required: true
+      },
+      returns: [{
+        arg: 'day',
+        type: 'string'
+      }, {
+        arg: 'openOrClosed',
+        type: 'string'
+      }]
+    }
+  );
 
-            if(now.isBefore(workingFrom) || now.isAfter(workingTo)) {
-              openOrClosed ="Closed";
-            }
-            else{
-              openOrClosed = "Open";
-            }
-          }
-          else {
-            openOrClosed ="Closed";
-          }
-
-          cb(null, day, openOrClosed);
-        });
-      };
-
-      Restaurant.remoteMethod (
-            'openOrClosed',
-            {
-              http: {path: '/:restaurantId/openOrClosed', verb: 'get'},
-              accepts: {arg: 'restaurantId', type: 'string', required: true},
-              returns: [
-                {arg: 'day', type: 'string'},
-                {arg: 'openOrClosed', type: 'string'}
-              ]
-            }
-        );
 };

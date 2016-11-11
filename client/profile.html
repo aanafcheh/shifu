@@ -18,7 +18,7 @@
 
   </head>
   <body ng-controller="ProfileController" ng-cloak>
-    <div class="navbar navbar-inverse" role="navigation">
+    <nav class="navbar navbar-inverse" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -29,6 +29,29 @@
           </button>
           <a class="navbar-brand" href="#">Shifu</a>
         </div>
+
+        <!-- search  -->
+        <form class="navbar-form navbar-left" role="search" ng-submit="search()">
+          <div class="form-group">
+            <div class="input-group">
+              <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search for restaurant in your area"
+                ng-model="result"
+                uib-typeahead="result.restaurantName for result in allRestaurants | filter:$viewValue | limitTo:5"
+                typeahead-loading="loadingRestaurants"
+                typeahead-no-results="noResults">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+              </span>
+              <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+            </div>
+          </div>
+        </form>
 
         <!-- collapsable menu -->
         <div id="navbar" class="navbar-collapse collapse" ng-repeat="user in profile">
@@ -45,7 +68,9 @@
               <ul class="dropdown-menu">
                 <li>
                   <p>Your Restaurants:</p>
-                  <a ui-sref="restaurant({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants">{{restaurant.restaurantName}} - {{restaurant.city | capitalize}}</a>
+                  <a ui-sref="restaurant({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants">{{restaurant.restaurantName}}
+                    -
+                    {{restaurant.city | capitalize}}</a>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>
@@ -63,12 +88,12 @@
 
             <!-- open a restaurant -->
             <li>
-                <button class="btn btn-default" role="button" ui-sref="application">Open a Restaurant</button>
+              <button class="btn btn-default" role="button" ui-sref="application">Open a Restaurant</button>
             </li>
           </ul>
         </div>
       </div>
-    </div>
+    </nav>
 
     <!-- view -->
     <div class="container-fluid">

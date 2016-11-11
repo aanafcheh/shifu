@@ -84,15 +84,15 @@
           <h4>
           <span class="label label-success" id="{{restaurant.id}}"></span>
           <span class="label label-primary">Delivery from &euro;{{restaurant.deliveryFee}}</span>
-          <span class="label label-default">{{restaurant.workFrom[today] | date:'shortTime'}} - {{restaurant.workTo[today] | date:'shortTime'}}</span>
+          <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}} - {{restaurant.workTo[today] | date:'shortTime'}}</span>
         </h4>
         </div>
       </div>
 
       <!-- rating -->
+      <!-- readonly  -->
       <div ng-controller="RatingController">
-        <span style="font-size:20px" uib-rating ng-model="rate" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null" aria-labelledby="default-rating" ng-class="text-warning" ng-click="newfeedback()"></span>
-        <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overStar && !isReadonly">{{percent}}%</span>
+        <span style="font-size:20px" uib-rating ng-model="rate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
       </div>
 
     </div>

@@ -65,11 +65,19 @@
 
         <div class="col-md-6">
           <h4>
+            <!-- TODO: fix the working hours -->
           <span class="label label-success">{{state.openOrClosed}}</span>
           <span class="label label-primary">Delivery from &euro;{{restaurant.deliveryFee}}</span>
-          <span class="label label-default">{{restaurant.workFrom | formatTime}} - {{restaurant.workTo | formatTime}} Daily</span>
+          <!-- <span class="label label-default">{{restaurant.workFrom | formatTime}} - {{restaurant.workTo | formatTime}} Daily</span> -->
         </h4>
         </div>
+
+        <!-- rating -->
+        <div ng-controller="RatingController">
+          <span style="font-size:20px" uib-rating ng-model="rate" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null" aria-labelledby="default-rating" ng-class="text-warning" ng-click="newfeedback()"></span>
+          <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overStar && !isReadonly">{{percent}}%</span>
+        </div>
+
       </div>
 
     </div>

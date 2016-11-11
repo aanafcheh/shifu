@@ -34,6 +34,12 @@ angular
         url: '/:city/:name',
         templateUrl: 'views/restaurant.html',
         controller: 'RestaurantController'
+      })
+
+      .state('search', {
+        url: '/search=:keyword',
+        templateUrl: 'views/search.html',
+        controller: 'SearchController'
       });
 
     $urlRouterProvider.otherwise('/');

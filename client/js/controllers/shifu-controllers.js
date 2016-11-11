@@ -4,7 +4,7 @@
 //
 angular.module('shifuProfile')
 
-.controller('ProfileController', ['$scope', '$filter', '$state', '$http', 'User', 'Restaurant', function($scope, $filter, $state, $http, User, Restaurant) {
+.controller('ProfileController', ['$scope', '$filter', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $filter, $state, $stateParams, $http, User, Restaurant) {
 
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
@@ -13,6 +13,8 @@ angular.module('shifuProfile')
   $scope.profile = User.identities({
     id: 'me'
   });
+
+  $scope.allRestaurants = Restaurant.find();
 
   $scope.restaurants = User.restaurants({
     id: 'me'
@@ -31,6 +33,11 @@ angular.module('shifuProfile')
   $http.get('api/users/me/restaurants/count').success(function(data){
     $scope.restaurantCount = data.count;
   });
+
+  // search function
+  $scope.search = function () {
+    $state.go('search', {'keyword': $scope.result});
+  };
 
 
 }])
@@ -229,7 +236,6 @@ angular.module('shifuProfile')
     Restaurant.prototype$updateAttributes({
       id: $scope.restaurantId
     }, $scope.application);
-    console.log($scope.application.workFrom);
 
     Restaurant.menus.create({
       id: $scope.restaurantId
@@ -321,7 +327,7 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RatingController', ['$scope', '$state', 'User', 'Restaurant', 'Feedback', function($scope, $state, User, Restaurant, Feedback) {
+.controller('RatingController', ['$scope', '$state', '$http', '$stateParams', 'User', 'Restaurant', 'Feedback', function($scope, $state, $http, $stateParams, User, Restaurant, Feedback) {
   $scope.max = 5;
   $scope.isReadonly = false;
 
@@ -331,16 +337,8 @@ angular.module('shifuProfile')
   };
 
   // query restaurant id
-  $scope.restaurantId = User.restaurants({
-    id: 'me',
-    filter: {
-      fields: {
-        id: true
-      }
-    }
-  }).$promise.then(function(response) {
-    $scope.restaurantId = response[0].id;
-  });
+  $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data){
+  $scope.restaurantId = data[0].id;
 
   //restaurant rating
   $scope.newfeedback = function() {
@@ -365,7 +363,6 @@ angular.module('shifuProfile')
             restaurantId: $scope.restaurantId
           });
         }
-
       },
       function(error) {
         User.feedbacks.create({
@@ -377,6 +374,7 @@ angular.module('shifuProfile')
       }
     );
   };
+  });
 
 }])
 
@@ -387,20 +385,30 @@ angular.module('shifuProfile')
     id: 'me'
   });
 
-  $scope.restaurants = User.restaurants({
-    id: 'me',
-    filter: {
-      where: {
-        city: $stateParams.city,
-        restaurantName: $stateParams.name
-      }
-    }
-  }).$promise.then(function(response) {
-    $scope.restaurants = response;
+  $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data){
+  $scope.restaurants = data;
+  $scope.restaurantId = data[0].id;
 
-    //check if the restaurant is open or closed
-    $http.get('api/restaurants/' + response[0].id + '/openOrClosed').success(function(data){
-    $scope.state = data;
+  // check if the restaurant is open or closed
+  $http.get('api/restaurants/' + $scope.restaurantId + '/openOrClosed').success(function(data){
+  $scope.state = data;
+  });
+
+  });
+
+}])
+
+.controller('SearchController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
+
+  $scope.keyword = $stateParams.keyword;
+  $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"'+ $scope.keyword + '","options":"i"}}}').success(function(data){
+    $scope.results = data;
+
+    // check the restaurant's status
+    angular.forEach($scope.results, function(value, key) {
+      $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data){
+        angular.element(document).find("#"+value.id).append(data.openOrClosed);
+      });
     });
   });
 
