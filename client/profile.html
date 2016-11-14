@@ -45,13 +45,16 @@
                 typeahead-no-results="noResults">
               <span class="input-group-btn">
                 <button class="btn btn-default" type="submit">
+
                   <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 </button>
+
               </span>
               <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
             </div>
           </div>
         </form>
+        <button class="btn btn-default" value="Sort By name" ng-click="sortBy('restaurantName')">Sort By name</button>
 
         <!-- collapsable menu -->
         <div id="navbar" class="navbar-collapse collapse" ng-repeat="user in profile">
@@ -68,12 +71,12 @@
               <ul class="dropdown-menu">
                 <li>
                   <p>Your Restaurants:</p>
-                  <a ui-sref="restaurant({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants">{{restaurant.restaurantName}}
+
+                  <a ui-sref="restaurant({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants|orderBy:'-restaurantName'">{{restaurant.restaurantName}}
                     -
                     {{restaurant.city | capitalize}}</a>
                 </li>
                 <li role="separator" class="divider"></li>
-                <li>
                   <a ui-sref="application">Open a New Restaurant</a>
                 </li>
                 <li>

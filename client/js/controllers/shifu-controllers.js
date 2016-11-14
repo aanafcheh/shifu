@@ -2,12 +2,64 @@
 // APP 1 Controllers - shifuProfile
 //
 //
+
+
+
+function initAutocomplete() {
+  var placeSearch, autocomplete,streetAddress;
+
+  componentForm = {
+    route: 'short_name',
+    locality: 'long_name',
+    postal_code: 'short_name'
+
+  };
+
+  autocomplete = new google.maps.places.Autocomplete(
+    (document.getElementById('route')),
+    {types: ['geocode']});
+
+  function fillInAddress() {
+    // Get the place details from the autocomplete object.
+    var place = autocomplete.getPlace();
+    console.log(place);
+
+    for (var component in componentForm) {
+      document.getElementById(component).value = '';
+    }
+
+    // Get each component of the address from the place details
+    // and fill the corresponding field on the form.
+    for (var i = 0; i < place.address_components.length; i++) {
+      var addressType = place.address_components[i].types[0];
+      console.log(addressType);
+
+      if (componentForm[addressType]) {
+        console.log(componentForm[addressType]);
+        var val = place.address_components[i][componentForm[addressType]];
+       // console.log(val);
+        document.getElementById(addressType).value = val;
+      }
+    }
+    //document.getElementById('street_number').value = streetAddress;
+  }
+
+  // When the user selects an address from the dropdown, populate the address
+  // fields in the form.
+  autocomplete.addListener('place_changed', fillInAddress);
+}
 angular.module('shifuProfile')
 
 .controller('ProfileController', ['$scope', '$filter', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $filter, $state, $stateParams, $http, User, Restaurant) {
 
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
+  $scope.sortBy=function(propertyName){
+    $scope.propertyName=propertyName;
+    console.log($scope.propertyName);
+    console.log($scope.restaurants);
+
+  }
 
   // query all the needed information
   $scope.profile = User.identities({
@@ -46,9 +98,7 @@ angular.module('shifuProfile')
 
   $scope.application = {};
 
-  //
-  //  Uploader
-  //
+
 
   // uploader1
   var uploader1 = $scope.uploader1 = new FileUploader({
@@ -338,7 +388,7 @@ angular.module('shifuProfile')
 
   // query restaurant id
   $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data){
-  $scope.restaurantId = data[0].id;
+  //$scope.restaurantId = data[0].id;
 
   //restaurant rating
   $scope.newfeedback = function() {

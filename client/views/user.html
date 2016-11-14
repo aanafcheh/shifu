@@ -52,10 +52,11 @@
   </div>
 
   <!-- restaurant profile badge -->
-  <div class="row" ng-repeat="restaurant in restaurants">
+  <div class="row" ng-repeat="restaurant in restaurants|orderBy:propertyName:true">
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="col-md-6">
+
           <div class="media">
             <div class="media-left media-middle">
               <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="open('lg')">
