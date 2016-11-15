@@ -72,7 +72,7 @@
                 <li>
                   <p>Your Restaurants:</p>
 
-                  <a ui-sref="restaurant({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants|orderBy:'-restaurantName'">{{restaurant.restaurantName}}
+                  <a ui-sref="restaurant({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants">{{restaurant.restaurantName}}
                     -
                     {{restaurant.city | capitalize}}</a>
                 </li>

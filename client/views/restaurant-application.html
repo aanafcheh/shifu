@@ -69,7 +69,7 @@
         <!-- restaurant address -->
         <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine}">
           <label for="route">Restaurant Address</label>
-          <input type="text" class="form-control" name="addressInput" id="route" placeholder="Restaurant Street Address" onFocus="initAutocomplete()" ng-model="application.address" change-case required>
+          <input type="text" class="form-control" name="addressInput" id="route" placeholder="Restaurant Street Address" ng-onFocus="initAutocomplete()" ng-model="application.address" change-case required>
           <span ng-show="restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
@@ -209,5 +209,6 @@
   </div>
 
 </div>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBflUIT7duAzpvLf04Ps6VfhomM4hlODNM&libraries=places&callback=initAutocomplete"
         async defer></script>
