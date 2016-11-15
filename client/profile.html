@@ -18,7 +18,7 @@
 
   </head>
   <body ng-controller="ProfileController" ng-cloak>
-    <nav class="navbar navbar-inverse" role="navigation">
+    <nav class="navbar navbar-inverse" role="navigation" style="margin-bottom: 0px;">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -54,7 +54,7 @@
             </div>
           </div>
         </form>
-        <button class="btn btn-default" value="Sort By name" ng-click="sortBy('restaurantName')">Sort By name</button>
+       
 
         <!-- collapsable menu -->
         <div id="navbar" class="navbar-collapse collapse" ng-repeat="user in profile">
@@ -99,7 +99,7 @@
     </nav>
 
     <!-- view -->
-    <div class="container-fluid">
+    <div class="container-fluid" style="padding-left: 0px;">
       <div ui-view></div>
     </div>
 

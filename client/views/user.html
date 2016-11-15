@@ -5,11 +5,11 @@
 <div class="navbar navbar-inverse navbar-fixed-left" >
   <a class="navbar-brand" href="#">Shifu</a>
   <ul class="nav navbar-nav">
-    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">SortBy <span class="caret"></span></a>
+    <li class="dropdown"><a  class="dropdown-toggle" data-toggle="dropdown">SortBy <span class="caret"></span></a>
       <ul class="dropdown-menu" >
-        <li><a href="#">Restaurant Name</a></li>
+        <li><a  ng-href="#"ng-click="sortBy('restaurantName')">Restaurant Name</a></li>
         <li><a href="#">Distance</a></li>
-        <li><a href="#">City</a></li>
+        <li><a href="#" ng-click="sortBy('city')">City</a></li>
         <li><a href="#">Price</a></li>
         <li><a href="#">Rating</a></li>
       </ul>
