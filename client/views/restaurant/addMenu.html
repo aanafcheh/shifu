@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- Add items to the menu model -->
+<div class="container">
+
+  <!-- header -->
+    <div class="modal-header">
+      <h3>Add Items:</h3>
+    </div>
+
+    <!-- body -->
+    <form name="menu" role="form" ng-submit="menuItem()" novalidate>
+    <div class="modal-body">
+      <div class="row" style="margin:50px">
+
+        <div class="col-xs-12 col-md-2 text-center">
+            <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="open('lg')">
+              <i class="fa fa-camera"></i>
+            </button>
+            <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
+        </div>
+
+        <div class="col-xs-12 col-md-4">
+              <div class="form-group">
+                <input type="text" class="form-control input-sm" name="itemName" id="itemName" placeholder="Item Name" ng-model="menu.item" change-case required>
+              </div>
+            <div class="form-group">
+              <input type="text" class="form-control input-sm" name="allergies" id="allergies" placeholder="Allergies" ng-model="menu.allergies" change-case required>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+          <select class="form-control input-sm">
+            <option value="mains">Main Meal</option>
+            <option value="dessert">Dessert</option>
+            <option value="appetizer">Appetizer</option>
+            <option value="beverage">Beverage</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- footer -->
+    <div class="modal-footer">
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <div class="btn-group btn-group-justified" role="group">
+            <div class="btn-group" role="group">
+              <button class="btn btn-primary" ng-click="ok()" ng-submit="menuItem()">Add</button>
+            </div>
+            <div class="btn-group" role="group">
+              <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </form>
+
+</div>

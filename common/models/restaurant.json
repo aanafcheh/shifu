@@ -33,6 +33,10 @@
     "logo": {
       "type": "string",
       "default": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAQAAAD9CzEMAAABnklEQVR4Ae2OPUtbURyHHxMVB0P3Nn1du/QLdCilDeKgqMn1xheIEhBB8AOoizg56eDmoosIIg5OjgER7e6SNlBIh3ToB8hNT7fLxfxyz7GcodA8v/Wc5/nT55+gzxBj7HLBFcdUyZHKPgHgziBrNDGJ/WSSnkxjiHBPvOELpmsdJkBzj8E98Y4WRq7FqPwQP4iYxcZrpY9XQbCCcU5kucOk7BDBJsY5sYpJ3SWCdYxjIst3S+AMwSdMVyJE8RFj2Q6CYX45JratgQ9INjBOiROLvkEGyQi3MlEGkpxbAlV68pQ69sRBqr5GhhTy2BNBir7JMyw856slsdhT/4O3SOyJ31QAgJAIra+Rx5EXfHugXwIAymh9nWUyALgnhH4u1rcJmWKPU47Y4j0DPJqXNLr0nVhfxIJjQl4fUcITrwiT18eBAF8Ivb+E0EdEHhNCXyIQCY96QCS86r0m5mN9O9aLhG+9SPjRe0hofRHAb0LrvSUWtN5XQuu9JcYT+hmsiESBVJ5w464XiWtyYE/Y9Tqh9SLxmb+hQI7/kT5/AN2aMGKy1KHZAAAAAElFTkSuQmCC"
+    },
+    "avgRate": {
+      "type": "number",
+      "default": 0
     }
   },
   "validations": [],

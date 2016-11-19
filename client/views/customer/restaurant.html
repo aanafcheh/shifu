@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<div class="container">
+
+  <!-- restaurant profile badge -->
+  <div class="row" ng-repeat="restaurant in restaurants">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="col-md-6">
+          <div class="media">
+            <div class="media-left media-middle">
+            <img class="img-circle" height="64" width="64" ng-src="{{restaurant.logo}}" alt="{{restaurant.restaurantName}}">
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              {{restaurant.address | capitalize}}
+              <br>
+              {{restaurant.zipcode}},
+              {{restaurant.city | capitalize}}
+              <br>
+              <i class="fa fa-mobile" aria-hidden="true"></i>
+              {{restaurant.phoneNumber}}
+              <br>
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+              {{restaurant.email}}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <h4>
+          <span class="label label-success">{{state.openOrClosed}}</span>
+          <!-- paid delivery -->
+          <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
+          <!-- free delivery -->
+          <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
+          <!-- pick-up only -->
+          <span ng-if="!restaurant.deliveryFee" class="label label-primary">Pick-up Only</span>
+          <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
+            -
+            {{restaurant.workTo[today] | date:'shortTime'}}</span>
+        </h4>
+        </div>
+
+        <!-- rating -->
+        <div ng-controller="RatingController">
+          <!-- if the user has not rated the restaurant, show the restauant average rating -->
+          <span ng-show="!userRated" style="font-size:20px" uib-rating ng-model="restaurant.avgRate" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null" aria-labelledby="default-rating" ng-class="text-warning" ng-change="newFeedback()"></span>
+          <!-- otherwise show the user rating -->
+          <span ng-show="userRated" style="font-size:20px" uib-rating ng-model="userFeedback.rate" max="max" read-only="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null" aria-labelledby="default-rating" ng-class="text-warning" ng-change="newFeedback()"></span>
+          <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overStar && !isReadonly">{{percent}}%</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

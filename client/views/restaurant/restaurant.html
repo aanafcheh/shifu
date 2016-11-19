@@ -1,21 +1,5 @@
-<!--  -->
-<!-- USER WITH NO RESTAURANT -->
-<!--  -->
-<!-- show if the user has no restaurant -->
-<div class="container" ng-if="restaurantCount == 0">
-
-  <div>
-    <h1>User Profile</h1>
-    <hr>
-  </div>
-
-</div>
-
-<!--  -->
-<!-- USER WITH RESTAURANT -->
-<!--  -->
-<!-- show if the user has one restaurant -->
-<div class="container-fluid" ng-if="restaurantCount === 1">
+<!DOCTYPE html>
+<div class="container-fluid">
   <div class="row">
 
     <!-- restaurant profile badge -->
@@ -49,7 +33,7 @@
           </div>
           <div class="row text-center">
             <h4>
-              <span class="label label-success" id="{{restaurant.id}}"></span>
+              <span class="label label-success">{{state.openOrClosed}}</span>
               <!-- paid delivery -->
               <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
               <!-- free delivery -->
@@ -128,66 +112,6 @@
 
     </div>
 
-  </div>
-
-</div>
-
-<!-- show if the user has more than one restaurant -->
-<div class="container" ng-if="restaurantCount > 1">
-
-  <!-- restaurant profile badge -->
-  <div class="row" ng-repeat="restaurant in restaurants">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <div class="col-md-6">
-          <div class="media">
-            <div class="media-left media-middle">
-              <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl">
-                <i class="fa fa-cutlery" aria-hidden="true"></i>
-              </button>
-              <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
-            </div>
-            <div class="media-body">
-              <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
-              <i class="fa fa-map-marker" aria-hidden="true"></i>
-              {{restaurant.address | capitalize}}
-              <br>
-              {{restaurant.zipcode}},
-              {{restaurant.city | capitalize}}
-              <br>
-              <i class="fa fa-mobile" aria-hidden="true"></i>
-              {{restaurant.phoneNumber}}
-              <br>
-              <i class="fa fa-envelope" aria-hidden="true"></i>
-              {{restaurant.email}}
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <h4>
-            <!-- TODO: fix the working hours -->
-            <span class="label label-success" id="{{restaurant.id}}"></span>
-            <!-- paid delivery -->
-            <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
-            <!-- free delivery -->
-            <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
-            <!-- pick-up only -->
-            <span ng-if="!restaurant.deliveryFee" class="label label-primary">Pick-up Only</span>
-            <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
-              -
-              {{restaurant.workTo[today] | date:'shortTime'}}</span>
-          </h4>
-        </div>
-
-        <!-- rating -->
-        <div ng-controller="RatingController">
-          <span style="font-size:20px" uib-rating ng-model="restaurant.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
-        </div>
-        <!-- view button -->
-        <a ui-sref="app.owner({city: restaurant.city, name: restaurant.restaurantName})" class="btn btn-success btn-sm pull-right" role="button">View</a>
-      </div>
-    </div>
   </div>
 
 </div>

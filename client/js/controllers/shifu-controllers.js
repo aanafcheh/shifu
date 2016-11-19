@@ -4,17 +4,35 @@
 //
 angular.module('shifuProfile')
 
-.controller('ProfileController', ['$scope', '$filter', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $filter, $state, $stateParams, $http, User, Restaurant) {
-
-  // get the name of today to show the working hours accordingly
-  $scope.today = $filter('date')(new Date(), 'EEEE');
+.controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
 
   // query all the needed information
   $scope.profile = User.identities({
     id: 'me'
   });
 
+  $scope.restaurants = User.restaurants({
+    id: 'me'
+  }).$promise.then(function(response) {
+    $scope.restaurants = response;
+  });
+
+  // query all the restaurants for suggestions
   $scope.allRestaurants = Restaurant.find();
+
+  // search function
+  $scope.search = function() {
+    $state.go('app.search', {
+      'keyword': $scope.result
+    });
+  };
+
+}])
+
+.controller('UserController', ['$scope', '$filter', '$state', '$stateParams', '$http', 'User', 'Restaurant', '$uibModal', function($scope, $filter, $state, $stateParams, $http, User, Restaurant, $uibModal) {
+
+  // get the name of today to show the working hours accordingly
+  $scope.today = $filter('date')(new Date(), 'EEEE');
 
   $scope.restaurants = User.restaurants({
     id: 'me'
@@ -23,20 +41,31 @@ angular.module('shifuProfile')
 
     // check the status of a list of restaurants in a user profile or in search results
     angular.forEach(response, function(value, key) {
-      $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data){
-        angular.element(document).find("#"+value.id).append(data.openOrClosed);
+      $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data) {
+        angular.element(document).find("#" + value.id).append(data.openOrClosed);
       });
     });
   });
 
   // Check if the user has a restaurant yet or not, and display content depending on that
-  $http.get('api/users/me/restaurants/count').success(function(data){
+  $http.get('api/users/me/restaurants/count').success(function(data) {
     $scope.restaurantCount = data.count;
   });
 
-  // search function
-  $scope.search = function () {
-    $state.go('search', {'keyword': $scope.result});
+  // add menu item model
+  $scope.open = function(size) {
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: '../../views/restaurant/addMenu.html',
+      controller: 'ModalInstanceCtrl',
+      size: size
+    });
+
+    modalInstance.result.then(function(menu) {
+      $scope.menu = menu;
+    });
   };
 
 
@@ -132,7 +161,7 @@ angular.module('shifuProfile')
         $scope.uploader1.uploadAll();
         $scope.uploader2.uploadAll();
         $scope.restaurantApplication.$setPristine();
-        $state.go('restaurantwizard', {
+        $state.go('app.restaurantwizard', {
           'address': $scope.application.address,
           'zipcode': $scope.application.zipcode
         });
@@ -181,23 +210,21 @@ angular.module('shifuProfile')
   timeTo.setMinutes(0);
 
   //funtion to set the default time if a day is checked, if unchecked the day will be set to zero
-  $scope.setDefaultTime = function (day, checked) {
+  $scope.setDefaultTime = function(day, checked) {
     if (checked) {
       $scope.application.workFrom[day] = timeFrom;
       $scope.application.workTo[day] = timeTo;
-    }
-    else {
+    } else {
       $scope.application.workFrom[day] = null;
       $scope.application.workTo[day] = null;
     }
   };
 
   // function to validate the business time
-  $scope.validateTime = function (day) {
+  $scope.validateTime = function(day) {
     if ($scope.application.workFrom[day] > $scope.application.workTo[day]) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   };
@@ -241,7 +268,9 @@ angular.module('shifuProfile')
       id: $scope.restaurantId
     }, $scope.menu);
     $scope.restaurantProfile.$setPristine();
-    $state.go('app', { reload: true });
+    $state.go('app', {
+      reload: true
+    });
   };
 
 }])
@@ -336,63 +365,70 @@ angular.module('shifuProfile')
     $scope.percent = 100 * (value / $scope.max);
   };
 
-  // query restaurant id
-  $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data){
-  $scope.restaurantId = data[0].id;
-
-  //restaurant rating
-  $scope.newfeedback = function() {
-
-    User.feedbacks({
-      id: 'me',
-      filter: {
-        where: {
-          restaurantId: $scope.restaurantId
-        }
+  // check if the user has rated this restaurant, show the rating based on that
+  // TODO: make the rating look like the user already rated
+  $scope.userFeedback = User.feedbacks({
+    id: 'me',
+    filter: {
+      where: {
+        restaurantId: $scope.restaurantId
       }
-    }).$promise.then(
-      function(response) {
+    }
+  }).$promise.then(
+    function(response) {
+      $scope.userFeedback = response[0];
+      if (response[0]) {
+        $scope.userRated = true;
+      } else {
+        $scope.userRated = false;
+      }
+
+      //function to submit the user rating
+      $scope.newFeedback = function() {
+        // if the user already rated, just update the user rating
         if (response[0]) {
-          response[0].rate = $scope.rate;
+          response[0].rate = $scope.userFeedback.rate;
           response[0].$save();
-        } else {
+          // update the restaurant average rate when the user updates their rating
+          // TODO: make this live update
+          $http.get('api/feedbacks/' + $scope.restaurantId + '/avgFeedback');
+        }
+        // otherwise create a new user rate and calculate the restaurant's average rate
+        else {
           User.feedbacks.create({
             id: 'me'
           }, {
-            rate: $scope.rate,
+            rate: $scope.restaurant.avgRate,
             restaurantId: $scope.restaurantId
           });
+          // update the restaurant average rate when the user updates their rating
+          // TODO: make this live update
+          $http.get('api/feedbacks/' + $scope.restaurantId + '/avgFeedback');
         }
-      },
-      function(error) {
-        User.feedbacks.create({
-          id: 'me'
-        }, {
-          rate: $scope.rate,
-          restaurantId: $scope.restaurantId
-        });
-      }
-    );
-  };
-  });
+      };
+    });
+
 
 }])
 
-.controller('RestaurantController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
+.controller('RestaurantController', ['$scope', '$state', '$stateParams', '$filter', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $http, User, Restaurant) {
+
+  // get the name of today to show the working hours accordingly
+  $scope.today = $filter('date')(new Date(), 'EEEE');
 
   // query all the needed information
   $scope.profile = User.identities({
     id: 'me'
   });
 
-  $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data){
-  $scope.restaurants = data;
-  $scope.restaurantId = data[0].id;
+  $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
+    $scope.restaurants = data;
+    $scope.restaurantId = data[0].id;
 
-  // check if the restaurant is open or closed
-  $http.get('api/restaurants/' + $scope.restaurantId + '/openOrClosed').success(function(data){
-  $scope.state = data;
-  });
+    // check if the restaurant is open or closed
+    $http.get('api/restaurants/' + $scope.restaurantId + '/openOrClosed').success(function(data) {
+      $scope.state = data;
+    });
 
   });
 
@@ -401,13 +437,13 @@ angular.module('shifuProfile')
 .controller('SearchController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
 
   $scope.keyword = $stateParams.keyword;
-  $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"'+ $scope.keyword + '","options":"i"}}}').success(function(data){
+  $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"' + $scope.keyword + '","options":"i"}}}').success(function(data) {
     $scope.results = data;
 
     // check the restaurant's status
     angular.forEach($scope.results, function(value, key) {
-      $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data){
-        angular.element(document).find("#"+value.id).append(data.openOrClosed);
+      $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data) {
+        angular.element(document).find("#" + value.id).append(data.openOrClosed);
       });
     });
   });

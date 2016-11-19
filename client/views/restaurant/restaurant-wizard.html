@@ -38,6 +38,7 @@
               </div>
 
               <!-- restaurat name -->
+              <!-- TODO: no space is allowed in restaurant names -->
               <div class="form-group has-feedback" ng-class="{'has-error': restaurantProfile.restaurantInfo.restaurantName.$error.required && !restaurantProfile.restaurantInfo.restaurantName.$pristine}">
                 <label for="restaurantName">Restaurant Name</label>
                 <input type="text" class="form-control" name="restaurantName" id="restaurantName" placeholder="Restaurant Name" ng-model="application.restaurantName" required>

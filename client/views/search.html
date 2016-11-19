@@ -10,7 +10,7 @@
   <div class="panel panel-default">
   <div class="panel-heading">Results:</div>
   <div ng-if="!noResults" class="list-group">
-    <a ui-sref="restaurant({city: result.city, name: result.restaurantName})" class="list-group-item" ng-repeat="result in results">
+    <a ui-sref="app.restaurant({city: result.city, name: result.restaurantName})" class="list-group-item" ng-repeat="result in results">
       <div class="media">
 
         <div class="col-xs-12 col-sm-6">
@@ -26,8 +26,10 @@
 
         <div class="col-xs-12 col-sm-6">
           <!-- rating -->
-          <!-- TODO: add ng-model here to read the rating -->
-          <span style="font-size:25px;line-height:50px;" uib-rating ng-model="result[rate]" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+          <!-- readonly  -->
+          <div ng-controller="RatingController">
+            <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+          </div>
         </div>
 
       </div>
