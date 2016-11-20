@@ -14,7 +14,7 @@
       <!-- sort by -->
       <div class="dropdown pull-right">
         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-          sort by
+          Sort by
           <span class="caret"></span>
         </a>
 
@@ -22,20 +22,20 @@
         <!-- TODO: add acending and decending option -->
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
           <li>
-            <a href="" ng-click="sortBy('restaurantName')">relevance</a>
+            <a href="" ng-click="sortBy('restaurantName')">Relevance</a>
           </li>
           <li>
-            <a href="">price</a>
+            <a href="">Price</a>
           </li>
           <li>
-            <a href="">rating</a>
+            <a href="" ng-click="sortBy('-avgRate')">Rating</a>
           </li>
           <!-- TODO: the search result by default must be for restaurant in the user's relevent city -->
           <li>
-            <a href="" ng-click="sortBy('city')">city</a>
+            <a href="" ng-click="sortBy('city')">City</a>
           </li>
           <li>
-            <a href="">distance</a>
+            <a href="">Distance</a>
           </li>
         </ul>
       </div>
@@ -60,6 +60,7 @@
             <!-- readonly  -->
             <div ng-controller="RatingController">
               <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+             
             </div>
           </div>
 

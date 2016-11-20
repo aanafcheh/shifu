@@ -47,9 +47,30 @@ angular.module('shifuProfile')
     });
   });
 
+  $scope.getWorkingHours=function(id,workFrom,workTo){
+    var allOpeningHours="";
+    if(angular.element(document).find("#"+id+"openingHours").text().length>0){
+      angular.element(document).find("#"+id+"openingHours")
+
+    }
+    else{
+
+
+    angular.forEach(workFrom,function(key,value){
+      if(key!=null){
+      allOpeningHours=allOpeningHours+"<b>"+value+ " </b>"+": "+"<i>"+$filter('date')(key, "HH:mm")+"-"+$filter('date')(workTo[value], "HH:mm")+"</i><br>";
+      }
+    })
+   angular.element(document).find("#"+id+"openingHours").append("<p class='openingHpurs' >"+allOpeningHours+"</p>");
+
+  }
+  }
+
+
   // Check if the user has a restaurant yet or not, and display content depending on that
   $http.get('api/users/me/restaurants/count').success(function(data) {
     $scope.restaurantCount = data.count;
+
   });
 
   // add menu item model
