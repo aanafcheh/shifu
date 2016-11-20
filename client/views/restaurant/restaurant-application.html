@@ -68,8 +68,8 @@
 
         <!-- restaurant address -->
         <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine}">
-          <label for="addressInput">Restaurant Address</label>
-          <input type="text" class="form-control" name="addressInput" id="addressInput" placeholder="Restaurant Street Address" ng-model="application.address" change-case required>
+          <label for="route">Restaurant Address</label>
+          <input ng-focus="initAutocomplete()" type="text" class="form-control" name="addressInput" id="route" placeholder="Restaurant Street Address" ng-model="application.address" change-case required>
           <span ng-show="restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
@@ -77,13 +77,13 @@
         <div class="form-group">
           <div class="form-inline">
             <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine}">
-              <input type="text" class="form-control" name="cityInput" id="cityInput" placeholder="City" ng-model="application.city" change-case required>
+              <input type="text" class="form-control" name="cityInput" id="locality" placeholder="City" ng-model="application.city" change-case required>
               <span ng-show="restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
             </div>
 
             <!-- zipcode -->
             <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine}">
-              <input type="number" class="form-control" name="zipCodeInput" id="zipCodeInput" placeholder="Zip Code" ng-model="application.zipcode" required>
+              <input type="number" class="form-control" name="zipCodeInput" id="postal_code" placeholder="Zip Code" ng-model="application.zipcode" required>
               <span ng-show="restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
             </div>
           </div>
@@ -195,12 +195,8 @@
 
         <hr>
 
-
-
-
-          <!-- error if a the restaurant address is not unique -->
-          <div  uib-alert class="alert alert-danger" ng-if="addressExists" dismiss-on-timeout="5000" close="closeAlert()">A restaurant with the same address exists already. Please change the restaurant's address.</div>
-
+        <!-- error if a the restaurant address is not unique -->
+        <div uib-alert class="alert alert-danger" ng-if="addressExists" dismiss-on-timeout="5000" close="closeAlert()">A restaurant with the same address exists already. Please change the restaurant's address.</div>
 
         <button type="submit" id="submit" value="Submit" class="btn btn-success" ng-disabled="restaurantApplication.$invalid">Submit</button>
 
@@ -209,3 +205,6 @@
   </div>
 
 </div>
+
+<!-- google places api -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbi8MGgqr9Q07heg7n8_tdzg1cu5C92XE&libraries=places&callback=initAutocomplete" async defer></script>

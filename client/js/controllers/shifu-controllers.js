@@ -71,9 +71,52 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('ApplicationController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', 'FileUploader', function($scope, $state, $stateParams, User, Restaurant, FileUploader) {
+.controller('ApplicationController', ['$scope', '$state', '$stateParams', '$window', 'User', 'Restaurant', 'FileUploader', function($scope, $state, $stateParams, $window, User, Restaurant, FileUploader) {
 
   $scope.application = {};
+
+  // address suggestion by google
+  //callback function from google api(for google address listing)
+  $window.initAutocomplete = function() {
+    var placeSearch, autocomplete, streetAddress;
+
+    //fields
+    componentForm = {
+      route: 'short_name',
+      postal_code: 'short_name',
+      locality: 'long_name'
+    };
+
+    autocomplete = new google.maps.places.Autocomplete(
+      (document.getElementById('route')), {
+        types: ['geocode']
+      });
+
+    function fillInAddress() {
+      // Get the place details from the autocomplete object.
+      var place = autocomplete.getPlace();
+      $scope.application.lat = place.geometry.location.lat();
+      $scope.application.lng = place.geometry.location.lng();
+
+
+
+      for (var component in componentForm) {
+        document.getElementById(component).value = '';
+      }
+
+
+      for (var i = 0; i < place.address_components.length; i++) {
+        var addressType = place.address_components[i].types[0];
+
+        if (componentForm[addressType]) {
+          var val = place.address_components[i][componentForm[addressType]];
+          document.getElementById(addressType).value = val;
+        }
+      }
+
+    }
+    autocomplete.addListener('place_changed', fillInAddress);
+  };
 
   //
   //  Uploader
@@ -163,7 +206,9 @@ angular.module('shifuProfile')
         $scope.restaurantApplication.$setPristine();
         $state.go('app.restaurantwizard', {
           'address': $scope.application.address,
-          'zipcode': $scope.application.zipcode
+          'zipcode': $scope.application.zipcode,
+          'lng': $scope.application.lng,
+          'lat': $scope.application.lat
         });
       }
     );
@@ -447,6 +492,11 @@ angular.module('shifuProfile')
       });
     });
   });
+
+  // sort the results
+  $scope.sortBy = function(propertyName) {
+    $scope.propertyName = propertyName;
+  };
 
 
 }])

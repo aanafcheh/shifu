@@ -8,33 +8,64 @@
 
   <!-- results -->
   <div class="panel panel-default">
-  <div class="panel-heading">Results:</div>
-  <div ng-if="!noResults" class="list-group">
-    <a ui-sref="app.restaurant({city: result.city, name: result.restaurantName})" class="list-group-item" ng-repeat="result in results">
-      <div class="media">
+    <div class="panel-heading">
+      Results:
 
-        <div class="col-xs-12 col-sm-6">
-          <div class="media-left">
-            <img ng-src="{{result.logo}}" alt="{{result.restaurantName}}">
-          </div>
-          <div class="media-body">
-            <h4 class="media-heading">{{result.restaurantName}}</h4>
-            <span class="label label-success" id="{{result.id}}"></span>
-            <span class="label label-primary">Delivery from &euro;{{result.deliveryFee}}</span>
-          </div>
-        </div>
+      <!-- sort by -->
+      <div class="dropdown pull-right">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          sort by
+          <span class="caret"></span>
+        </a>
 
-        <div class="col-xs-12 col-sm-6">
-          <!-- rating -->
-          <!-- readonly  -->
-          <div ng-controller="RatingController">
-            <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
-          </div>
-        </div>
-
+        <!-- TODO: if a an option was selected, put a tick next to it to show that it is currently selected -->
+        <!-- TODO: add acending and decending option -->
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li>
+            <a href="" ng-click="sortBy('restaurantName')">relevance</a>
+          </li>
+          <li>
+            <a href="">price</a>
+          </li>
+          <li>
+            <a href="">rating</a>
+          </li>
+          <!-- TODO: the search result by default must be for restaurant in the user's relevent city -->
+          <li>
+            <a href="" ng-click="sortBy('city')">city</a>
+          </li>
+          <li>
+            <a href="">distance</a>
+          </li>
+        </ul>
       </div>
-    </a>
-  </div>
+    </div>
+    <div ng-if="!noResults" class="list-group">
+      <a ui-sref="app.restaurant({city: result.city, name: result.restaurantName})" class="list-group-item" ng-repeat="result in results | orderBy:propertyName">
+        <div class="media">
+
+          <div class="col-xs-12 col-sm-6">
+            <div class="media-left">
+              <img ng-src="{{result.logo}}" alt="{{result.restaurantName}}">
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading">{{result.restaurantName}}</h4>
+              <span class="label label-success" id="{{result.id}}"></span>
+              <span class="label label-primary">Delivery from &euro;{{result.deliveryFee}}</span>
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-sm-6">
+            <!-- rating -->
+            <!-- readonly  -->
+            <div ng-controller="RatingController">
+              <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+            </div>
+          </div>
+
+        </div>
+      </a>
+    </div>
   </div>
 
 </div>

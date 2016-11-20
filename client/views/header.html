@@ -47,8 +47,8 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
+            <li class="dropdown-header">Your Restaurants:</li>
             <li>
-              <p>Your Restaurants:</p>
               <a ui-sref="app.owner({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants">{{restaurant.restaurantName}}
                 -
                 {{restaurant.city | capitalize}}</a>

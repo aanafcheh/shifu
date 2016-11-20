@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--  -->
 <!-- USER WITH NO RESTAURANT -->
 <!--  -->
@@ -16,10 +17,10 @@
 <!--  -->
 <!-- show if the user has one restaurant -->
 <div class="container-fluid" ng-if="restaurantCount === 1">
-  <div class="row">
+  <div class="row" ng-repeat="restaurant in restaurants">
 
     <!-- restaurant profile badge -->
-    <div class="col-xs-12 col-md-4 col-lg-3" ng-repeat="restaurant in restaurants">
+    <div class="col-xs-12 col-md-4 col-lg-3">
       <div class="panel panel-default">
         <div class="panel-body">
           <div class="row center-block text-center">
