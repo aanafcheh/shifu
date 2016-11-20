@@ -175,9 +175,12 @@
             <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
             <!-- pick-up only -->
             <span ng-if="!restaurant.deliveryFee" class="label label-primary">Pick-up Only</span>
-            <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
+
+           <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
               -
               {{restaurant.workTo[today] | date:'shortTime'}}</span>
+            <a ng-href="#{{restaurant.id}}openingHours" ng-click="getWorkingHours(restaurant.id,restaurant.workFrom, restaurant.workTo)" class="btn btn-info btn-xs" data-toggle="collapse" >Opening Hours<div id="{{restaurant.id}}openingHours" style="z-index: 5; position:absolute;margin-top:5px;" ></div></a>
+
           </h4>
         </div>
 
