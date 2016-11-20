@@ -68,3 +68,14 @@ img-crop canvas {
 .glyphicon-star, .glyphicon-star-empty {
   color: #FFDC00;
 }
+
+.openingHpurs{
+  font-size:15px;
+  padding-top:5px;
+  border:1px;
+  border-radius: 2px;
+  background-color: darkgray;
+  color:white;
+  padding:3px;
+
+}
