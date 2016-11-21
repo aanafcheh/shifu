@@ -61,6 +61,7 @@ angular.module('shifuProfile')
       allOpeningHours=allOpeningHours+"<b>"+value+ " </b>"+": "+"<i>"+$filter('date')(key, "HH:mm")+"-"+$filter('date')(workTo[value], "HH:mm")+"</i><br>";
       }
     })
+
    angular.element(document).find("#"+id+"openingHours").append("<p class='openingHpurs' >"+allOpeningHours+"</p>");
 
   }
@@ -491,6 +492,61 @@ angular.module('shifuProfile')
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
 
+    //maps and direction services
+    $scope.loadMap=function(lat,lng){
+      var directionsService = new google.maps.DirectionsService;
+      var directionsDisplay = new google.maps.DirectionsRenderer;
+      var resLocationLatLng = {lat: lat, lng: lng};
+      console.log("here");
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: resLocationLatLng,
+        scrollwheel: true,
+        zoom: 13
+      });
+      var marker = new google.maps.Marker({
+        position: resLocationLatLng,
+        map: map
+      });
+      directionsDisplay.setMap(map);
+      $scope.onChangeHandler=function(){
+        console.log("Here");
+        directionServiceRender(directionsService,directionsDisplay,resLocationLatLng,map);
+      };
+
+
+    }
+
+    //driving route render
+    function directionServiceRender(directionService,directionsDisplay,resLocationLatLng,map){
+      directionService.route({
+        origin:resLocationLatLng,
+        destination:{lat:60.77777, lng:24.6666}, //user coordinates goes here
+        travelMode:'DRIVING'
+
+      },function(response,status){
+        var length=parseInt(response.routes[0].legs[0].steps.length);
+
+        var step=Math.round(length/2);
+
+
+        if(status==="OK"){
+          var details='<b>'+"Distance: "+"</b>"+ response.routes[0].legs[0].distance.text+'<br>'+
+              "<b>"+"Time: "+"</b>"+response.routes[0].legs[0].duration.text+"</b>";
+          directionsDisplay.setDirections(response);
+          var travelDetailsInfoWindow=new google.maps.InfoWindow({
+            content:details
+
+          });
+          travelDetailsInfoWindow.setPosition(response.routes[0].legs[0].steps[step].end_location);
+
+        }else{
+          window.alert("Direction service failed. Sorry for inconvience");
+        }
+        travelDetailsInfoWindow.open(map);
+      });
+
+
+    }
     // check if the restaurant is open or closed
     $http.get('api/restaurants/' + $scope.restaurantId + '/openOrClosed').success(function(data) {
       $scope.state = data;
@@ -501,10 +557,32 @@ angular.module('shifuProfile')
 }])
 
 .controller('SearchController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
+  $scope.propertyName="distanceKm";
 
   $scope.keyword = $stateParams.keyword;
   $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"' + $scope.keyword + '","options":"i"}}}').success(function(data) {
     $scope.results = data;
+
+    //function to calcualte distance from two lats/lngs
+    $scope.distance=function(lat,lng,obj){
+
+      var R = 6371;
+      var dLat = deg2rad(65.677777-lat);  // deg2rad below
+      var dLon = deg2rad(24.567777-lng);
+      var a =
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(deg2rad(lat)) * Math.cos(deg2rad(65.677777)) *
+          Math.sin(dLon/2) * Math.sin(dLon/2)
+        ;
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var d = R * c;
+      obj.distanceKm=Math.round(d);
+      return Math.round(d);
+
+    }
+    function deg2rad(deg) {
+      return deg * (Math.PI/180)
+    }
 
     // check the restaurant's status
     angular.forEach($scope.results, function(value, key) {
