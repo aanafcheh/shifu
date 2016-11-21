@@ -35,7 +35,7 @@
             <a href="" ng-click="sortBy('city')">City</a>
           </li>
           <li>
-            <a href="">Distance</a>
+            <a href="" ng-click="sortBy('distanceKm')">Distance</a>
           </li>
         </ul>
       </div>
@@ -50,21 +50,24 @@
             </div>
             <div class="media-body">
               <h4 class="media-heading">{{result.restaurantName}}</h4>
+              {{result.city | capitalize}}<br>
               <span class="label label-success" id="{{result.id}}"></span>
               <span class="label label-primary">Delivery from &euro;{{result.deliveryFee}}</span>
+
             </div>
           </div>
 
-          <div class="col-xs-12 col-sm-6">
+
             <!-- rating -->
             <!-- readonly  -->
+            <p ng-init="return1=distance(result.lat,result.lng,result)"> {{return1}} Km</p>
             <div ng-controller="RatingController">
               <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
-             
+
             </div>
           </div>
 
-        </div>
+
       </a>
     </div>
   </div>

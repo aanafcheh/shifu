@@ -79,3 +79,15 @@ img-crop canvas {
   padding:3px;
 
 }
+
+#map{
+  width: 103%;
+  height:250px;
+  border:1px solid white;
+  border-radius: 2px;
+  margin-left: -15px;
+  margin-right: 15px;
+  margin-top:-19px;"
+}
+
+
