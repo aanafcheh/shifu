@@ -567,7 +567,7 @@ angular.module('shifuProfile')
     $scope.distance=function(lat,lng,obj){
 
       var R = 6371;
-      var dLat = deg2rad(65.677777-lat);  // deg2rad below
+      var dLat = deg2rad(60.677777-lat);  // deg2rad below
       var dLon = deg2rad(24.567777-lng);
       var a =
           Math.sin(dLat/2) * Math.sin(dLat/2) +
