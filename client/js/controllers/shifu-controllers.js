@@ -107,6 +107,7 @@ angular.module('shifuProfile')
       route: 'short_name',
       postal_code: 'short_name',
       locality: 'long_name'
+
     };
 
     autocomplete = new google.maps.places.Autocomplete(
@@ -117,6 +118,7 @@ angular.module('shifuProfile')
     function fillInAddress() {
       // Get the place details from the autocomplete object.
       var place = autocomplete.getPlace();
+      console.log(place);
       $scope.application.lat = place.geometry.location.lat();
       $scope.application.lng = place.geometry.location.lng();
 
@@ -124,15 +126,19 @@ angular.module('shifuProfile')
 
       for (var component in componentForm) {
         document.getElementById(component).value = '';
+
       }
 
 
       for (var i = 0; i < place.address_components.length; i++) {
         var addressType = place.address_components[i].types[0];
+        console.log(addressType);
 
         if (componentForm[addressType]) {
           var val = place.address_components[i][componentForm[addressType]];
+
           document.getElementById(addressType).value = val;
+
         }
       }
 
