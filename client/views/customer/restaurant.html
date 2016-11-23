@@ -40,7 +40,41 @@
           <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
             -
             {{restaurant.workTo[today] | date:'shortTime'}}</span>
-            <button id="direction" ng-click="onChangeHandler()" type="button" class="btn btn-success  btn-xs">Direction</button>
+            <button id="direction"  type="button" class="btn btn-success  btn-xs"  data-toggle="modal" data-target="#travelWay">Direction</button>
+            <div id="travelWay" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Choose your travel medium</h4>
+
+                  </div>
+
+                  <div class="modal-body">
+                    <div class="radio">
+                      <label><input type="radio" ng-model="travelMeduim" ng-click=changeMedium('DRIVING') value="DRIVING">Driving</label>
+                    </div>
+                    <div class="radio">
+                      <label><input type="radio" ng-model="travelMeduim" ng-click=changeMedium('BICYCLING') value="CYCLING">Cycling</label>
+                    </div>
+                    <div class="radio">
+                      <label><input type="radio" ng-model="travelMeduim"  ng-click=changeMedium('WALKING') value="WALKING">Walking</label>
+                    </div>
+                    </div>
+
+
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="onChangeHandler()">Ok</button>
+                  </div>
+                </div>
+                </div>
+              </div>
+
+
+
+
+
         </h4>
         </div>
 

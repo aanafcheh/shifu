@@ -106,7 +106,8 @@ angular.module('shifuProfile')
     componentForm = {
       route: 'short_name',
       postal_code: 'short_name',
-      locality: 'long_name'
+      locality: 'long_name',
+      street_number:'long_name'
 
     };
 
@@ -124,23 +125,30 @@ angular.module('shifuProfile')
 
 
 
-      for (var component in componentForm) {
-        document.getElementById(component).value = '';
+      //for (var component in componentForm) {
+        //document.getElementById(component).value = '';
 
-      }
+     // }
 
-
+      var street;
       for (var i = 0; i < place.address_components.length; i++) {
+
         var addressType = place.address_components[i].types[0];
         console.log(addressType);
 
         if (componentForm[addressType]) {
-          var val = place.address_components[i][componentForm[addressType]];
+          if (addressType==="street_number"){
+           street = place.address_components[i][componentForm[addressType]];
 
-          document.getElementById(addressType).value = val;
-
+          }
+          else{
+            var val = place.address_components[i][componentForm[addressType]];
+            document.getElementById(addressType).value = val;
+          }
         }
       }
+      document.getElementById("route").value=document.getElementById("route").value+" "+ street;
+
 
     }
     autocomplete.addListener('place_changed', fillInAddress);
@@ -497,17 +505,22 @@ angular.module('shifuProfile')
   $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
+      $scope.travelMeduim="";
+    var travelDetailsInfoWindow;
+    $scope.changeMedium=function(meduim){
+      $scope.travelMeduim=meduim;
+    }
 
     //maps and direction services
     $scope.loadMap=function(lat,lng){
       var directionsService = new google.maps.DirectionsService;
       var directionsDisplay = new google.maps.DirectionsRenderer;
       var resLocationLatLng = {lat: lat, lng: lng};
-      console.log("here");
+
       var map = new google.maps.Map(document.getElementById('map'), {
         center: resLocationLatLng,
         scrollwheel: true,
-        zoom: 13
+        zoom: 15
       });
       var marker = new google.maps.Marker({
         position: resLocationLatLng,
@@ -515,7 +528,10 @@ angular.module('shifuProfile')
       });
       directionsDisplay.setMap(map);
       $scope.onChangeHandler=function(){
-        console.log("Here");
+        if(travelDetailsInfoWindow){
+          travelDetailsInfoWindow.close();
+        }
+
         directionServiceRender(directionsService,directionsDisplay,resLocationLatLng,map);
       };
 
@@ -524,10 +540,11 @@ angular.module('shifuProfile')
 
     //driving route render
     function directionServiceRender(directionService,directionsDisplay,resLocationLatLng,map){
+      console.log($scope.travelMeduim);
       directionService.route({
         origin:resLocationLatLng,
         destination:{lat:60.77777, lng:24.6666}, //user coordinates goes here
-        travelMode:'DRIVING'
+        travelMode:$scope.travelMeduim
 
       },function(response,status){
         var length=parseInt(response.routes[0].legs[0].steps.length);
@@ -539,7 +556,7 @@ angular.module('shifuProfile')
           var details='<b>'+"Distance: "+"</b>"+ response.routes[0].legs[0].distance.text+'<br>'+
               "<b>"+"Time: "+"</b>"+response.routes[0].legs[0].duration.text+"</b>";
           directionsDisplay.setDirections(response);
-          var travelDetailsInfoWindow=new google.maps.InfoWindow({
+           travelDetailsInfoWindow=new google.maps.InfoWindow({
             content:details
 
           });
