@@ -89,5 +89,13 @@ img-crop canvas {
   margin-right: 15px;
   margin-top:-19px;"
 }
+#radiusMap{
+  width: 100%;
+  height:150px;
+  border-radius: 2px;
+  margin-left: -15px;
+  margin-right: 15px;
+  margin-top:-19px;"
 
+}
 

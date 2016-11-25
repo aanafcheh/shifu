@@ -97,9 +97,9 @@ angular.module('shifuProfile')
 
   $scope.application = {};
 
-  // address suggestion by google
-  //callback function from google api(for google address listing)
+  //function for autocomplete google address for restaurant home address
   $window.initAutocomplete = function() {
+    console.log(here);
     var placeSearch, autocomplete, streetAddress;
 
     //fields
@@ -107,7 +107,7 @@ angular.module('shifuProfile')
       route: 'short_name',
       postal_code: 'short_name',
       locality: 'long_name',
-      street_number:'long_name'
+
 
     };
 
@@ -119,7 +119,7 @@ angular.module('shifuProfile')
     function fillInAddress() {
       // Get the place details from the autocomplete object.
       var place = autocomplete.getPlace();
-      console.log(place);
+
       $scope.application.lat = place.geometry.location.lat();
       $scope.application.lng = place.geometry.location.lng();
 
@@ -258,27 +258,85 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantWizardController', ['$scope', '$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope, $state, $stateParams, $uibModal, Menu, User, Restaurant) {
+.controller('RestaurantWizardController', ['$scope', '$window','$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope, $window, $state, $stateParams, $uibModal, Menu, User, Restaurant) {
 
+  $scope.map=true;
   $scope.application = {};
   $scope.application.workFrom = {};
   $scope.application.workTo = {};
+  $scope.openRadius = function (size, parentSelector) {
+    var parentElem = parentSelector ?
+      angular.element($document[0].querySelector('.modal-demo1 ' + parentSelector)) : undefined;
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: 'myModalContent.html',
+      controller: 'RestaurantWizardController',
+
+      size: size,
+      appendTo: parentElem,
+      resolve: {
+        items: function () {
+          return $scope.items;
+        }
+      }
+    });
+    modalInstance.result.then(function (selectedItem) {
+      $scope.selected = selectedItem;
+    }, function () {
+
+    });
+  };
+
+  $scope.openComponentModal = function () {
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      component: 'modalComponent',
+      resolve: {
+        items: function () {
+          return $scope.items;
+        }
+      }
+    });
+    }
 
   $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-  //get the latest restaurantId of the user, because the user might have multiple restaurants
   $scope.restaurantId = User.restaurants({
     id: 'me',
     filter: {
-      "fields": {
-        "id": true
-      },
+
       "order": "id DESC",
       "limit": 1,
     }
   }).$promise.then(function(response) {
     $scope.restaurantId = response[0].id;
+    $scope.lat=response[0].lat;
+    $scope.lng=response[0].lng;
+
+
   });
+
+  $scope.initRaduis=function(){
+
+
+    var resLocationLatLng = {lat: $scope.lat, lng: $scope.lng};
+
+    var map = new google.maps.Map(document.getElementById('radiusMap'), {
+      center: resLocationLatLng,
+      scrollwheel: true,
+      zoom: 15
+    });
+    var marker = new google.maps.Marker({
+      position: resLocationLatLng,
+      map: map
+    });
+
+  }
+
+  //get the latest restaurantId of the user, because the user might have multiple restaurants
+
 
   // time picker
   $scope.hstep = 1;
