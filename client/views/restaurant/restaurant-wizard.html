@@ -1,6 +1,6 @@
 <div class="container">
 
-  <div class="alert alert-success alert-dismissible" role="alert">
+  <div class="alert alert-success alert-dismissible" role="alert" >
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -67,7 +67,7 @@
                 </p>
                 <div class="input-group">
                   <div class="input-group-addon">€</div>
-                  <input type="number" class="form-control" name="deliveryFee" id="deliveryFee" placeholder="Amount" ng-model="application.deliveryFee" required>
+                  <input type="number" class="form-control"  name="deliveryFee" id="deliveryFee" placeholder="Amount" ng-model="application.deliveryFee" required>
                   <span ng-show="restaurantProfile.restaurantInfo.deliveryFee.$error.required && !restaurantProfile.restaurantInfo.deliveryFee.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                 </div>
               </div>
@@ -82,34 +82,44 @@
                 </p>
                 <div class="input-group"  >
 
-                  <input type="text"  class="form-control"  ng-click="openRadius()" name="raduis" id="radius" placeholder="Radius" ng-model="application.raduis" required>
+                  <input type="text"  class="form-control"  ng-click="openRadius('lg')" name="raduis" id="radius" placeholder="Radius" ng-model="application.raduis" required>
                   <div class="input-group-addon">Km</div>
                   <span ng-show="restaurantProfile.restaurantInfo.deliveryFee.$error.required && !restaurantProfile.restaurantInfo.deliveryFee.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                 </div>
 
               </div>
+
               <div class="modal-demo1"  >
               <script type="text/ng-template" id="myModalContent.html">
 
                 <div class="modal-header"  >
-                  <h3 class="modal-title" id="modal-title">I'm a modal!</h3>
-                  <div id="radiusMap"  ng-if="map==true"></div>
+                  <h3 class="modal-title" id="modal-title">Radius Setting</h3>
+
 
                 </div>
-                <div class="modal-body" id="modal-body" >
-
-                  <input type="text"  class="form-control"  ng-focus="initRaduis()" name="raduis1" id="radius1" placeholder="Radius1"  required>
+                <div class="modal-body" id="modal-body"  >
+                  <p class="help-block">
+                    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                    Input one  reference location to set radius for your delivery zone
+                  </p>
+                  <input type="text"  class="form-control" ng-focus="autocomplete1();initRadius()" name="addressForRadius" id="addressForRadius" placeholder="Enter place here"  required>
                 </div>
-                <div class="modal-footer">
+                <span  ng-model="distanceInKm"> {{distanceInKm}} </span>
+                    <div id="radiusMap"   ng-show="isCollapsed"  class="ng-hide animate-show"></div>
+
+                <div class="modal-footer" ng-init="googleLink()">
                   <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
                   <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+
                 </div>
+
               </script>
 
-              </div>
+
+              </div >
 
               <!-- working hours -->
-              <div class="form-group">
+              <div class="form-group" >
                 <label for="workFrom">Working Hours</label>
                 <div class="row" ng-repeat="day in weekdays">
 
@@ -259,6 +269,7 @@
       </div>
     </script>
   </div>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbi8MGgqr9Q07heg7n8_tdzg1cu5C92XE&libraries=places" async defer></script>
+
 
 </div>
+

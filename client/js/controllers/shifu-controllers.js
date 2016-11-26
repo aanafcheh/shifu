@@ -2,7 +2,37 @@
 // APP 1 Controllers - shifuProfile
 //
 //
+
+
 angular.module('shifuProfile')
+  .service('commonServices',function(){
+    function distanceCalculation(lat,lng,obj){
+
+      var R = 6371;
+      var dLat = deg2rad(60.2374603-lat);  // deg2rad below
+      var dLon = deg2rad( 24.820678000000044-lng);
+      var a =
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(deg2rad(lat)) * Math.cos(deg2rad(60.2374603)) *
+          Math.sin(dLon/2) * Math.sin(dLon/2)
+        ;
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var d = R * c;
+      if(obj!=""){
+      obj.distanceKm=d;
+      }
+      return d;
+    }
+    function deg2rad(deg) {
+
+      return deg * (Math.PI/180)
+    }
+    return {
+      distanceCalculation:distanceCalculation
+    }
+  })
+
+
 
 .controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
 
@@ -99,7 +129,7 @@ angular.module('shifuProfile')
 
   //function for autocomplete google address for restaurant home address
   $window.initAutocomplete = function() {
-    console.log(here);
+console.log("IN here ok ok");
     var placeSearch, autocomplete, streetAddress;
 
     //fields
@@ -258,15 +288,18 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantWizardController', ['$scope', '$window','$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope, $window, $state, $stateParams, $uibModal, Menu, User, Restaurant) {
+.controller('RestaurantWizardController', ['$scope','commonServices', '$window','$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope,commonServices, $window, $state, $stateParams, $uibModal, Menu, User, Restaurant) {
 
-  $scope.map=true;
   $scope.application = {};
   $scope.application.workFrom = {};
   $scope.application.workTo = {};
+
+
+
+  //radius selection dialog box
   $scope.openRadius = function (size, parentSelector) {
-    var parentElem = parentSelector ?
-      angular.element($document[0].querySelector('.modal-demo1 ' + parentSelector)) : undefined;
+    $scope.isCollapsed = false;
+
     var modalInstance = $uibModal.open({
       animation: $scope.animationsEnabled,
       ariaLabelledBy: 'modal-title',
@@ -275,7 +308,7 @@ angular.module('shifuProfile')
       controller: 'RestaurantWizardController',
 
       size: size,
-      appendTo: parentElem,
+
       resolve: {
         items: function () {
           return $scope.items;
@@ -318,22 +351,85 @@ angular.module('shifuProfile')
 
   });
 
-  $scope.initRaduis=function(){
+  var map, marker, marker1, resLocationLatLng ;
+  //add google api link to radius definition dialog box
+  $scope.googleLink=function(){
+
+    angular.element(document).find('#modal-body').append('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbi8MGgqr9Q07heg7n8_tdzg1cu5C92XE&libraries=places&callback=autocomplete1" async defer></script>');
+
+  }
+
+  //google place search autocomplete function
+  $window.autocomplete1=function(){
+
+   var latLng;
+    var autocomplete;
+    var boundary;
+    autocomplete = new google.maps.places.Autocomplete(
+
+      (document.getElementById('addressForRadius')), {
+        types: ['geocode']
+      });
+    function fillInAddress() {
+      // Get the place details from the autocomplete object.
+       var place = autocomplete.getPlace();
+     var radius=commonServices.distanceCalculation(place.geometry.location.lat(),place.geometry.location.lng(),"");
+      console.log("The vlaue "+radius);
+      latLng={ lat:place.geometry.location.lat(),lng:place.geometry.location.lng()};
 
 
-    var resLocationLatLng = {lat: $scope.lat, lng: $scope.lng};
+      if(map){
 
-    var map = new google.maps.Map(document.getElementById('radiusMap'), {
+        if(marker1){
+        marker1.setMap(null);
+        }
+        if(boundary){
+          boundary.setMap(null);
+        }
+         marker1 = new google.maps.Marker({
+          position: latLng,
+          map: map
+        });
+         boundary = new google.maps.Circle({
+          map: map,
+          radius:radius*1000,
+          fillColor: 'green',
+          fillOpacity: 0.3,
+          center:resLocationLatLng
+        });
+
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(marker.getPosition());
+        bounds.extend(marker1.getPosition())
+        map.fitBounds(bounds);
+
+      }
+    }
+
+    autocomplete.addListener('place_changed', fillInAddress);
+
+  }
+
+  //map controller
+  $scope.initRadius=function(){
+    $scope.isCollapsed = true;
+    if(!map){
+     resLocationLatLng = {lat: $scope.lat, lng: $scope.lng};
+     map = new google.maps.Map(document.getElementById('radiusMap'), {
       center: resLocationLatLng,
       scrollwheel: true,
       zoom: 15
     });
-    var marker = new google.maps.Marker({
+     marker = new google.maps.Marker({
       position: resLocationLatLng,
       map: map
     });
 
+
+    }
+
   }
+
 
   //get the latest restaurantId of the user, because the user might have multiple restaurants
 
@@ -637,8 +733,13 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('SearchController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
+.controller('SearchController',['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant','commonServices', function($scope, $state, $stateParams, $http, User, Restaurant,commonServices) {
   $scope.propertyName="distanceKm";
+  //var value=commonServices.distanceCalculation(12,13);
+
+
+
+
 
   $scope.keyword = $stateParams.keyword;
   $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"' + $scope.keyword + '","options":"i"}}}').success(function(data) {
@@ -646,24 +747,9 @@ angular.module('shifuProfile')
 
     //function to calcualte distance from two lats/lngs
     $scope.distance=function(lat,lng,obj){
-
-      var R = 6371;
-      var dLat = deg2rad(60.677777-lat);  // deg2rad below
-      var dLon = deg2rad(24.567777-lng);
-      var a =
-          Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(deg2rad(lat)) * Math.cos(deg2rad(65.677777)) *
-          Math.sin(dLon/2) * Math.sin(dLon/2)
-        ;
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      var d = R * c;
-      obj.distanceKm=Math.round(d);
-      return Math.round(d);
-
+     return commonServices.distanceCalculation(lat,lng,obj)
     }
-    function deg2rad(deg) {
-      return deg * (Math.PI/180)
-    }
+
 
     // check the restaurant's status
     angular.forEach($scope.results, function(value, key) {
