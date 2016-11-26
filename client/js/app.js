@@ -7,7 +7,10 @@ angular
     'ui.router',
     'ui.bootstrap',
     'angularFileUpload',
-    'ngImgCrop'
+    'ngImgCrop',
+    'angular.filter',
+    'ngSanitize',
+    'ui.select'
   ])
   .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
     $urlRouterProvider) {

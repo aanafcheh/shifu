@@ -17,39 +17,73 @@
 <!--  -->
 <!-- show if the user has one restaurant -->
 <div class="container-fluid" ng-if="restaurantCount === 1">
-  <div class="row" ng-repeat="restaurant in restaurants">
 
-    <!-- restaurant profile badge -->
-    <div class="col-xs-12 col-md-4 col-lg-3">
+  <!-- restaurant application status -->
+  <div class="row">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <ul class="list-inline">
+            <li>
+              <span class="glyphicon glyphicon-check text-success" aria-hidden="true"></span>
+              Application Received
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
+              Proccessing
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+            </li>
+            <li>
+              <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
+              Restaurant Registered
+            </li>
+          </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- restaurant profile badge -->
+  <div class="row">
+    <div class="col-xs-12 col-md-4 col-lg-3" ng-repeat="restaurant in restaurants">
       <div class="panel panel-default">
         <div class="panel-body">
           <div class="row center-block text-center">
-            <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl">
-              <i class="fa fa-cutlery" aria-hidden="true"></i>
-            </button>
-            <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
-          </div>
-          <div class="row text-center">
-            <!-- TODO: should we show the address? -->
-            <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
-            <!-- <address class="text-capitalize">
-            <i class="fa fa-map-marker" aria-hidden="true"></i>
-            {{restaurant.address}}<br>
-            {{restaurant.zipcode}},
-            {{restaurant.city}}<br>
-            <i class="fa fa-mobile" aria-hidden="true"></i>
-            {{restaurant.phoneNumber}}
-          </address> -->
-          </div>
-          <div class="row text-center">
-            <!-- rating -->
-            <!-- readonly  -->
-            <div ng-controller="RatingController">
-              <span style="font-size:20px" uib-rating ng-model="restaurant.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+            <div class="col-xs-12">
+              <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl">
+                <i class="fa fa-cutlery" aria-hidden="true"></i>
+              </button>
+              <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
             </div>
           </div>
           <div class="row text-center">
-            <h4>
+            <div class="col-xs-12">
+              <!-- TODO: should we show the address? -->
+              <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
+              <!-- <address class="text-capitalize">
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              {{restaurant.address}}<br>
+              {{restaurant.zipcode}},
+              {{restaurant.city}}<br>
+              <i class="fa fa-mobile" aria-hidden="true"></i>
+              {{restaurant.phoneNumber}}
+            </address> -->
+            </div>
+          </div>
+          <div class="row text-center">
+            <div class="col-xs-12">
+              <!-- rating -->
+              <!-- readonly  -->
+              <div ng-controller="RatingController">
+                <span style="font-size:20px" uib-rating ng-model="restaurant.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row text-center">
+            <div class="col-xs-12">
               <span class="label label-success" id="{{restaurant.id}}"></span>
               <!-- paid delivery -->
               <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
@@ -60,10 +94,9 @@
               <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
                 -
                 {{restaurant.workTo[today] | date:'shortTime'}}</span>
-            </h4>
+            </div>
           </div>
         </div>
-
         <div class="list-group">
           <a class="list-group-item">
             <span class="badge">2</span>
@@ -78,43 +111,11 @@
             Help
           </a>
         </div>
-
       </div>
     </div>
 
-    <!-- application status -->
+      <!-- restaurant menu -->
     <div class="col-xs-12 col-md-6">
-      <div class="row">
-        <div class="panel">
-          <div class="panel-heading">
-            <h3 class="panel-title">Restaurant Application Status</h3>
-          </div>
-          <div class="panel-body text-justify">
-            <ul class="list-inline">
-              <li>
-                <span class="glyphicon glyphicon-check text-success" aria-hidden="true"></span>
-                Application Received
-              </li>
-              <li>
-                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
-              </li>
-              <li>
-                <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
-                Proccessing
-              </li>
-              <li>
-                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
-              </li>
-              <li>
-                <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
-                Restaurant Registered
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- the menu -->
       <div class="row">
         <button ng-click="open('lg')" type="button" class="btn btn-success btn-xs pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -126,9 +127,7 @@
           <uib-tab index="1" heading="Appetizer">Appetizer</uib-tab>
         </uib-tabset>
       </div>
-
     </div>
-
   </div>
 
 </div>
@@ -137,37 +136,48 @@
 <div class="container" ng-if="restaurantCount > 1">
 
   <!-- restaurant profile badge -->
-  <div class="row" ng-repeat="restaurant in restaurants">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <div class="col-md-6">
-          <div class="media">
-            <div class="media-left media-middle">
-              <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl">
-                <i class="fa fa-cutlery" aria-hidden="true"></i>
-              </button>
-              <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
+  <div class="panel panel-default" ng-repeat="restaurant in restaurants">
+    <!-- working hours popover -->
+    <i class="fa fa-clock-o text-muted pull-right" style="margin:5px;" aria-hidden="true" uib-popover-template="'openinghours.html'" popover-trigger="'mouseenter'" popover-placement="left-top"></i>
+
+    <div class="panel-body">
+      <div class="row">
+
+        <div class="col-sm-6 col-md-6">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="media">
+                <div class="media-left">
+                  <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl">
+                    <i class="fa fa-cutlery" aria-hidden="true"></i>
+                  </button>
+                  <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
+                </div>
+                <div class="media-body">
+                  <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
+                  <i class="fa fa-map-marker" aria-hidden="true"></i>
+                  <span class="text-capitalize">{{restaurant.address}}</span>
+                  <br>
+                  {{restaurant.zipcode}},
+                  <span class="text-capitalize">{{restaurant.city}}</span>
+                </div>
+              </div>
             </div>
-            <div class="media-body">
-              <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
-              <i class="fa fa-map-marker" aria-hidden="true"></i>
-              {{restaurant.address | capitalize}}
-              <br>
-              {{restaurant.zipcode}},
-              {{restaurant.city | capitalize}}
-              <br>
-              <i class="fa fa-mobile" aria-hidden="true"></i>
-              {{restaurant.phoneNumber}}
-              <br>
-              <i class="fa fa-envelope" aria-hidden="true"></i>
-              {{restaurant.email}}
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <!-- rating -->
+              <div style="margin-top:15px" ng-controller="RatingController">
+                <span class="h4" uib-rating ng-model="restaurant.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="col-md-6">
-          <h4>
-            <!-- TODO: fix the working hours -->
+        <!-- labels -->
+        <div class="col-sm-6 col-md-5 col-md-offset-1">
+          <div class="row text-center h4">
+            <!-- open or closed -->
             <span class="label label-success" id="{{restaurant.id}}"></span>
             <!-- paid delivery -->
             <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
@@ -176,22 +186,38 @@
             <!-- pick-up only -->
             <span ng-if="!restaurant.deliveryFee" class="label label-primary">Pick-up Only</span>
 
-           <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
+            <!-- working hours -->
+            <span class="label label-default" ng-if="restaurant.workFrom[today]">
+              {{restaurant.workFrom[today] | date:'shortTime'}}
               -
               {{restaurant.workTo[today] | date:'shortTime'}}</span>
-            <a ng-href="#{{restaurant.id}}openingHours" ng-click="getWorkingHours(restaurant.id,restaurant.workFrom, restaurant.workTo)" class="btn btn-info btn-xs" data-toggle="collapse" >Opening Hours<div id="{{restaurant.id}}openingHours" style="z-index: 5; position:absolute;margin-top:5px;" ></div></a>
-
-          </h4>
+          </div>
         </div>
-
-        <!-- rating -->
-        <div ng-controller="RatingController">
-          <span style="font-size:20px" uib-rating ng-model="restaurant.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
-        </div>
-        <!-- view button -->
-        <a ui-sref="app.owner({city: restaurant.city, name: restaurant.restaurantName})" class="btn btn-success btn-sm pull-right" role="button">View</a>
       </div>
+
     </div>
+    <!-- view button -->
+    <a ui-sref="app.owner({city: restaurant.city, name: restaurant.restaurantName})" class="btn btn-success btn-sm pull-right" role="button">View</a>
   </div>
 
 </div>
+
+<!-- opening hours popover template -->
+<script type="text/ng-template" id="openinghours.html">
+  <div>
+    <ul class="list-unstyled" ng-repeat="day in weekdays">
+      <li>
+        <div class="row">
+          <div class="col-xs-4">
+            <b>{{day}}:</b>
+          </div>
+          <div class="col-xs-8">
+            {{restaurant.workFrom[today] | date:'shortTime'}}
+            -
+            {{restaurant.workTo[today] | date:'shortTime'}}
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</script>

@@ -31,7 +31,7 @@ function clickHook(el, $state, $timeout, type, current) {
     var button = e.which || e.button, target = current();
 
     if (!(button > 1 || e.ctrlKey || e.metaKey || e.shiftKey || el.attr('target'))) {
-      // HACK:0 This is to allow ng-clicks to be processed before the transition is initiated: id:5
+      // HACK: This is to allow ng-clicks to be processed before the transition is initiated:
       var transition = $timeout(function() {
         $state.go(target.state, target.params, target.options);
       });
@@ -145,9 +145,9 @@ function $StateRefDirective($state, $timeout) {
 
       if (!type.clickable) return;
       hookFn = clickHook(element, $state, $timeout, type, function() { return def; });
-      element.bind("click", hookFn);
+      element[element.on ? 'on' : 'bind']("click", hookFn);
       scope.$on('$destroy', function() {
-        element.unbind("click", hookFn);
+        element[element.off ? 'off' : 'unbind']("click", hookFn);
       });
     }
   };
@@ -197,9 +197,9 @@ function $StateRefDynamicDirective($state, $timeout) {
 
       if (!type.clickable) return;
       hookFn = clickHook(element, $state, $timeout, type, function() { return def; });
-      element.bind("click", hookFn);
+      element[element.on ? 'on' : 'bind']("click", hookFn);
       scope.$on('$destroy', function() {
-        element.unbind("click", hookFn);
+        element[element.off ? 'off' : 'unbind']("click", hookFn);
       });
     }
   };

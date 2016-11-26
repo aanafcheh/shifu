@@ -1480,41 +1480,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               method: "POST",
             },
 
-            /**
-             * @ngdoc method
-             * @name lbServices.User#hasRestaurant
-             * @methodOf lbServices.User
-             *
-             * @description
-             *
-             * <em>
-             * (The remote method definition does not provide any description.)
-             * </em>
-             *
-             * @param {Object=} parameters Request parameters.
-             *
-             *   This method does not accept any parameters.
-             *   Supply an empty object or omit this argument altogether.
-             *
-             * @param {function(Object,Object)=} successCb
-             *   Success callback with two arguments: `value`, `responseHeaders`.
-             *
-             * @param {function(Object)=} errorCb Error callback with one argument:
-             *   `httpResponse`.
-             *
-             * @returns {Object} An empty reference that will be
-             *   populated with the actual data once the response is returned
-             *   from the server.
-             *
-             * Data properties:
-             *
-             *  - `hasRestaurant` – `{boolean=}` -
-             */
-            "hasRestaurant": {
-              url: urlBase + "/users/hasRestaurant",
-              method: "GET",
-            },
-
             // INTERNAL. Use UserIdentity.user() instead.
             "::get::UserIdentity::user": {
               url: urlBase + "/UserIdentities/:id/user",
@@ -4455,28 +4420,31 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               method: "GET",
             },
 
-            // INTERNAL. Use Restaurant.menus() instead.
-            "prototype$__get__menus": {
-              url: urlBase + "/restaurants/:id/menus",
+            // INTERNAL. Use Restaurant.menus.findById() instead.
+            "prototype$__findById__menus": {
+              params: {
+                'fk': '@fk',
+              },
+              url: urlBase + "/restaurants/:id/menus/:fk",
               method: "GET",
             },
 
-            // INTERNAL. Use Restaurant.menus.create() instead.
-            "prototype$__create__menus": {
-              url: urlBase + "/restaurants/:id/menus",
-              method: "POST",
-            },
-
-            // INTERNAL. Use Restaurant.menus.update() instead.
-            "prototype$__update__menus": {
-              url: urlBase + "/restaurants/:id/menus",
-              method: "PUT",
-            },
-
-            // INTERNAL. Use Restaurant.menus.destroy() instead.
-            "prototype$__destroy__menus": {
-              url: urlBase + "/restaurants/:id/menus",
+            // INTERNAL. Use Restaurant.menus.destroyById() instead.
+            "prototype$__destroyById__menus": {
+              params: {
+                'fk': '@fk',
+              },
+              url: urlBase + "/restaurants/:id/menus/:fk",
               method: "DELETE",
+            },
+
+            // INTERNAL. Use Restaurant.menus.updateById() instead.
+            "prototype$__updateById__menus": {
+              params: {
+                'fk': '@fk',
+              },
+              url: urlBase + "/restaurants/:id/menus/:fk",
+              method: "PUT",
             },
 
             // INTERNAL. Use Restaurant.feedbacks.findById() instead.
@@ -4504,6 +4472,31 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               },
               url: urlBase + "/restaurants/:id/feedbacks/:fk",
               method: "PUT",
+            },
+
+            // INTERNAL. Use Restaurant.menus() instead.
+            "prototype$__get__menus": {
+              isArray: true,
+              url: urlBase + "/restaurants/:id/menus",
+              method: "GET",
+            },
+
+            // INTERNAL. Use Restaurant.menus.create() instead.
+            "prototype$__create__menus": {
+              url: urlBase + "/restaurants/:id/menus",
+              method: "POST",
+            },
+
+            // INTERNAL. Use Restaurant.menus.destroyAll() instead.
+            "prototype$__delete__menus": {
+              url: urlBase + "/restaurants/:id/menus",
+              method: "DELETE",
+            },
+
+            // INTERNAL. Use Restaurant.menus.count() instead.
+            "prototype$__count__menus": {
+              url: urlBase + "/restaurants/:id/menus/count",
+              method: "GET",
             },
 
             // INTERNAL. Use Restaurant.feedbacks() instead.
@@ -5163,6 +5156,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * Data properties:
              *
+             *  - `day` – `{string=}` -
+             *
              *  - `openOrClosed` – `{string=}` -
              */
             "openOrClosed": {
@@ -5543,21 +5538,21 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * @description
              *
-             * Fetches hasOne relation menus.
+             * Queries menus of restaurant.
              *
              * @param {Object=} parameters Request parameters.
              *
              *  - `id` – `{*}` - PersistedModel id
              *
-             *  - `refresh` – `{boolean=}` -
+             *  - `filter` – `{object=}` -
              *
-             * @param {function(Object,Object)=} successCb
+             * @param {function(Array.<Object>,Object)=} successCb
              *   Success callback with two arguments: `value`, `responseHeaders`.
              *
              * @param {function(Object)=} errorCb Error callback with one argument:
              *   `httpResponse`.
              *
-             * @returns {Object} An empty reference that will be
+             * @returns {Array.<Object>} An empty reference that will be
              *   populated with the actual data once the response is returned
              *   from the server.
              *
@@ -5569,6 +5564,41 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
         R.menus = function() {
           var TargetResource = $injector.get("Menu");
           var action = TargetResource["::get::Restaurant::menus"];
+          return action.apply(R, arguments);
+        };
+
+            /**
+             * @ngdoc method
+             * @name lbServices.Restaurant.menus#count
+             * @methodOf lbServices.Restaurant.menus
+             *
+             * @description
+             *
+             * Counts menus of restaurant.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - PersistedModel id
+             *
+             *  - `where` – `{object=}` - Criteria to match model instances
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * Data properties:
+             *
+             *  - `count` – `{number=}` -
+             */
+        R.menus.count = function() {
+          var TargetResource = $injector.get("Menu");
+          var action = TargetResource["::count::Restaurant::menus"];
           return action.apply(R, arguments);
         };
 
@@ -5650,12 +5680,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
 
             /**
              * @ngdoc method
-             * @name lbServices.Restaurant.menus#destroy
+             * @name lbServices.Restaurant.menus#destroyAll
              * @methodOf lbServices.Restaurant.menus
              *
              * @description
              *
-             * Deletes menus of this model.
+             * Deletes all menus of this model.
              *
              * @param {Object=} parameters Request parameters.
              *
@@ -5673,24 +5703,95 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * This method returns no data.
              */
-        R.menus.destroy = function() {
+        R.menus.destroyAll = function() {
           var TargetResource = $injector.get("Menu");
-          var action = TargetResource["::destroy::Restaurant::menus"];
+          var action = TargetResource["::delete::Restaurant::menus"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Restaurant.menus#update
+             * @name lbServices.Restaurant.menus#destroyById
              * @methodOf lbServices.Restaurant.menus
              *
              * @description
              *
-             * Update menus of this model.
+             * Delete a related item by id for menus.
              *
              * @param {Object=} parameters Request parameters.
              *
              *  - `id` – `{*}` - PersistedModel id
+             *
+             *  - `fk` – `{*}` - Foreign key for menus
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * This method returns no data.
+             */
+        R.menus.destroyById = function() {
+          var TargetResource = $injector.get("Menu");
+          var action = TargetResource["::destroyById::Restaurant::menus"];
+          return action.apply(R, arguments);
+        };
+
+            /**
+             * @ngdoc method
+             * @name lbServices.Restaurant.menus#findById
+             * @methodOf lbServices.Restaurant.menus
+             *
+             * @description
+             *
+             * Find a related item by id for menus.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - PersistedModel id
+             *
+             *  - `fk` – `{*}` - Foreign key for menus
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `Menu` object.)
+             * </em>
+             */
+        R.menus.findById = function() {
+          var TargetResource = $injector.get("Menu");
+          var action = TargetResource["::findById::Restaurant::menus"];
+          return action.apply(R, arguments);
+        };
+
+            /**
+             * @ngdoc method
+             * @name lbServices.Restaurant.menus#updateById
+             * @methodOf lbServices.Restaurant.menus
+             *
+             * @description
+             *
+             * Update a related item by id for menus.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - PersistedModel id
+             *
+             *  - `fk` – `{*}` - Foreign key for menus
              *
              * @param {Object} postData Request data.
              *
@@ -5711,9 +5812,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              * This usually means the response is a `Menu` object.)
              * </em>
              */
-        R.menus.update = function() {
+        R.menus.updateById = function() {
           var TargetResource = $injector.get("Menu");
-          var action = TargetResource["::update::Restaurant::menus"];
+          var action = TargetResource["::updateById::Restaurant::menus"];
           return action.apply(R, arguments);
         };
     /**
@@ -6589,8 +6690,36 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               method: "POST",
             },
 
+            // INTERNAL. Use Restaurant.menus.findById() instead.
+            "::findById::Restaurant::menus": {
+              params: {
+                'fk': '@fk',
+              },
+              url: urlBase + "/restaurants/:id/menus/:fk",
+              method: "GET",
+            },
+
+            // INTERNAL. Use Restaurant.menus.destroyById() instead.
+            "::destroyById::Restaurant::menus": {
+              params: {
+                'fk': '@fk',
+              },
+              url: urlBase + "/restaurants/:id/menus/:fk",
+              method: "DELETE",
+            },
+
+            // INTERNAL. Use Restaurant.menus.updateById() instead.
+            "::updateById::Restaurant::menus": {
+              params: {
+                'fk': '@fk',
+              },
+              url: urlBase + "/restaurants/:id/menus/:fk",
+              method: "PUT",
+            },
+
             // INTERNAL. Use Restaurant.menus() instead.
             "::get::Restaurant::menus": {
+              isArray: true,
               url: urlBase + "/restaurants/:id/menus",
               method: "GET",
             },
@@ -6608,16 +6737,16 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               method: "POST",
             },
 
-            // INTERNAL. Use Restaurant.menus.update() instead.
-            "::update::Restaurant::menus": {
-              url: urlBase + "/restaurants/:id/menus",
-              method: "PUT",
-            },
-
-            // INTERNAL. Use Restaurant.menus.destroy() instead.
-            "::destroy::Restaurant::menus": {
+            // INTERNAL. Use Restaurant.menus.destroyAll() instead.
+            "::delete::Restaurant::menus": {
               url: urlBase + "/restaurants/:id/menus",
               method: "DELETE",
+            },
+
+            // INTERNAL. Use Restaurant.menus.count() instead.
+            "::count::Restaurant::menus": {
+              url: urlBase + "/restaurants/:id/menus/count",
+              method: "GET",
             },
           }
         );
@@ -7476,6 +7605,41 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
             "createChangeStream": {
               url: urlBase + "/feedbacks/change-stream",
               method: "POST",
+            },
+
+            /**
+             * @ngdoc method
+             * @name lbServices.Feedback#avgFeedback
+             * @methodOf lbServices.Feedback
+             *
+             * @description
+             *
+             * <em>
+             * (The remote method definition does not provide any description.)
+             * </em>
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `restaurantId` – `{string}` -
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `Feedback` object.)
+             * </em>
+             */
+            "avgFeedback": {
+              url: urlBase + "/feedbacks/:restaurantId/avgFeedback",
+              method: "GET",
             },
 
             // INTERNAL. Use User.feedbacks.findById() instead.

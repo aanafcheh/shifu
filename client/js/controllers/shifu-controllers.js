@@ -34,6 +34,8 @@ angular.module('shifuProfile')
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
 
+  $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
   $scope.restaurants = User.restaurants({
     id: 'me'
   }).$promise.then(function(response) {
@@ -46,26 +48,6 @@ angular.module('shifuProfile')
       });
     });
   });
-
-  $scope.getWorkingHours=function(id,workFrom,workTo){
-    var allOpeningHours="";
-    if(angular.element(document).find("#"+id+"openingHours").text().length>0){
-      angular.element(document).find("#"+id+"openingHours")
-
-    }
-    else{
-
-
-    angular.forEach(workFrom,function(key,value){
-      if(key!=null){
-      allOpeningHours=allOpeningHours+"<b>"+value+ " </b>"+": "+"<i>"+$filter('date')(key, "HH:mm")+"-"+$filter('date')(workTo[value], "HH:mm")+"</i><br>";
-      }
-    })
-   angular.element(document).find("#"+id+"openingHours").append("<p class='openingHpurs' >"+allOpeningHours+"</p>");
-
-  }
-  }
-
 
   // Check if the user has a restaurant yet or not, and display content depending on that
   $http.get('api/users/me/restaurants/count').success(function(data) {
@@ -252,7 +234,7 @@ angular.module('shifuProfile')
   $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   //get the latest restaurantId of the user, because the user might have multiple restaurants
-  $scope.restaurantId = User.restaurants({
+  $scope.restaurants = User.restaurants({
     id: 'me',
     filter: {
       "fields": {
@@ -262,6 +244,7 @@ angular.module('shifuProfile')
       "limit": 1,
     }
   }).$promise.then(function(response) {
+    $scope.restaurants = response[0];
     $scope.restaurantId = response[0].id;
   });
 
@@ -315,7 +298,7 @@ angular.module('shifuProfile')
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
       templateUrl: 'addImage.html',
-      controller: 'ModalInstanceCtrl',
+      controller: 'ImageModelController',
       size: size
     });
 
@@ -334,6 +317,7 @@ angular.module('shifuProfile')
       id: $scope.restaurantId
     }, $scope.menu);
     $scope.restaurantProfile.$setPristine();
+    // TODO: make the website reload so the new info is loaded
     $state.go('app', {
       reload: true
     });
@@ -342,7 +326,7 @@ angular.module('shifuProfile')
 }])
 
 
-.controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', function($scope, $state, FileUploader, $uibModalInstance, User) {
+.controller('ImageModelController', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', function($scope, $state, FileUploader, $uibModalInstance, User) {
 
   // cropped image will be saved here
   $scope.image = "";
@@ -422,6 +406,50 @@ angular.module('shifuProfile')
 
 }])
 
+.controller('MenuModalController', ['$scope', '$state', '$http', 'FileUploader', '$uibModalInstance', '$stateParams', 'User', 'Restaurant', 'menu', function($scope, $state, $http, FileUploader, $uibModalInstance, $stateParams, User, Restaurant, menu) {
+
+  // list of allergies to be added to menu items
+  $scope.allergies = ["celery", "gluten", "crustaceans", "eggs", "fish", "lupin", "milk", "molluscs", "mustard", "nuts", "peanuts"];
+
+  // get the menu information that are injected to this controller
+  $scope.menu = menu;
+
+  // query the restaurant info
+  $http.get('api/users/me/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
+    $scope.restaurants = data;
+    $scope.restaurantId = data[0].id;
+  });
+
+  $scope.ok = function() {
+    $scope.addMenuItem();
+    $uibModalInstance.close($scope.menu);
+  };
+
+  $scope.save = function() {
+    $scope.saveMenuItem();
+    $uibModalInstance.close($scope.menu);
+  };
+
+  $scope.cancel = function() {
+    $uibModalInstance.dismiss('cancel');
+  };
+
+  // function to add a new menu item
+  // TODO: add validation
+  $scope.addMenuItem = function() {
+    Restaurant.menus.create({
+      id: $scope.restaurantId
+    }, $scope.menu);
+    $scope.newMenuItem.$setPristine();
+  };
+
+  // function to update a menu item
+  $scope.saveMenuItem = function() {
+    $http.put('api/menus/' + $scope.menu.id, $scope.menu);
+    $scope.newMenuItem.$setPristine();
+  };
+}])
+
 .controller('RatingController', ['$scope', '$state', '$http', '$stateParams', 'User', 'Restaurant', 'Feedback', function($scope, $state, $http, $stateParams, User, Restaurant, Feedback) {
   $scope.max = 5;
   $scope.isReadonly = false;
@@ -477,7 +505,7 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', '$state', '$stateParams', '$filter', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $http, User, Restaurant) {
+.controller('RestaurantController', ['$scope', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant) {
 
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
@@ -487,9 +515,10 @@ angular.module('shifuProfile')
     id: 'me'
   });
 
-  $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
+  $http.get('api/restaurants?filter[include]=menus&filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
+    $scope.menus = data[0].menus;
 
     // check if the restaurant is open or closed
     $http.get('api/restaurants/' + $scope.restaurantId + '/openOrClosed').success(function(data) {
@@ -497,6 +526,30 @@ angular.module('shifuProfile')
     });
 
   });
+
+  // add menu item model and pass the menu details as a parameter in case we want to update a specific item
+  $scope.open = function(size, menu) {
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: '../../views/restaurant/addMenu.html',
+      controller: 'MenuModalController',
+      size: size,
+      resolve: {
+        menu: function () { return menu;}
+      }
+    });
+
+    modalInstance.result.then(function(menu) {
+      $scope.menu = menu;
+    });
+  };
+
+  // edit the menu
+  $scope.delete = function (dishId) {
+    $http.delete('api/menus/' + dishId);
+  };
 
 }])
 

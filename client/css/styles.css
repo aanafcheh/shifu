@@ -8,15 +8,19 @@
   display: none !important;
 }
 
+
 /*footer settings*/
+
 html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
+
 .footer {
   position: absolute;
   bottom: 0;
@@ -25,14 +29,15 @@ body {
   height: 40px;
 }
 
-
 .center-block {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
+
 /*circle buttons*/
+
 .btn-circle.btn-xl {
   width: 70px;
   height: 70px;
@@ -42,6 +47,7 @@ body {
   border-radius: 35px;
 }
 
+
 /*image cropping*/
 
 .cropArea {
@@ -49,6 +55,7 @@ body {
   width: 300px;
   height: 200px;
 }
+
 img-crop {
   display: block;
   height: 100%;
@@ -56,6 +63,7 @@ img-crop {
   position: relative;
   width: 100%;
 }
+
 img-crop canvas {
   display: block;
   left: 50%;
@@ -64,18 +72,31 @@ img-crop canvas {
   top: 50%;
 }
 
+
 /*rating*/
+
 .glyphicon-star, .glyphicon-star-empty {
   color: #FFDC00;
 }
 
-.openingHpurs{
-  font-size:15px;
-  padding-top:5px;
-  border:1px;
-  border-radius: 2px;
-  background-color: darkgray;
-  color:white;
-  padding:3px;
 
+/*popover size*/
+
+.popover {
+  max-width: 100%;
+  /* Max Width of the popover (depending on the container!) */
+  font-size: 12px;
+}
+
+
+/*panel*/
+
+.panel {
+  overflow: hidden;
+}
+
+/*make ui-select visiable in the modal*/
+body>.ui-select-bootstrap.open {
+  z-index: 10000;
+  /* Standard Bootstrap dropdown z-index */
 }

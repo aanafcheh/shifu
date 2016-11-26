@@ -26,6 +26,11 @@
     "bootstrap": "^3.3.7",
     "font-awesome": "fontawesome#^4.6.3",
     "trianglify": "^1.0.0",
-    "ng-img-crop": "ngImgCrop#^0.3.2"
+    "ng-img-crop": "ngImgCrop#^0.3.2",
+    "angular-filter": "^0.5.11",
+    "angular-sanitize": "^1.5.9",
+    "angular": "^1.5.9",
+    "jquery": "^3.1.1",
+    "angular-ui-select": "^0.19.6"
   }
 }
