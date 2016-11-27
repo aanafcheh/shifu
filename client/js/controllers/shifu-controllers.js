@@ -1,8 +1,6 @@
 //
-// APP 1 Controllers - shifuProfile
-//
-//
-
+// APP 1 Controllers - shifuProfil
+//'use strict';
 
 angular.module('shifuProfile')
   .service('commonServices',function(){
@@ -35,6 +33,7 @@ angular.module('shifuProfile')
 
 
 .controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
+
 
   // query all the needed information
   $scope.profile = User.identities({
@@ -128,12 +127,12 @@ angular.module('shifuProfile')
   $scope.application = {};
 
   //function for autocomplete google address for restaurant home address
-  $window.initAutocomplete = function() {
-console.log("IN here ok ok");
-    var placeSearch, autocomplete, streetAddress;
+  $scope.initAutocomplete = function() {
+
+    var autocomplete;
 
     //fields
-    componentForm = {
+   var componentForm = {
       route: 'short_name',
       postal_code: 'short_name',
       locality: 'long_name',
@@ -154,12 +153,6 @@ console.log("IN here ok ok");
       $scope.application.lng = place.geometry.location.lng();
 
 
-
-      //for (var component in componentForm) {
-        //document.getElementById(component).value = '';
-
-     // }
-
       var street;
       for (var i = 0; i < place.address_components.length; i++) {
 
@@ -177,9 +170,6 @@ console.log("IN here ok ok");
           }
         }
       }
-      document.getElementById("route").value=document.getElementById("route").value+" "+ street;
-
-
     }
     autocomplete.addListener('place_changed', fillInAddress);
   };
@@ -297,7 +287,7 @@ console.log("IN here ok ok");
 
 
   //radius selection dialog box
-  $scope.openRadius = function (size, parentSelector) {
+  $scope.openRadiusDialogBox = function (size) {
     $scope.isCollapsed = false;
 
     var modalInstance = $uibModal.open({
@@ -351,67 +341,68 @@ console.log("IN here ok ok");
 
   });
 
-  var map, marker, marker1, resLocationLatLng ;
-  //add google api link to radius definition dialog box
-  $scope.googleLink=function(){
 
-    angular.element(document).find('#modal-body').append('<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbi8MGgqr9Q07heg7n8_tdzg1cu5C92XE&libraries=places&callback=autocomplete1" async defer></script>');
 
-  }
 
-  //google place search autocomplete function
-  $window.autocomplete1=function(){
 
-   var latLng;
-    var autocomplete;
-    var boundary;
-    autocomplete = new google.maps.places.Autocomplete(
-
-      (document.getElementById('addressForRadius')), {
-        types: ['geocode']
+  //function that handles radius input if user wants to just input radius
+  var map, restaurantMarker, referenceAddressMarker, resLocationLatLng,referencelatLng,boundary;
+  $scope.getRadius=function(){
+    angular.element(document).find("#addressForRadius").val("");
+    if(!map){
+      resLocationLatLng = {lat: $scope.lat, lng: $scope.lng};
+      map = new google.maps.Map(document.getElementById('radiusMap'), {
+        center: resLocationLatLng,
+        scrollwheel: true,
+        zoom: 14
       });
-    function fillInAddress() {
-      // Get the place details from the autocomplete object.
-       var place = autocomplete.getPlace();
-     var radius=commonServices.distanceCalculation(place.geometry.location.lat(),place.geometry.location.lng(),"");
-      console.log("The vlaue "+radius);
-      latLng={ lat:place.geometry.location.lat(),lng:place.geometry.location.lng()};
+      restaurantMarker = new google.maps.Marker({
+        position: resLocationLatLng,
+        map: map
+      });
+    }
+    $scope.isCollapsed = true;
+    $scope.$watch('radiusValue',function() {
 
+      if(referenceAddressMarker){
+        referenceAddressMarker.setMap(null);
+      }
+      if(boundary){
+        boundary.setMap(null);
+      }
+      console.log($scope.radiusValue);
+      if($scope.radiusValue!=null){
+      boundary = new google.maps.Circle({
+        map: map,
+        radius:$scope.radiusValue*1000,
+        fillColor: 'green',
+        fillOpacity: 0.3,
+        strokeColor: 'green',
+        strokeOpacity: 0.5,
+        center:resLocationLatLng
+      });
 
-      if(map){
-
-        if(marker1){
-        marker1.setMap(null);
-        }
+        //fixing the zoom level
+      var bounds = new google.maps.LatLngBounds();
+      bounds.extend(boundary.getBounds().getNorthEast());
+      bounds.extend(boundary.getBounds().getSouthWest());
+      map.fitBounds(bounds);
+      }
+      if($scope.radiusValue===undefined){
         if(boundary){
           boundary.setMap(null);
         }
-         marker1 = new google.maps.Marker({
-          position: latLng,
-          map: map
-        });
-         boundary = new google.maps.Circle({
-          map: map,
-          radius:radius*1000,
-          fillColor: 'green',
-          fillOpacity: 0.3,
-          center:resLocationLatLng
-        });
-
-        var bounds = new google.maps.LatLngBounds();
-        bounds.extend(marker.getPosition());
-        bounds.extend(marker1.getPosition())
-        map.fitBounds(bounds);
-
       }
-    }
 
-    autocomplete.addListener('place_changed', fillInAddress);
+    });
+
+
 
   }
 
-  //map controller
+  //intial map loading with autocompelete google search
   $scope.initRadius=function(){
+    angular.element(document).find("#radiusValue").val("");
     $scope.isCollapsed = true;
     if(!map){
      resLocationLatLng = {lat: $scope.lat, lng: $scope.lng};
@@ -420,14 +411,60 @@ console.log("IN here ok ok");
       scrollwheel: true,
       zoom: 15
     });
-     marker = new google.maps.Marker({
+     restaurantMarker = new google.maps.Marker({
       position: resLocationLatLng,
       map: map
     });
 
 
     }
+    var autocomplete = new google.maps.places.Autocomplete(
 
+      (document.getElementById('addressForRadius')), {
+        types: ['geocode']
+      });
+    function fillInAddress() {
+
+      // Get the place details from the autocomplete object.
+      var place = autocomplete.getPlace();
+      var radius=commonServices.distanceCalculation(place.geometry.location.lat(),place.geometry.location.lng(),""); //get radius from commonService distance function
+      $scope.radiusModel=Math.ceil(radius);
+      referencelatLng={ lat:place.geometry.location.lat(),lng:place.geometry.location.lng()};
+
+      //check if  map is already loaded
+      if(map){
+        if(referenceAddressMarker){
+          referenceAddressMarker.setMap(null);
+        }
+        if(boundary){
+          boundary.setMap(null);
+        }
+        referenceAddressMarker = new google.maps.Marker({
+          position: referencelatLng,
+          map: map
+        });
+        boundary = new google.maps.Circle({
+          map: map,
+          radius:radius*1000,
+          fillColor: 'green',
+          strokeColor: 'green',
+          strokeOpacity: 0.5,
+          fillOpacity: 0.3,
+          center:resLocationLatLng
+        });
+
+        //fixing zoom level
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(restaurantMarker.getPosition());
+        bounds.extend(referenceAddressMarker.getPosition());
+        map.fitBounds(bounds);
+        console.log("The zoom level "+map.getZoom());
+        map.setZoom(map.getZoom()-2);
+        map.setCenter(resLocationLatLng);
+      }
+    }
+
+    autocomplete.addListener('place_changed', fillInAddress);
   }
 
 

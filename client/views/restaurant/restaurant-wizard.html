@@ -82,15 +82,17 @@
                 </p>
                 <div class="input-group"  >
 
-                  <input type="text"  class="form-control"  ng-click="openRadius('lg')" name="raduis" id="radius" placeholder="Radius" ng-model="application.raduis" required>
+                  <input type="text"  class="form-control"  ng-click="openRadiusDialogBox('lg')" name="raduis" id="radius" placeholder="Radius" ng-model="application.radius" required>
                   <div class="input-group-addon">Km</div>
                   <span ng-show="restaurantProfile.restaurantInfo.deliveryFee.$error.required && !restaurantProfile.restaurantInfo.deliveryFee.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                 </div>
 
               </div>
 
-              <div class="modal-demo1"  >
-              <script type="text/ng-template" id="myModalContent.html">
+              <div class="modal-demo1" >
+
+
+                <script type="text/ng-template" id="myModalContent.html">
 
                 <div class="modal-header"  >
                   <h3 class="modal-title" id="modal-title">Radius Setting</h3>
@@ -102,12 +104,21 @@
                     <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
                     Input one  reference location to set radius for your delivery zone
                   </p>
-                  <input type="text"  class="form-control" ng-focus="autocomplete1();initRadius()" name="addressForRadius" id="addressForRadius" placeholder="Enter place here"  required>
-                </div>
-                <span  ng-model="distanceInKm"> {{distanceInKm}} </span>
-                    <div id="radiusMap"   ng-show="isCollapsed"  class="ng-hide animate-show"></div>
 
-                <div class="modal-footer" ng-init="googleLink()">
+                  <input type="text"  class="form-control" ng-focus="initRadius()" name="addressForRadius" id="addressForRadius" placeholder="Enter place here"  required>
+
+                  <div class="input-group"  >
+                  <input type="number"  class="form-control" id="radiusValue" ng-model="radiusValue" ng-click="getRadius()" placeholder="Enter Radius"  required> <div class="input-group-addon">Km</div>
+                    </div>
+                  <p ng-model="radiusModel">
+                    {{radiusModel}}
+                  </p>
+                </div>
+                <span  id="distanceInKm"> {{distanceInKm}} </span>
+                    <div id="radiusMap"></div>
+
+                <div class="modal-footer"></div>
+
                   <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
                   <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 
@@ -268,8 +279,9 @@
 
       </div>
     </script>
+
   </div>
-
-
+  <div id="googleApiLink" ng-if="isCollapsed" class="ng-hide">
+  </div>
 </div>
 

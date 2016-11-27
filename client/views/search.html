@@ -56,15 +56,25 @@
 
             </div>
           </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 center-block">
+              <div ng-controller="RatingController">
+                <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
 
+              </div>
+
+              </div>
+            <div class="col-xs-12 col-sm-6 " >
+
+              <p ng-init="return1=distance(result.lat,result.lng,result)" > {{return1|number:0}} Km</p>
+            </div>
+
+          </div>
 
             <!-- rating -->
             <!-- readonly  -->
-            <p ng-init="return1=distance(result.lat,result.lng,result)"> {{return1}} Km</p>
-            <div ng-controller="RatingController">
-              <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
 
-            </div>
+
           </div>
 
 
