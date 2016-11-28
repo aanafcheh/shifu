@@ -47,7 +47,7 @@
       "foreignKey": "userId"
     },
     "menus": {
-      "type": "hasOne",
+      "type": "hasMany",
       "model": "menu",
       "foreignKey": "restaurantId"
     },

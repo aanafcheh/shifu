@@ -4,10 +4,14 @@
 angular
   .module('shifuProfile', [
     'lbServices',
+    'ngAnimate',
     'ui.router',
     'ui.bootstrap',
     'angularFileUpload',
-    'ngImgCrop'
+    'ngImgCrop',
+    'angular.filter',
+    'ngSanitize',
+    'ui.select'
   ])
   .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
     $urlRouterProvider) {
@@ -16,10 +20,11 @@ angular
     // common states
       .state('app', {
       url: '/',
+      params : { noResults: null},
       views: {
         'header': {
           templateUrl: 'views/header.html',
-          controller: 'HeaderController'
+          controller: 'HeaderController',
         },
         'content': {
           templateUrl: 'views/user.html',

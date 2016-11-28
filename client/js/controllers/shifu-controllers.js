@@ -56,7 +56,8 @@ angular.module('shifuProfile')
   // search function
   $scope.search = function() {
     $state.go('app.search', {
-      'keyword': $scope.result
+      'keyword': $scope.result,
+      'noResults': $scope.noResults
     });
   };
 
@@ -66,6 +67,8 @@ angular.module('shifuProfile')
 
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
+
+  $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   $scope.restaurants = User.restaurants({
     id: 'me'
@@ -79,27 +82,6 @@ angular.module('shifuProfile')
       });
     });
   });
-
-  $scope.getWorkingHours=function(id,workFrom,workTo){
-    var allOpeningHours="";
-    if(angular.element(document).find("#"+id+"openingHours").text().length>0){
-      angular.element(document).find("#"+id+"openingHours")
-
-    }
-    else{
-
-
-    angular.forEach(workFrom,function(key,value){
-      if(key!=null){
-      allOpeningHours=allOpeningHours+"<b>"+value+ " </b>"+": "+"<i>"+$filter('date')(key, "HH:mm")+"-"+$filter('date')(workTo[value], "HH:mm")+"</i><br>";
-      }
-    })
-
-
-   angular.element(document).find("#"+id+"openingHours").append("<p class='openingHpurs' >"+allOpeningHours+"</p>");
-
-  }
-  }
 
 
   // Check if the user has a restaurant yet or not, and display content depending on that
@@ -142,6 +124,7 @@ angular.module('shifuProfile')
       postal_code: 'short_name',
       locality: 'long_name',
 
+      street_number: 'long_name'
 
     };
 
@@ -154,6 +137,7 @@ angular.module('shifuProfile')
       // Get the place details from the autocomplete object.
       var place = autocomplete.getPlace();
 
+      console.log(place);
       $scope.application.lat = place.geometry.location.lat();
       $scope.application.lng = place.geometry.location.lng();
 
@@ -165,16 +149,21 @@ angular.module('shifuProfile')
         console.log(addressType);
 
         if (componentForm[addressType]) {
-          if (addressType==="street_number"){
-           street = place.address_components[i][componentForm[addressType]];
 
-          }
-          else{
+          if (addressType === "street_number") {
+            street = place.address_components[i][componentForm[addressType]];
+
+          } else {
+
             var val = place.address_components[i][componentForm[addressType]];
             document.getElementById(addressType).value = val;
           }
         }
       }
+
+      document.getElementById("route").value = document.getElementById("route").value + " " + street;
+
+
     }
     autocomplete.addListener('place_changed', fillInAddress);
   };
@@ -336,7 +325,9 @@ angular.module('shifuProfile')
 
   $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-  $scope.restaurantId = User.restaurants({
+
+  //get the latest restaurantId of the user, because the user might have multiple restaurants
+  $scope.restaurants = User.restaurants({
     id: 'me',
     filter: {
 
@@ -344,6 +335,7 @@ angular.module('shifuProfile')
       "limit": 1,
     }
   }).$promise.then(function(response) {
+    $scope.restaurants = response[0];
     $scope.restaurantId = response[0].id;
     $scope.response=response;
     $scope.lat=response[0].lat;
@@ -405,7 +397,7 @@ angular.module('shifuProfile')
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
       templateUrl: 'addImage.html',
-      controller: 'ModalInstanceCtrl',
+      controller: 'ImageModelController',
       size: size
     });
 
@@ -424,6 +416,7 @@ angular.module('shifuProfile')
       id: $scope.restaurantId
     }, $scope.menu);
     $scope.restaurantProfile.$setPristine();
+    // TODO: make the website reload so the new info is loaded
     $state.go('app', {
       reload: true
     });
@@ -432,7 +425,10 @@ angular.module('shifuProfile')
 }])
 
 
+
 .controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User','lat','lng',function($scope, $state, FileUploader, $uibModalInstance, User,lat,lng) {
+
+
 
   // cropped image will be saved here
   $scope.image = "";
@@ -569,6 +565,50 @@ angular.module('shifuProfile')
 
 }])
 
+.controller('MenuModalController', ['$scope', '$state', '$http', 'FileUploader', '$uibModalInstance', '$stateParams', 'User', 'Restaurant', 'menu', function($scope, $state, $http, FileUploader, $uibModalInstance, $stateParams, User, Restaurant, menu) {
+
+  // list of allergies to be added to menu items
+  $scope.allergies = ["celery", "gluten", "crustaceans", "eggs", "fish", "lupin", "milk", "molluscs", "mustard", "nuts", "peanuts"];
+
+  // get the menu information that are injected to this controller
+  $scope.menu = menu;
+
+  // query the restaurant info
+  $http.get('api/users/me/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
+    $scope.restaurants = data;
+    $scope.restaurantId = data[0].id;
+  });
+
+  $scope.ok = function() {
+    $scope.addMenuItem();
+    $uibModalInstance.close($scope.menu);
+  };
+
+  $scope.save = function() {
+    $scope.saveMenuItem();
+    $uibModalInstance.close($scope.menu);
+  };
+
+  $scope.cancel = function() {
+    $uibModalInstance.dismiss('cancel');
+  };
+
+  // function to add a new menu item
+  // TODO: add validation
+  $scope.addMenuItem = function() {
+    Restaurant.menus.create({
+      id: $scope.restaurantId
+    }, $scope.menu);
+    $scope.newMenuItem.$setPristine();
+  };
+
+  // function to update a menu item
+  $scope.saveMenuItem = function() {
+    $http.put('api/menus/' + $scope.menu.id, $scope.menu);
+    $scope.newMenuItem.$setPristine();
+  };
+}])
+
 .controller('RatingController', ['$scope', '$state', '$http', '$stateParams', 'User', 'Restaurant', 'Feedback', function($scope, $state, $http, $stateParams, User, Restaurant, Feedback) {
   $scope.max = 5;
   $scope.isReadonly = false;
@@ -624,9 +664,14 @@ angular.module('shifuProfile')
 
 }])
 
+
 .controller('RestaurantController', ['$scope', 'commonServices','$state', '$stateParams', '$filter', '$http', 'User', 'Restaurant', function($scope,commonServices, $state, $stateParams, $filter, $http, User, Restaurant) {
 
 
+
+
+  // restaurant directions - driving-walking-bicycling variable
+  $scope.travelMeduim = "";
 
 
   // get the name of today to show the working hours accordingly
@@ -637,9 +682,11 @@ angular.module('shifuProfile')
     id: 'me'
   });
 
-  $http.get('api/restaurants?filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
+  // get the restaurant info
+  $http.get('api/restaurants?filter[include]=menus&filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
+
       $scope.travelMeduim="";
       console.log(data);
     //check for delivery and user loccation
@@ -660,6 +707,17 @@ angular.module('shifuProfile')
         else{
           $scope.deliveryToCurrentLocation=false;
         }
+
+    $scope.menus = data[0].menus;
+
+    // check if the restaurant has a menu
+    if ($scope.menus[0]) {
+      $scope.hasMenu = false;
+    }
+    else {
+      $scope.hasMenu = true;
+    }
+
 
       });
     }
@@ -732,7 +790,99 @@ angular.module('shifuProfile')
       $scope.state = data;
     });
 
+    // **************************
+    // maps and direction services
+    // **************************
+    var travelDetailsInfoWindow;
+    $scope.loadMap = function(lat, lng) {
+      var directionsService = new google.maps.DirectionsService();
+      var directionsDisplay = new google.maps.DirectionsRenderer();
+      var resLocationLatLng = {
+        lat: lat,
+        lng: lng
+      };
+
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: resLocationLatLng,
+        scrollwheel: true,
+        zoom: 15
+      });
+      var marker = new google.maps.Marker({
+        position: resLocationLatLng,
+        map: map
+      });
+      directionsDisplay.setMap(map);
+
+      // function to get the direction from a restaurant to a user address with differnt meduims
+      $scope.changeMeduim = function() {
+        if (travelDetailsInfoWindow) {
+          travelDetailsInfoWindow.close();
+        }
+        directionServiceRender(directionsService, directionsDisplay, resLocationLatLng, map);
+      };
+    };
+
+    //route render
+    function directionServiceRender(directionService, directionsDisplay, resLocationLatLng, map) {
+      console.log($scope.travelMeduim);
+      directionService.route({
+        origin: resLocationLatLng,
+        destination: {
+          lat: 60.77777,
+          lng: 24.6666
+        }, //user coordinates goes here
+        travelMode: $scope.travelMeduim
+
+      }, function(response, status) {
+        var length = parseInt(response.routes[0].legs[0].steps.length);
+
+        var step = Math.round(length / 2);
+
+
+        if (status === "OK") {
+          var details = '<b>' + "Distance: " + "</b>" + response.routes[0].legs[0].distance.text + '<br>' +
+            "<b>" + "Time: " + "</b>" + response.routes[0].legs[0].duration.text + "</b>";
+          directionsDisplay.setDirections(response);
+          travelDetailsInfoWindow = new google.maps.InfoWindow({
+            content: details
+
+          });
+          travelDetailsInfoWindow.setPosition(response.routes[0].legs[0].steps[step].end_location);
+
+        } else {
+          window.alert("Direction service failed. Sorry for inconvience");
+        }
+        travelDetailsInfoWindow.open(map);
+      });
+    }
+
   });
+
+  // add menu item model and pass the menu details as a parameter in case we want to update a specific item
+  $scope.open = function(size, menu) {
+    var modalInstance = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: '../../views/restaurant/addMenu.html',
+      controller: 'MenuModalController',
+      size: size,
+      resolve: {
+        menu: function() {
+          return menu;
+        }
+      }
+    });
+
+    modalInstance.result.then(function(menu) {
+      $scope.menu = menu;
+    });
+  };
+
+  // edit the menu
+  $scope.delete = function(dishId) {
+    $http.delete('api/menus/' + dishId);
+  };
 
 }])
 
@@ -743,7 +893,19 @@ angular.module('shifuProfile')
 
 
 
+  $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+  // default values of the sorting functions
+  $scope.propertyNameStatic = "distanceKm";
+  $scope.propertyName = "distanceKm";
+  $scope.sort = "Distance";
+  $scope.ascDes = "asc";
+
+  // search box values
   $scope.keyword = $stateParams.keyword;
+  $scope.noResults = $stateParams.noResults;
+
+  // restaurant results
   $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"' + $scope.keyword + '","options":"i"}}}').success(function(data) {
     $scope.results = data;
 
@@ -764,7 +926,37 @@ angular.module('shifuProfile')
   // sort the results
   $scope.sortBy = function(propertyName) {
     $scope.propertyName = propertyName;
+    $scope.propertyNameStatic = propertyName;
   };
+
+  $scope.sortReverse = function() {
+    if ($scope.ascDes === "asc") {
+      $scope.propertyName = "-" + $scope.propertyName;
+    } else {
+      $scope.propertyName = $scope.propertyNameStatic;
+    }
+  };
+
+  //function to calcualte distance from two lats/lngs
+  $scope.distance = function(lat, lng, obj) {
+
+    var R = 6371;
+    var dLat = deg2rad(60.677777 - lat); // deg2rad below
+    var dLon = deg2rad(24.567777 - lng);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat)) * Math.cos(deg2rad(65.677777)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    obj.distanceKm = Math.round(d);
+    return Math.round(d);
+
+  };
+
+  function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+  }
 
 
 }])

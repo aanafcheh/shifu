@@ -4,19 +4,23 @@
   other selectors that are more specific or come later and might alter display.
  */
 
-[ng\:cloak], [ng-cloak], .ng-cloak {
-  display: none !important;
-}
+ [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+   display: none !important;
+ }
+
 
 /*footer settings*/
+
 html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
+
 .footer {
   position: absolute;
   bottom: 0;
@@ -25,14 +29,52 @@ body {
   height: 40px;
 }
 
-
 .center-block {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
+
+/*search box*/
+
+@media (max-width: 767px) {
+  .searchbar {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .searchbar {
+    width: 205px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .searchbar {
+    width: 425px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .searchbar {
+    width: 625px;
+  }
+}
+
+
 /*circle buttons*/
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+
 .btn-circle.btn-xl {
   width: 70px;
   height: 70px;
@@ -42,6 +84,17 @@ body {
   border-radius: 35px;
 }
 
+
+/*text buttons*/
+
+.btn-text, .btn-text:hover {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+
 /*image cropping*/
 
 .cropArea {
@@ -49,6 +102,7 @@ body {
   width: 300px;
   height: 200px;
 }
+
 img-crop {
   display: block;
   height: 100%;
@@ -56,6 +110,7 @@ img-crop {
   position: relative;
   width: 100%;
 }
+
 img-crop canvas {
   display: block;
   left: 50%;
@@ -64,20 +119,35 @@ img-crop canvas {
   top: 50%;
 }
 
+
 /*rating*/
+
 .glyphicon-star, .glyphicon-star-empty {
   color: #FFDC00;
 }
 
-.openingHpurs{
-  font-size:15px;
-  padding-top:5px;
-  border:1px;
-  border-radius: 2px;
-  background-color: darkgray;
-  color:white;
-  padding:3px;
 
+/*popover size*/
+
+.popover {
+  max-width: 100%;
+  /* Max Width of the popover (depending on the container!) */
+  font-size: 12px;
+}
+
+
+/*panel*/
+
+.panel {
+  overflow: hidden;
+}
+
+
+/*make ui-select visiable in the modal*/
+
+body>.ui-select-bootstrap.open {
+  z-index: 10000;
+  /* Standard Bootstrap dropdown z-index */
 }
 
 
