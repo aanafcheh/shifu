@@ -40,6 +40,8 @@
           <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
             -
             {{restaurant.workTo[today] | date:'shortTime'}}</span>
+
+
             <button id="direction"  type="button" class="btn btn-success  btn-xs"  data-toggle="modal" data-target="#travelWay">Direction</button>
             <div id="travelWay" class="modal fade " role="dialog">
               <div class="modal-dialog">
@@ -74,7 +76,15 @@
 
 
 
-
+            <p ng-if="permission" class="label-label default">
+              <p  ng-if="deliveryToCurrentLocation">
+                Delivers to your Current Location <br>
+                Distance to Restaurant: Approx. {{currentLocDistanceToRes}} Km
+              </p>
+              <p  ng-if="!deliveryToCurrentLocation">
+                Does not deliver to your Current Location
+              </p>
+            </p>
         </h4>
         </div>
 

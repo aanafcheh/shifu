@@ -4,21 +4,24 @@
 
 angular.module('shifuProfile')
   .service('commonServices',function(){
-    function distanceCalculation(lat,lng,obj){
+    function distanceCalculation(userLat,userLng,restaurantObj,resLat,resLng){
 
       var R = 6371;
-      var dLat = deg2rad(60.2374603-lat);  // deg2rad below
-      var dLon = deg2rad( 24.820678000000044-lng);
+      var dLat = deg2rad(resLat-userLat);  // deg2rad below
+      var dLon = deg2rad( resLng-userLng);
       var a =
           Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(deg2rad(lat)) * Math.cos(deg2rad(60.2374603)) *
+          Math.cos(deg2rad(userLat)) * Math.cos(deg2rad(resLat)) *
           Math.sin(dLon/2) * Math.sin(dLon/2)
         ;
       var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       var d = R * c;
-      if(obj!=""){
-      obj.distanceKm=d;
+
+      //this functionality is only for search page for showing distance to each restaurant
+      if(restaurantObj!=""){
+        restaurantObj.distanceKm=d;
       }
+      console.log("The distance is "+ d);
       return d;
     }
     function deg2rad(deg) {
@@ -620,16 +623,9 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', '$state', '$stateParams', '$filter', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $http, User, Restaurant) {
+.controller('RestaurantController', ['$scope', 'commonServices','$state', '$stateParams', '$filter', '$http', 'User', 'Restaurant', function($scope,commonServices, $state, $stateParams, $filter, $http, User, Restaurant) {
 
-  if(navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function (position) {
 
-      $scope.userLat=position.coords.latitude;
-      $scope.userLng= position.coords.longitude;
-
-    });
-  }
 
 
   // get the name of today to show the working hours accordingly
@@ -644,6 +640,28 @@ angular.module('shifuProfile')
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
       $scope.travelMeduim="";
+      console.log(data);
+    //check for delivery and user loccation
+    if(navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        $scope.permission=true;
+        $scope.userLat=position.coords.latitude;
+        $scope.userLng= position.coords.longitude;
+        console.log($scope.userLat+" "+ $scope.userLng+ " "+ data[0].lat+" "+ data[0].lng);
+        $scope.currentLocDistanceToRes=commonServices.distanceCalculation($scope.userLat,$scope.userLng,"",data[0].lat,data[0].lng);
+        console.log("The distance "+ $scope.currentLocDistanceToRes);
+        if(data[0].radius>=$scope.currentLocDistanceToRes){
+          $scope.deliveryToCurrentLocation=true;
+          $scope.currentLocDistanceToRes=Math.ceil($scope.currentLocDistanceToRes);
+
+
+        }
+        else{
+          $scope.deliveryToCurrentLocation=false;
+        }
+
+      });
+    }
     var travelDetailsInfoWindow;
     $scope.changeMedium=function(meduim){
       $scope.travelMeduim=meduim;
