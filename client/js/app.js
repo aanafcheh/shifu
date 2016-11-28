@@ -4,6 +4,7 @@
 angular
   .module('shifuProfile', [
     'lbServices',
+    'ngAnimate',
     'ui.router',
     'ui.bootstrap',
     'angularFileUpload',
@@ -19,10 +20,11 @@ angular
     // common states
       .state('app', {
       url: '/',
+      params : { noResults: null},
       views: {
         'header': {
           templateUrl: 'views/header.html',
-          controller: 'HeaderController'
+          controller: 'HeaderController',
         },
         'content': {
           templateUrl: 'views/user.html',

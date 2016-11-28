@@ -98,9 +98,19 @@
     </div>
 
     <!-- restaurant menu -->
-    <div class="col-xs-12 col-md-6">
-      <div class="row">
-        <!-- add menu button -->
+    <div class="col-xs-12 col-md-6 ng-cloak">
+      <!-- alert if the restaurant has no menus -->
+      <div class="row" ng-if="hasMenu">
+        <div class="alert alert-info text-center" role="alert">You do not have a menu currently. Click on this button to add new items:
+          <button ng-click="open('md')" type="button" class="btn btn-success btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            Add
+          </button>
+        </div>
+      </div>
+
+      <!-- add menu button -->
+      <div class="row" ng-if="menus[0]" >
         <button style="margin:10px" ng-click="open('md')" type="button" class="btn btn-success btn-xs hidden-xs pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
           Add

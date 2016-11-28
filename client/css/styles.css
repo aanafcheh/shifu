@@ -4,9 +4,9 @@
   other selectors that are more specific or come later and might alter display.
  */
 
-[ng\:cloak], [ng-cloak], .ng-cloak {
-  display: none !important;
-}
+ [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+   display: none !important;
+ }
 
 
 /*footer settings*/
@@ -36,7 +36,44 @@ body {
 }
 
 
+/*search box*/
+
+@media (max-width: 767px) {
+  .searchbar {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .searchbar {
+    width: 205px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .searchbar {
+    width: 425px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .searchbar {
+    width: 625px;
+  }
+}
+
+
 /*circle buttons*/
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
 
 .btn-circle.btn-xl {
   width: 70px;
@@ -45,6 +82,16 @@ body {
   font-size: 24px;
   line-height: 1.33;
   border-radius: 35px;
+}
+
+
+/*text buttons*/
+
+.btn-text, .btn-text:hover {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
 }
 
 
@@ -95,7 +142,9 @@ img-crop canvas {
   overflow: hidden;
 }
 
+
 /*make ui-select visiable in the modal*/
+
 body>.ui-select-bootstrap.open {
   z-index: 10000;
   /* Standard Bootstrap dropdown z-index */

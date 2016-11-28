@@ -207,14 +207,14 @@
   <div>
     <ul class="list-unstyled" ng-repeat="day in weekdays">
       <li>
-        <div class="row">
+        <div class="row" ng-if="restaurant.workFrom[day]">
           <div class="col-xs-4">
             <b>{{day}}:</b>
           </div>
           <div class="col-xs-8">
-            {{restaurant.workFrom[today] | date:'shortTime'}}
+            {{restaurant.workFrom[day] | date:'shortTime'}}
             -
-            {{restaurant.workTo[today] | date:'shortTime'}}
+            {{restaurant.workTo[day] | date:'shortTime'}}
           </div>
         </div>
       </li>

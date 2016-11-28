@@ -1,48 +1,50 @@
 <!DOCTYPE html>
 <div class="container">
 
-  <!-- show if nothing was found -->
-  <div ng-if="noResults" class="alert alert-warning" role="alert">
-    <i class="glyphicon glyphicon-remove"></i>
-    No Results Found. Please try another keyword.</div>
-
-  <!-- results -->
+  <!-- results panel-->
   <div class="panel panel-default">
     <div class="panel-heading">
       Results:
 
       <!-- sort by -->
       <div class="dropdown pull-right">
+        <!-- Asc or Dec -->
+        <button type="button" class="btn-text" ng-model="ascDes" uib-btn-checkbox btn-checkbox-true="'asc'" btn-checkbox-false="'des'" ng-click="sortReverse()">
+          <i class="fa fa-sort" aria-hidden="true"></i>
+        </button>
+        <!-- sorting options -->
         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-          Sort by
+          {{sort}}
           <span class="caret"></span>
         </a>
 
-        <!-- TODO: if a an option was selected, put a tick next to it to show that it is currently selected -->
-        <!-- TODO: add acending and decending option -->
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
           <li>
-            <a href="" ng-click="sortBy('restaurantName')">Relevance</a>
+            <a href="" ng-click="sortBy('restaurantName'); sort = 'Relevance'">
+              Relevance</a>
           </li>
           <li>
-            <a href="">Price</a>
+            <a href="" ng-click="sort = 'Price'">Price</a>
           </li>
           <li>
-            <a href="" ng-click="sortBy('-avgRate')">Rating</a>
-          </li>
-          <!-- TODO: the search result by default must be for restaurant in the user's relevent city -->
-          <li>
-            <a href="" ng-click="sortBy('city')">City</a>
+            <a href="" ng-click="sortBy('-avgRate'); sort = 'Rating'" ng-model="sort">Rating</a>
           </li>
           <li>
-            <a href="">Distance</a>
+            <a href="" ng-click="sortBy('city'); sort = 'City'" ng-model="sort">City</a>
+          </li>
+          <li>
+            <a href="" ng-click="sortBy('distanceKm'); sort = 'Distance'" ng-model="sort">Distance</a>
           </li>
         </ul>
       </div>
     </div>
+
     <div ng-if="!noResults" class="list-group">
-      <a ui-sref="app.restaurant({city: result.city, name: result.restaurantName})" class="list-group-item" ng-repeat="result in results | orderBy:propertyName">
-        <div class="media">
+      <a href="" class="list-group-item" ng-repeat="result in results | orderBy:propertyName">
+        <!-- working hours popover -->
+        <i class="fa fa-clock-o text-muted pull-right" aria-hidden="true" uib-popover-template="'openinghours.html'" popover-trigger="'mouseenter'" popover-placement="left-top" popover-append-to-body="true"></i>
+
+        <div class="media" ui-sref="app.restaurant({city: result.city, name: result.restaurantName})">
 
           <div class="col-xs-12 col-sm-6">
             <div class="media-left">
@@ -51,16 +53,30 @@
             <div class="media-body">
               <h4 class="media-heading">{{result.restaurantName}}</h4>
               <span class="label label-success" id="{{result.id}}"></span>
-              <span class="label label-primary">Delivery from &euro;{{result.deliveryFee}}</span>
+              <!-- paid delivery -->
+              <span ng-if="result.deliveryFee" class="label label-primary">Delivery From &euro;{{result.deliveryFee}}</span>
+              <!-- free delivery -->
+              <span ng-if="result.deliveryFee === 0" class="label label-primary">Free Delivery</span>
+              <!-- pick-up only -->
+              <span ng-if="!result.deliveryFee" class="label label-primary">Pick-up Only</span>
             </div>
           </div>
 
           <div class="col-xs-12 col-sm-6">
             <!-- rating -->
             <!-- readonly  -->
-            <div ng-controller="RatingController">
-              <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
-             
+            <div class="row">
+              <div class="col-xs-6">
+                <div ng-controller="RatingController">
+                  <span class="h4" style="line-height:50px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+                </div>
+              </div>
+              <div class="col-xs-6">
+                <span style="line-height:50px" ng-init="distance=distance(result.lat,result.lng,result)">
+                  <i class="fa fa-car" aria-hidden="true"></i>
+                  {{distance}}
+                  Km</span>
+              </div>
             </div>
           </div>
 
@@ -69,4 +85,29 @@
     </div>
   </div>
 
+  <!-- NO RESULTS, show if nothing was found -->
+  <div ng-if="noResults && !keyword==''" class="alert alert-info" role="alert">
+    <i class="glyphicon glyphicon-remove"></i>
+    No Results Found. <span class="hidden-xs">Please try another keyword.</span></div>
+
 </div>
+
+<!-- opening hours popover template -->
+<script type="text/ng-template" id="openinghours.html">
+  <div>
+    <ul class="list-unstyled" ng-repeat="day in weekdays">
+      <li>
+        <div class="row" ng-if="result.workFrom[day]">
+          <div class="col-xs-4">
+            <b>{{day}}:</b>
+          </div>
+          <div class="col-xs-8">
+            {{result.workFrom[day] | date:'shortTime'}}
+            -
+            {{result.workTo[day] | date:'shortTime'}}
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</script>
