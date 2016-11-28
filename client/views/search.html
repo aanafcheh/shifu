@@ -35,7 +35,9 @@
             <a href="" ng-click="sortBy('city')">City</a>
           </li>
           <li>
-            <a href="" ng-click="sortBy('distanceKm')">Distance</a>
+
+            <a href="">Distance</a>
+
           </li>
         </ul>
       </div>
@@ -74,6 +76,10 @@
             <!-- rating -->
             <!-- readonly  -->
 
+            <div ng-controller="RatingController">
+              <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
+
+            </div>
 
           </div>
 

@@ -95,6 +95,7 @@ angular.module('shifuProfile')
       }
     })
 
+
    angular.element(document).find("#"+id+"openingHours").append("<p class='openingHpurs' >"+allOpeningHours+"</p>");
 
   }
