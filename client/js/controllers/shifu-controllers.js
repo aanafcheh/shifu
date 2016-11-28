@@ -35,6 +35,7 @@ angular.module('shifuProfile')
 .controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
 
 
+
   // query all the needed information
   $scope.profile = User.identities({
     id: 'me'
@@ -278,7 +279,7 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantWizardController', ['$scope','commonServices', '$window','$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope,commonServices, $window, $state, $stateParams, $uibModal, Menu, User, Restaurant) {
+.controller('RestaurantWizardController', ['$scope','commonServices', '$window','$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope,commonServices, $window, $state, $stateParams, $uibModal,Menu, User, Restaurant) {
 
   $scope.application = {};
   $scope.application.workFrom = {};
@@ -287,28 +288,33 @@ angular.module('shifuProfile')
 
 
   //radius selection dialog box
-  $scope.openRadiusDialogBox = function (size) {
+  $scope.openRadiusDialogBox = function (size,lat,lng) {
     $scope.isCollapsed = false;
+    $scope.lat=lat;
+    $scope.lng=lng;
 
     var modalInstance = $uibModal.open({
       animation: $scope.animationsEnabled,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
-      templateUrl: 'myModalContent.html',
-      controller: 'RestaurantWizardController',
-
+      templateUrl: 'radiusDialogBox.html',
+      controller: 'ModalInstanceCtrl',
       size: size,
 
       resolve: {
         items: function () {
           return $scope.items;
+        },
+        lat:function () {
+          return $scope.lat;
+        },
+        lng:function () {
+          return $scope.lng;
         }
       }
     });
-    modalInstance.result.then(function (selectedItem) {
-      $scope.selected = selectedItem;
-    }, function () {
-
+    modalInstance.result.then(function (radius) {
+      $scope.application.radius=radius;
     });
   };
 
@@ -335,138 +341,12 @@ angular.module('shifuProfile')
     }
   }).$promise.then(function(response) {
     $scope.restaurantId = response[0].id;
+    $scope.response=response;
     $scope.lat=response[0].lat;
     $scope.lng=response[0].lng;
 
 
   });
-
-
-
-
-
-  //function that handles radius input if user wants to just input radius
-  var map, restaurantMarker, referenceAddressMarker, resLocationLatLng,referencelatLng,boundary;
-  $scope.getRadius=function(){
-    angular.element(document).find("#addressForRadius").val("");
-    if(!map){
-      resLocationLatLng = {lat: $scope.lat, lng: $scope.lng};
-      map = new google.maps.Map(document.getElementById('radiusMap'), {
-        center: resLocationLatLng,
-        scrollwheel: true,
-        zoom: 14
-      });
-      restaurantMarker = new google.maps.Marker({
-        position: resLocationLatLng,
-        map: map
-      });
-    }
-    $scope.isCollapsed = true;
-    $scope.$watch('radiusValue',function() {
-
-      if(referenceAddressMarker){
-        referenceAddressMarker.setMap(null);
-      }
-      if(boundary){
-        boundary.setMap(null);
-      }
-      console.log($scope.radiusValue);
-      if($scope.radiusValue!=null){
-      boundary = new google.maps.Circle({
-        map: map,
-        radius:$scope.radiusValue*1000,
-        fillColor: 'green',
-        fillOpacity: 0.3,
-        strokeColor: 'green',
-        strokeOpacity: 0.5,
-        center:resLocationLatLng
-      });
-
-        //fixing the zoom level
-      var bounds = new google.maps.LatLngBounds();
-      bounds.extend(boundary.getBounds().getNorthEast());
-      bounds.extend(boundary.getBounds().getSouthWest());
-      map.fitBounds(bounds);
-      }
-      if($scope.radiusValue===undefined){
-        if(boundary){
-          boundary.setMap(null);
-        }
-      }
-
-    });
-
-
-
-  }
-
-  //intial map loading with autocompelete google search
-  $scope.initRadius=function(){
-    angular.element(document).find("#radiusValue").val("");
-    $scope.isCollapsed = true;
-    if(!map){
-     resLocationLatLng = {lat: $scope.lat, lng: $scope.lng};
-     map = new google.maps.Map(document.getElementById('radiusMap'), {
-      center: resLocationLatLng,
-      scrollwheel: true,
-      zoom: 15
-    });
-     restaurantMarker = new google.maps.Marker({
-      position: resLocationLatLng,
-      map: map
-    });
-
-
-    }
-    var autocomplete = new google.maps.places.Autocomplete(
-
-      (document.getElementById('addressForRadius')), {
-        types: ['geocode']
-      });
-    function fillInAddress() {
-
-      // Get the place details from the autocomplete object.
-      var place = autocomplete.getPlace();
-      var radius=commonServices.distanceCalculation(place.geometry.location.lat(),place.geometry.location.lng(),""); //get radius from commonService distance function
-      $scope.radiusModel=Math.ceil(radius);
-      referencelatLng={ lat:place.geometry.location.lat(),lng:place.geometry.location.lng()};
-
-      //check if  map is already loaded
-      if(map){
-        if(referenceAddressMarker){
-          referenceAddressMarker.setMap(null);
-        }
-        if(boundary){
-          boundary.setMap(null);
-        }
-        referenceAddressMarker = new google.maps.Marker({
-          position: referencelatLng,
-          map: map
-        });
-        boundary = new google.maps.Circle({
-          map: map,
-          radius:radius*1000,
-          fillColor: 'green',
-          strokeColor: 'green',
-          strokeOpacity: 0.5,
-          fillOpacity: 0.3,
-          center:resLocationLatLng
-        });
-
-        //fixing zoom level
-        var bounds = new google.maps.LatLngBounds();
-        bounds.extend(restaurantMarker.getPosition());
-        bounds.extend(referenceAddressMarker.getPosition());
-        map.fitBounds(bounds);
-        console.log("The zoom level "+map.getZoom());
-        map.setZoom(map.getZoom()-2);
-        map.setCenter(resLocationLatLng);
-      }
-    }
-
-    autocomplete.addListener('place_changed', fillInAddress);
-  }
-
 
   //get the latest restaurantId of the user, because the user might have multiple restaurants
 
@@ -548,10 +428,67 @@ angular.module('shifuProfile')
 }])
 
 
-.controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', function($scope, $state, FileUploader, $uibModalInstance, User) {
+.controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User','lat','lng',function($scope, $state, FileUploader, $uibModalInstance, User,lat,lng) {
 
   // cropped image will be saved here
   $scope.image = "";
+
+  //radius map for delivery zone
+  var map, restaurantMarker, referenceAddressMarker, resLocationLatLng,boundary;
+  $scope.getRadius=function(){
+    if(!map){
+      resLocationLatLng = {lat: lat, lng: lng};
+      map = new google.maps.Map(document.getElementById('radiusMap'), {
+        center: resLocationLatLng,
+        scrollwheel: true,
+        zoom: 14
+      });
+      restaurantMarker = new google.maps.Marker({
+        position: resLocationLatLng,
+        map: map
+      });
+    }
+    //monitor change in radius input
+    $scope.$watch('radius',function() {
+
+      if(referenceAddressMarker){
+        referenceAddressMarker.setMap(null);
+      }
+      if(boundary){
+        boundary.setMap(null);
+      }
+      if($scope.radius!=null){
+        boundary = new google.maps.Circle({
+          map: map,
+          radius:$scope.radius*1000,
+          fillColor: 'green',
+          fillOpacity: 0.3,
+          strokeColor: 'green',
+          strokeOpacity: 0.5,
+          center:resLocationLatLng
+        });
+
+        //fixing the zoom level
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(boundary.getBounds().getNorthEast());
+        bounds.extend(boundary.getBounds().getSouthWest());
+        map.fitBounds(bounds);
+      }
+      if($scope.radius===undefined){
+        if(boundary){
+          boundary.setMap(null);
+        }
+      }
+
+
+    });
+
+
+
+  }
+  $scope.done=function(){
+    $uibModalInstance.close($scope.radius);
+  }
 
   $scope.ok = function() {
     angular.forEach(uploader.queue, function(value, key) {
@@ -685,6 +622,16 @@ angular.module('shifuProfile')
 
 .controller('RestaurantController', ['$scope', '$state', '$stateParams', '$filter', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $http, User, Restaurant) {
 
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+
+      $scope.userLat=position.coords.latitude;
+      $scope.userLng= position.coords.longitude;
+
+    });
+  }
+
+
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
 
@@ -777,7 +724,6 @@ angular.module('shifuProfile')
 
 
 
-
   $scope.keyword = $stateParams.keyword;
   $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"' + $scope.keyword + '","options":"i"}}}').success(function(data) {
     $scope.results = data;
@@ -859,5 +805,14 @@ angular.module('shifu')
 .controller('IndexController', ['$scope', '$state', 'User', function($scope, $state, User) {
 
 
+  //permission to trace user current location when user comes to landing page
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+      $scope.lat=position.coords.latitude;
+      $scope.lng= position.coords.longitude;
+      console.log($scope.lat +" "+ $scope.lng);
+
+    });
+  }
 
 }]);

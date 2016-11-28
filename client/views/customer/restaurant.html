@@ -32,7 +32,7 @@
           <h4>
           <span class="label label-success">{{state.openOrClosed}}</span>
           <!-- paid delivery -->
-          <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
+          <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}  upto {{restaurant.radius}} Km</span>
           <!-- free delivery -->
           <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
           <!-- pick-up only -->
