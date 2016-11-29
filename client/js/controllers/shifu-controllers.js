@@ -511,9 +511,6 @@ angular.module('shifuProfile')
 
 .controller('RestaurantController', ['$scope', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant', function($scope, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant) {
 
-  // restaurant directions - driving-walking-bicycling variable
-  $scope.travelMeduim = "";
-
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
 
@@ -556,7 +553,8 @@ angular.module('shifuProfile')
       var map = new google.maps.Map(document.getElementById('map'), {
         center: resLocationLatLng,
         scrollwheel: true,
-        zoom: 15
+        fullscreenControl: true,
+        zoom: 15,
       });
       var marker = new google.maps.Marker({
         position: resLocationLatLng,
