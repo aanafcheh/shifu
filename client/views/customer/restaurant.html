@@ -2,8 +2,10 @@
 <div class="container">
 
   <!-- restaurant profile badge -->
+
   <div class="row">
     <div class="col-md-8" ng-repeat="restaurant in restaurants">
+
       <div class="panel panel-default" ng-init="loadMap(restaurant.lat,restaurant.lng)">
         <div class="panel-body">
           <div class="row">
@@ -82,6 +84,14 @@
             </div>
           </div>
 
+
+
+
+
+
+
+
+
         </div>
       </div>
     </div>
@@ -105,8 +115,29 @@
         <div class="panel-body">
           <div id="map" style="height: 300px;"></div>
         </div>
+        <div class="panel-footer">
+          <div ng-if="permission">
+          <h6  ng-if="deliveryToCurrentLocation">
+            <i class="glyphicon glyphicon-check" aria-hidden="true"></i> Delivers to your current location<br>
+            <i class="glyphicon glyphicon-map-marker" aria-hidden="true"></i> Distance to Restaurant: Approx. {{currentLocDistanceToRes}} Km
+          </h6>
+          <h6  ng-if="!deliveryToCurrentLocation">
+            <i class="glyphicon glyphicon-remove-sign" aria-hidden="true"></i> Does not deliver to your current location <br>
+            <i class="glyphicon glyphicon-info-sign" aria-hidden="true"></i> Delivery Radius: {{radius}} Km <br>
+            <i class="glyphicon glyphicon-map-marker" aria-hidden="true"></i> Distance to restaurant: {{currentLocDistanceToRes}} Km
+          </h6>
+          </div>
+
+        </div>
       </div>
+
     </div>
   </div>
 
+
+
+
+
+
 </div>
+

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="container">
+<div class="container" ng-init="getUserLocation()">
 
   <!-- results panel-->
   <div class="panel panel-default">
@@ -72,7 +72,7 @@
                 </div>
               </div>
               <div class="col-xs-6">
-                <span style="line-height:50px" ng-init="distance=distance(result.lat,result.lng,result)">
+                <span style="line-height:50px" ng-if="gotUserLocation" ng-init="distance=distance(result.lat,result.lng,result)">
                   <i class="fa fa-car" aria-hidden="true"></i>
                   {{distance}}
                   Km</span>
