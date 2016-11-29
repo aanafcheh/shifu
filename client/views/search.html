@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="container">
+<div class="container" ng-init="getUserLocation()">
 
   <!-- results panel-->
   <div class="panel panel-default">
@@ -33,9 +33,7 @@
             <a href="" ng-click="sortBy('city'); sort = 'City'" ng-model="sort">City</a>
           </li>
           <li>
-
             <a href="" ng-click="sortBy('distanceKm'); sort = 'Distance'" ng-model="sort">Distance</a>
-
           </li>
         </ul>
       </div>
@@ -54,36 +52,19 @@
             </div>
             <div class="media-body">
               <h4 class="media-heading">{{result.restaurantName}}</h4>
-              {{result.city | capitalize}}<br>
               <span class="label label-success" id="{{result.id}}"></span>
-
               <!-- paid delivery -->
               <span ng-if="result.deliveryFee" class="label label-primary">Delivery From &euro;{{result.deliveryFee}}</span>
               <!-- free delivery -->
               <span ng-if="result.deliveryFee === 0" class="label label-primary">Free Delivery</span>
               <!-- pick-up only -->
               <span ng-if="!result.deliveryFee" class="label label-primary">Pick-up Only</span>
-
             </div>
           </div>
-          <div class="row">
-            <div class="col-xs-12 col-sm-6 center-block">
-              <div ng-controller="RatingController">
-                <span style="font-size:20px" uib-rating ng-model="result.avgRate" max="max" read-only="true" aria-labelledby="default-rating" ng-class="text-warning"></span>
 
-              </div>
-
-              </div>
-            <div class="col-xs-12 col-sm-6 " >
-
-              <p ng-init="distance=distance(result.lat,result.lng,result)" > {{distance|number:0}} Km</p>
-            </div>
-
-          </div>
-
+          <div class="col-xs-12 col-sm-6">
             <!-- rating -->
             <!-- readonly  -->
-
             <div class="row">
               <div class="col-xs-6">
                 <div ng-controller="RatingController">
@@ -91,17 +72,15 @@
                 </div>
               </div>
               <div class="col-xs-6">
-                <span style="line-height:50px" ng-init="distance=distance(result.lat,result.lng,result)">
+                <span style="line-height:50px" ng-if="gotUserLocation" ng-init="distance=distance(result.lat,result.lng,result)">
                   <i class="fa fa-car" aria-hidden="true"></i>
                   {{distance}}
                   Km</span>
               </div>
-
             </div>
-
           </div>
 
-
+        </div>
       </a>
     </div>
   </div>

@@ -690,6 +690,7 @@ angular.module('shifuProfile')
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (position) {
         $scope.permission=true;
+        $scope.radius=data[0].radius;
         $scope.userLat=position.coords.latitude;
         $scope.userLng= position.coords.longitude;
         console.log($scope.userLat+" "+ $scope.userLng+ " "+ data[0].lat+" "+ data[0].lng);
@@ -697,12 +698,13 @@ angular.module('shifuProfile')
         console.log("The distance "+ $scope.currentLocDistanceToRes);
         if(data[0].radius>=$scope.currentLocDistanceToRes){
           $scope.deliveryToCurrentLocation=true;
-          $scope.currentLocDistanceToRes=Math.ceil($scope.currentLocDistanceToRes);
+          $scope.currentLocDistanceToRes=Math.round($scope.currentLocDistanceToRes*10)/10;
 
 
         }
         else{
           $scope.deliveryToCurrentLocation=false;
+          $scope.currentLocDistanceToRes=Math.round($scope.currentLocDistanceToRes*10)/10;
         }
 
     $scope.menus = data[0].menus;
@@ -718,71 +720,11 @@ angular.module('shifuProfile')
 
       });
     }
-    var travelDetailsInfoWindow;
 
 
 
-    //maps and direction services
-      $scope.loadMap = function(lat, lng) {
-          var directionsService = new google.maps.DirectionsService();
-          var directionsDisplay = new google.maps.DirectionsRenderer();
-          var resLocationLatLng = {
-              lat: lat,
-              lng: lng
-          };
-
-          var map = new google.maps.Map(document.getElementById('map'), {
-              center: resLocationLatLng,
-              scrollwheel: true,
-              zoom: 15
-          });
-          var marker = new google.maps.Marker({
-              position: resLocationLatLng,
-              map: map
-          });
-          directionsDisplay.setMap(map);
-
-          // function to get the direction from a restaurant to a user address with differnt meduims
-          $scope.changeMeduim = function() {
-              if (travelDetailsInfoWindow) {
-                  travelDetailsInfoWindow.close();
-              }
-              directionServiceRender(directionsService, directionsDisplay, resLocationLatLng, map);
-          };
-      };
-
-    //driving route render
-    function directionServiceRender(directionService,directionsDisplay,resLocationLatLng,map){
-      console.log($scope.travelMeduim);
-      directionService.route({
-        origin:resLocationLatLng,
-        destination:{lat:60.77777, lng:24.6666}, //user coordinates goes here
-        travelMode:$scope.travelMeduim
-
-      },function(response,status){
-        var length=parseInt(response.routes[0].legs[0].steps.length);
-
-        var step=Math.round(length/2);
 
 
-        if(status==="OK"){
-          var details='<b>'+"Distance: "+"</b>"+ response.routes[0].legs[0].distance.text+'<br>'+
-              "<b>"+"Time: "+"</b>"+response.routes[0].legs[0].duration.text+"</b>";
-          directionsDisplay.setDirections(response);
-           travelDetailsInfoWindow=new google.maps.InfoWindow({
-            content:details
-
-          });
-          travelDetailsInfoWindow.setPosition(response.routes[0].legs[0].steps[step].end_location);
-
-        }else{
-          window.alert("Direction service failed. Sorry for inconvience");
-        }
-        travelDetailsInfoWindow.open(map);
-      });
-
-
-    }
     // check if the restaurant is open or closed
     $http.get('api/restaurants/' + $scope.restaurantId + '/openOrClosed').success(function(data) {
       $scope.state = data;
@@ -804,7 +746,7 @@ angular.module('shifuProfile')
         center: resLocationLatLng,
         scrollwheel: true,
         fullscreenControl: true,
-        zoom: 15,
+        zoom: 14,
       });
       var marker = new google.maps.Marker({
         position: resLocationLatLng,
@@ -827,8 +769,8 @@ angular.module('shifuProfile')
       directionService.route({
         origin: resLocationLatLng,
         destination: {
-          lat: 60.77777,
-          lng: 24.6666
+          lat: $scope.userLat,
+          lng: $scope.userLng
         }, //user coordinates goes here
         travelMode: $scope.travelMeduim
 
@@ -889,7 +831,17 @@ angular.module('shifuProfile')
   $scope.propertyName="distanceKm";
   //var value=commonServices.distanceCalculation(12,13);
 
+  $scope.getUserLocation=function() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        $scope.lat = position.coords.latitude;
+        $scope.lng = position.coords.longitude;
+        $scope.gotUserLocation=true;
+        console.log($scope.lat + " " + $scope.lng);
 
+      });
+    }
+  }
 
 
   $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -908,9 +860,10 @@ angular.module('shifuProfile')
   $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"' + $scope.keyword + '","options":"i"}}}').success(function(data) {
     $scope.results = data;
 
+
     //function to calcualte distance from two lats/lngs
     $scope.distance=function(lat,lng,obj){
-     return commonServices.distanceCalculation(lat,lng,obj)
+     return Math.round((commonServices.distanceCalculation(lat,lng,obj,$scope.lat,$scope.lng))*10)/10;
     }
 
 
@@ -937,7 +890,7 @@ angular.module('shifuProfile')
   };
 
   //function to calcualte distance from two lats/lngs
-  $scope.distance = function(lat, lng, obj) {
+  /*$scope.distance = function(lat, lng, obj) {
 
     var R = 6371;
     var dLat = deg2rad(60.677777 - lat); // deg2rad below
@@ -955,7 +908,7 @@ angular.module('shifuProfile')
 
   function deg2rad(deg) {
     return deg * (Math.PI / 180);
-  }
+  }*/
 
 
 }])
@@ -1015,7 +968,7 @@ angular.module('shifu')
 .controller('IndexController', ['$scope', '$state', 'User', function($scope, $state, User) {
 
 
-  //permission to trace user current location when user comes to landing page
+  //permission to trace user current location when user visit to landing page
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function (position) {
       $scope.lat=position.coords.latitude;
