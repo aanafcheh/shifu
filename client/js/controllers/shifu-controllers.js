@@ -889,29 +889,6 @@ angular.module('shifuProfile')
     }
   };
 
-  //function to calcualte distance from two lats/lngs
-  /*$scope.distance = function(lat, lng, obj) {
-
-    var R = 6371;
-    var dLat = deg2rad(60.677777 - lat); // deg2rad below
-    var dLon = deg2rad(24.567777 - lng);
-    var a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat)) * Math.cos(deg2rad(65.677777)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c;
-    obj.distanceKm = Math.round(d);
-    return Math.round(d);
-
-  };
-
-  function deg2rad(deg) {
-    return deg * (Math.PI / 180);
-  }*/
-
-
-}])
 
 //
 // directives
