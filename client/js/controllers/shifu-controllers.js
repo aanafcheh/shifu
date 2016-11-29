@@ -665,7 +665,7 @@ angular.module('shifuProfile')
 }])
 
 
-.controller('RestaurantController', ['$scope', 'commonServices','$state', '$stateParams', '$filter', '$http', 'User', 'Restaurant', function($scope,commonServices, $state, $stateParams, $filter, $http, User, Restaurant) {
+.controller('RestaurantController', ['$scope', 'commonServices','$state', '$stateParams', '$filter', '$http', '$uibModal','User', 'Restaurant', function($scope,commonServices, $state, $stateParams, $filter, $http,$uibModal, User, Restaurant) {
 
 
 
@@ -722,36 +722,37 @@ angular.module('shifuProfile')
       });
     }
     var travelDetailsInfoWindow;
-    $scope.changeMedium=function(meduim){
-      $scope.travelMeduim=meduim;
-    }
+
+
 
     //maps and direction services
-    $scope.loadMap=function(lat,lng){
-      var directionsService = new google.maps.DirectionsService;
-      var directionsDisplay = new google.maps.DirectionsRenderer;
-      var resLocationLatLng = {lat: lat, lng: lng};
+      $scope.loadMap = function(lat, lng) {
+          var directionsService = new google.maps.DirectionsService();
+          var directionsDisplay = new google.maps.DirectionsRenderer();
+          var resLocationLatLng = {
+              lat: lat,
+              lng: lng
+          };
 
-      var map = new google.maps.Map(document.getElementById('map'), {
-        center: resLocationLatLng,
-        scrollwheel: true,
-        zoom: 15
-      });
-      var marker = new google.maps.Marker({
-        position: resLocationLatLng,
-        map: map
-      });
-      directionsDisplay.setMap(map);
-      $scope.onChangeHandler=function(){
-        if(travelDetailsInfoWindow){
-          travelDetailsInfoWindow.close();
-        }
+          var map = new google.maps.Map(document.getElementById('map'), {
+              center: resLocationLatLng,
+              scrollwheel: true,
+              zoom: 15
+          });
+          var marker = new google.maps.Marker({
+              position: resLocationLatLng,
+              map: map
+          });
+          directionsDisplay.setMap(map);
 
-        directionServiceRender(directionsService,directionsDisplay,resLocationLatLng,map);
+          // function to get the direction from a restaurant to a user address with differnt meduims
+          $scope.changeMeduim = function() {
+              if (travelDetailsInfoWindow) {
+                  travelDetailsInfoWindow.close();
+              }
+              directionServiceRender(directionsService, directionsDisplay, resLocationLatLng, map);
+          };
       };
-
-
-    }
 
     //driving route render
     function directionServiceRender(directionService,directionsDisplay,resLocationLatLng,map){
