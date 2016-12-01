@@ -254,7 +254,8 @@ angular.module('shifuProfile')
         $scope.uploader1.uploadAll();
         $scope.uploader2.uploadAll();
         $scope.restaurantApplication.$setPristine();
-        $state.go('app.restaurantwizard', {
+        $state.go('app.' +
+          'restaurantwizard', {
           'address': $scope.application.address,
           'zipcode': $scope.application.zipcode,
           'lng': $scope.application.lng,
@@ -433,21 +434,30 @@ angular.module('shifuProfile')
   // cropped image will be saved here
   $scope.image = "";
 
+  $scope.initMap=function(){
+
+
+
+  }
+
   //radius map for delivery zone
   var map, restaurantMarker, referenceAddressMarker, resLocationLatLng,boundary;
   $scope.getRadius=function(){
-    if(!map){
+
       resLocationLatLng = {lat: lat, lng: lng};
-      map = new google.maps.Map(document.getElementById('radiusMap'), {
+
+       var map = new google.maps.Map(document.getElementById('radiusMap'), {
+        zoom: 14,
         center: resLocationLatLng,
-        scrollwheel: true,
-        zoom: 14
+        scrollwheel: true
+
       });
+
       restaurantMarker = new google.maps.Marker({
         position: resLocationLatLng,
         map: map
       });
-    }
+
     //monitor change in radius input
     $scope.$watch('radius',function() {
 
@@ -479,8 +489,6 @@ angular.module('shifuProfile')
           boundary.setMap(null);
         }
       }
-
-
     });
 
 
@@ -889,6 +897,10 @@ angular.module('shifuProfile')
     }
   };
 
+
+
+
+}])
 
 //
 // directives

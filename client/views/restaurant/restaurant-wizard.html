@@ -89,7 +89,7 @@
 
               </div>
 
-              <div class="modal-demo1" >
+              <div class="modal-demo1"  >
 
 
                 <script type="text/ng-template" id="radiusDialogBox.html">
@@ -106,14 +106,11 @@
                   </p>
 
                   <div class="input-group"  >
-                  <input type="number"  class="form-control" id="radiusValue" ng-model="radius" ng-focus="getRadius()" placeholder="Enter Radius"  required> <div class="input-group-addon">Km</div>
+                  <input type="number"  ng-focus="getRadius()" class="form-control" id="radiusValue" ng-model="radius"  placeholder="Enter Radius"  required> <div class="input-group-addon">Km</div>
                     </div>
-                  <p ng-model="radiusModel">
-                    {{radiusModel}}
-                  </p>
+                  <div id="radiusMap" ></div>
                 </div>
-                <span  id="distanceInKm"> {{distanceInKm}} </span>
-                    <div id="radiusMap"></div>
+
 
                 <div class="modal-footer">
 
@@ -279,7 +276,6 @@
     </script>
 
   </div>
-  <div id="googleApiLink" ng-if="isCollapsed" class="ng-hide">
   </div>
 </div>
 
