@@ -123,7 +123,6 @@ angular.module('shifuProfile')
       route: 'short_name',
       postal_code: 'short_name',
       locality: 'long_name',
-
       street_number: 'long_name'
 
     };
@@ -150,18 +149,13 @@ angular.module('shifuProfile')
 
         if (componentForm[addressType]) {
 
-          if (addressType === "street_number") {
-            street = place.address_components[i][componentForm[addressType]];
-
-          } else {
-
             var val = place.address_components[i][componentForm[addressType]];
             document.getElementById(addressType).value = val;
-          }
+
         }
       }
 
-      document.getElementById("route").value = document.getElementById("route").value + " " + street;
+
 
 
     }
@@ -479,10 +473,6 @@ angular.module('shifuProfile')
         });
 
         //fixing the zoom level
-        var bounds = new google.maps.LatLngBounds();
-        bounds.extend(boundary.getBounds().getNorthEast());
-        bounds.extend(boundary.getBounds().getSouthWest());
-        map.fitBounds(bounds);
       }
       if($scope.radius===undefined){
         if(boundary){
@@ -705,13 +695,13 @@ angular.module('shifuProfile')
         $scope.currentLocDistanceToRes=commonServices.distanceCalculation($scope.userLat,$scope.userLng,"",data[0].lat,data[0].lng);
         console.log("The distance "+ $scope.currentLocDistanceToRes);
         if(data[0].radius>=$scope.currentLocDistanceToRes){
-          $scope.deliveryToCurrentLocation=true;
+          $scope.deliveryToCurrentLocation=false;
           $scope.currentLocDistanceToRes=Math.round($scope.currentLocDistanceToRes*10)/10;
 
 
         }
         else{
-          $scope.deliveryToCurrentLocation=false;
+          $scope.deliveryToCurrentLocation=true;
           $scope.currentLocDistanceToRes=Math.round($scope.currentLocDistanceToRes*10)/10;
         }
 
@@ -741,7 +731,7 @@ angular.module('shifuProfile')
     // **************************
     // maps and direction services
     // **************************
-    var travelDetailsInfoWindow;
+    var travelDetailsInfoWindow,userLoc;
     $scope.loadMap = function(lat, lng) {
       var directionsService = new google.maps.DirectionsService();
       var directionsDisplay = new google.maps.DirectionsRenderer();
@@ -756,6 +746,23 @@ angular.module('shifuProfile')
         fullscreenControl: true,
         zoom: 14,
       });
+      $(window).resize(function() {
+        google.maps.event.trigger(map, "resize");
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(resLocationLatLng);
+          if(userLoc){
+          bounds.extend(userLoc);
+          map.fitBounds(bounds);
+          }
+          else{
+            map.fitBounds(bounds);
+            map.setZoom(14);
+          }
+
+
+      });
+
+
       var marker = new google.maps.Marker({
         position: resLocationLatLng,
         map: map
@@ -773,13 +780,11 @@ angular.module('shifuProfile')
 
     //route render
     function directionServiceRender(directionService, directionsDisplay, resLocationLatLng, map) {
+       userLoc={lat: $scope.userLat,lng: $scope.userLng};
       console.log($scope.travelMeduim);
       directionService.route({
         origin: resLocationLatLng,
-        destination: {
-          lat: $scope.userLat,
-          lng: $scope.userLng
-        }, //user coordinates goes here
+        destination: userLoc,//user coordinates goes here
         travelMode: $scope.travelMeduim
 
       }, function(response, status) {

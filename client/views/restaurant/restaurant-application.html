@@ -66,11 +66,24 @@
           <span ng-show="restaurantApplication.phoneInput.$error.required && !restaurantApplication.phoneInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
+
         <!-- restaurant address -->
         <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine}">
           <label for="route">Restaurant Address</label>
-          <input ng-focus="initAutocomplete()" type="text" class="form-control" name="addressInput" id="route" placeholder="Restaurant Street Address" ng-model="application.address" change-case required>
+          <p class="help-block">
+            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+           Enter the full address to the restaurant.
+          </p>
+          <input ng-focus="initAutocomplete()" type="text" class="form-control" name="addressInput" id="route" placeholder="Street Address" ng-model="application.address" change-case required>
           <span ng-show="restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+        </div>
+
+
+        <!-- street number -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.street_number.$error.required && !restaurantApplication.street_number.$pristine}">
+          <label for="street_number">Street Number</label>
+          <input  type="text" class="form-control" name="street_number" id="street_number" placeholder="Street number" ng-model="application.street_number" change-case required>
+          <span ng-show="restaurantApplication.street_number.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
         <!-- city -->
