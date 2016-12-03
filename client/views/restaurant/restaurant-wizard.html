@@ -70,16 +70,23 @@
                   <input type="number" class="form-control"  name="deliveryFee" id="deliveryFee" placeholder="Amount" ng-model="application.deliveryFee" required>
                   <span ng-show="restaurantProfile.restaurantInfo.deliveryFee.$error.required && !restaurantProfile.restaurantInfo.deliveryFee.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                 </div>
+                <label for="deliveryTime">Delivery Time</label>
+                <p class="help-block">
+                  <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                 Enter the delivery time in minutes in range(Example: 30-40 mins)
+                </p>
+                <div class="input-group">
+
+                  <input type="text" class="form-control"  name="deliveryTime" id="deliveryTime" placeholder="30-40" ng-model="application.deliveryTime" required><div class="input-group-addon">mins</div>
+                  <span ng-show="restaurantProfile.restaurantInfo.deliveryTime.$error.required && !restaurantProfile.restaurantInfo.deliveryTime.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                </div>
               </div>
 
 
               <!-- raduis Definition-->
               <div    class="form-group" ng-if="application.delivery == 'true'" ng-class="{'has-error': restaurantProfile.restaurantInfo.deliveryFee.$error.required && !restaurantProfile.restaurantInfo.deliveryFee.$pristine}">
-                <label for="radius">Radius of Delivery</label>
-                <p class="help-block">
-                  <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-                  Input one of the location to set radius for your delivery zone
-                </p>
+                <label for="radius">Delivery Radius</label>
+
                 <div class="input-group"  >
 
                   <input type="text"  class="form-control"  ng-click="openRadiusDialogBox('lg',response[0].lat,response[0].lng)" ng-model="application.radius" name="radius" id="radius"   placeholder="Radius"  required>

@@ -440,12 +440,15 @@ angular.module('shifuProfile')
 
       resLocationLatLng = {lat: lat, lng: lng};
 
-       var map = new google.maps.Map(document.getElementById('radiusMap'), {
+       if(!map){
+         console.log("here in creating map ");
+         map = new google.maps.Map(document.getElementById('radiusMap'), {
         zoom: 14,
         center: resLocationLatLng,
         scrollwheel: true
 
       });
+       }
 
       restaurantMarker = new google.maps.Marker({
         position: resLocationLatLng,
@@ -471,9 +474,14 @@ angular.module('shifuProfile')
           strokeOpacity: 0.5,
           center:resLocationLatLng
         });
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(boundary.getBounds().getNorthEast());
+        bounds.extend(boundary.getBounds().getSouthWest());
+        map.fitBounds(bounds);
+      }
 
         //fixing the zoom level
-      }
+
       if($scope.radius===undefined){
         if(boundary){
           boundary.setMap(null);
