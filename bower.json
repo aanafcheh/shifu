@@ -18,6 +18,7 @@
   ],
   "dependencies": {
     "angular-animate": "^1.5.8",
+    "angular": "^1.5.9",
     "angular-bootstrap": "^2.0.2",
     "angular-resource": "^1.5.8",
     "angular-file-upload": "^2.3.4",

@@ -66,7 +66,7 @@
           <span ng-show="restaurantApplication.phoneInput.$error.required && !restaurantApplication.phoneInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
-
+        <!--TODO: validation does not support auto filled fields from address. Find other way of validation-->
         <!-- restaurant address -->
         <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine}">
           <label for="route">Restaurant Address</label>

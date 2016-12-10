@@ -449,8 +449,8 @@ angular.module('shifuProfile')
 
       });
        }
-
       restaurantMarker = new google.maps.Marker({
+
         position: resLocationLatLng,
         map: map
       });

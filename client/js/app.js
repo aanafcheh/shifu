@@ -11,6 +11,7 @@ angular
     'ngImgCrop',
     'angular.filter',
     'ngSanitize',
+    'ngResource',
     'ui.select'
   ])
   .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
