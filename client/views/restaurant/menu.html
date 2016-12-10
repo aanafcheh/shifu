@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--this page is included in the restaurant page -->
+
+<!-- alert if the restaurant has no menus -->
+<div class="row" ng-if="hasMenu">
+  <div class="alert alert-info text-center" role="alert">You do not have a menu currently. Click on this button to add new items:
+    <button ng-click="openMenuModal('md')" type="button" class="btn btn-success btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+      Add
+    </button>
+  </div>
+</div>
+
+<!-- add menu button -->
+<div class="row" ng-if="menus[0]" >
+  <button style="margin:10px" ng-click="openMenuModal('md')" type="button" class="btn btn-success btn-xs hidden-xs pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    Add
+  </button>
+
+  <!-- TODO: make the info update live -->
+  <uib-tabset>
+    <uib-tab index="$index + 1" ng-repeat="item in menus | unique: 'category' | orderBy:'-category'" heading="{{item.category | capitalize}}">
+      <div class="table-responsive">
+        <!-- TODO: should I put a table header -->
+        <table class="table">
+          <tr ng-repeat="menu in menus | filter:item.category">
+            <td class="text-capitalize">{{menu.item}}</td>
+            <td class="text-capitalize">
+              <span class="label label-info">{{menu.allergies | join:', ' }}</span>
+            </td>
+            <td>€{{menu.price}}</td>
+            <td class="text-right">
+              <button ng-click="openMenuModal('md', menu)" type="button" class="btn btn-info btn-xs" aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-edit"></span>
+                Edit
+              </button>
+              <!-- TODO: ask for confirmation before deleting -->
+              <button ng-click="delete(menu.id)" type="button" class="btn btn-danger btn-xs" aria-expanded="false">
+                <span class="glyphicon glyphicon-remove"></span>
+                Del
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </uib-tab>
+  </uib-tabset>
+
+  <!-- add menu button for small screens -->
+  <button style="margin:10px" ng-click="openMenuModal('md')" type="button" class="btn btn-success btn-xs visible-xs-inline-block pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    Add
+  </button>
+
+</div>

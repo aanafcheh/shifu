@@ -42,7 +42,7 @@
     <div ng-if="!noResults" class="list-group">
       <a href="" class="list-group-item" ng-repeat="result in results | orderBy:propertyName">
         <!-- working hours popover -->
-        <i class="fa fa-clock-o text-muted pull-right" aria-hidden="true" uib-popover-template="'openinghours.html'" popover-trigger="'mouseenter'" popover-placement="left-top" popover-append-to-body="true"></i>
+        <i class="fa fa-clock-o fa-lg text-muted pull-right" aria-hidden="true" uib-popover-template="'openinghours.html'" popover-trigger="'mouseenter'" popover-placement="left-top" popover-append-to-body="true"></i>
 
         <div class="media" ui-sref="app.restaurant({city: result.city, name: result.restaurantName})">
 
@@ -51,14 +51,19 @@
               <img ng-src="{{result.logo}}" alt="{{result.restaurantName}}">
             </div>
             <div class="media-body">
-              <h4 class="media-heading">{{result.restaurantName}}</h4>
+              <!-- TODO: allow the user to choose a top tag that is shown in block letters -->
+              <h4 class="media-heading">{{result.restaurantName}}
+                <small>ASIAN</small>
+              </h4>
               <span class="label label-success" id="{{result.id}}"></span>
-              <!-- paid delivery -->
-              <span ng-if="result.deliveryFee" class="label label-primary">Delivery From &euro;{{result.deliveryFee}}</span>
-              <!-- free delivery -->
-              <span ng-if="result.deliveryFee === 0" class="label label-primary">Free Delivery</span>
+              <span ng-if="result.delivery">
+                <!-- paid delivery -->
+                <span ng-if="result.deliveryFee" class="label label-primary">Delivery From &euro;{{result.deliveryFee}}</span>
+                <!-- free delivery -->
+                <span ng-if="result.deliveryFee === 0" class="label label-primary">Free Delivery</span>
+              </span>
               <!-- pick-up only -->
-              <span ng-if="!result.deliveryFee" class="label label-primary">Pick-up Only</span>
+              <span ng-show="!result.deliveryFee && result.deliveryFee !== 0 || !result.delivery" class="label label-primary">Pick-up Only</span>
             </div>
           </div>
 
@@ -88,10 +93,13 @@
   <!-- NO RESULTS, show if nothing was found -->
   <div ng-if="noResults && !keyword==''" class="alert alert-info" role="alert">
     <i class="glyphicon glyphicon-remove"></i>
-    No Results Found. <span class="hidden-xs">Please try another keyword.</span></div>
+    No Results Found.
+    <span class="hidden-xs">Please try another keyword.</span>
+  </div>
 
 </div>
 
+<!-- TODO: make this an external template -->
 <!-- opening hours popover template -->
 <script type="text/ng-template" id="openinghours.html">
   <div>
