@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<!-- this page is included in the restaurant page -->
+
+<form name="settings" class="tab-form-demo form-horizontal" ng-repeat="restaurant in restaurants" ng-submit="update()">
+  <uib-tabset active="activeForm">
+
+    <!--alert if settings updated-->
+    <div class="alert alert-success alert-dismissible" role="alert" ng-if="updated">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <i class="fa fa-check-circle" aria-hidden="true"></i>
+      <strong>Your settings have been updated successfully.</strong>
+    </div>
+
+    <!-- error if settings update fail-->
+    <div class="alert alert-danger alert-dismissible" role="alert" ng-if="updateFailed">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+      <strong>Update failed!</strong>
+      Please try again later.</div>
+
+    <!-- basic settings -->
+    <uib-tab index="0" heading="Basic">
+      <ng-form name="basic">
+        <div style="margin-top:30px;">
+          <!-- restaurant name -->
+          <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': settings.basic.restaurantName.$error.required && !settings.basic.restaurantName.$pristine}">
+            <label for="restaurantName" class="col-sm-3 control-label">Restaurant Name</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="restaurantName" id="restaurantName" ng-model="restaurant.restaurantName" required>
+              <span ng-show="settings.basic.restaurantName.$error.required && !settings.basic.restaurantName.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+
+          <!-- minimum preparation time -->
+          <div class="form-group form-group-sm" ng-class="{'has-error': settings.delivery.preparationTime.$error.required && !settings.delivery.preparationTime.$pristine}">
+            <label for="preparationTime" class="col-sm-3 control-label">Preparation Time</label>
+            <div class="col-sm-8">
+              <div class="input-group input-group-sm">
+                <input type="number" class="form-control" name="preparationTime" id="preparationTime" placeholder="Minimum Time" ng-model="restaurant.preparationTime" required>
+                <span class="input-group-addon">minutes</span>
+                <span ng-show="settings.delivery.preparationTime.$error.required && !settings.delivery.preparationTime.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TODO: how to save the lat and lang here? -->
+          <!-- street address -->
+          <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': settings.basic.address.$error.required && !settings.basic.address.$pristine}">
+            <label for="address" class="col-sm-3 control-label">Street Address</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="address" id="address" ng-model="restaurant.address" change-case required>
+              <span ng-show="settings.basic.address.$error.required && !settings.basic.address.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+          <!-- zipcode -->
+          <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': settings.basic.zipcode.$error.required && !settings.basic.zipcode.$pristine}">
+            <label for="postal_code" class="col-sm-3 control-label">ZIP Code</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="zipcode" id="postal_code" ng-model="restaurant.zipcode" change-case required>
+              <span ng-show="settings.basic.zipcode.$error.required && !settings.basic.zipcode.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+          <!-- city -->
+          <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': settings.basic.city.$error.required && !settings.basic.city.$pristine}">
+            <label for="locality" class="col-sm-3 control-label">City</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="city" id="locality" ng-model="restaurant.city" change-case required>
+              <span ng-show="settings.basic.city.$error.required && !settings.basic.city.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+          <!-- email address -->
+          <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': settings.basic.email.$error.email && !settings.basic.email.$pristine}">
+            <label for="email" class="col-sm-3 control-label">Email</label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" name="email" id="email" ng-model="restaurant.email" change-case required>
+              <span ng-show="settings.basic.email.$error.email && !settings.basic.email.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+          <!-- phone number -->
+          <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': settings.basic.phoneNumber.$error.required && !settings.basic.phoneNumber.$pristine}">
+            <label for="locality" class="col-sm-3 control-label">Phone Number</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="phoneNumber" id="phoneNumber" ng-model="restaurant.phoneNumber" change-case required>
+              <span ng-show="settings.basic.phoneNumber.$error.required && !settings.basic.phoneNumber.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </ng-form>
+    </uib-tab>
+
+    <!-- working hours tab-->
+    <uib-tab index="1" heading="Working Hours">
+      <ng-form>
+        <uib-accordion close-others="true">
+          <div uib-accordion-group class="bs-callout-xs nostyleheading" ng-repeat="day in weekdays">
+            <uib-accordion-heading>
+              <span class="col-xs-5 col-sm-3">{{day}}</span>
+              <span class="text-muted" ng-if="restaurant.workFrom[day]">{{restaurant.workFrom[day] | date:'shortTime'}}
+                -
+                {{restaurant.workTo[day] | date:'shortTime'}}</span>
+              <span class="label label-danger" ng-if="!restaurant.workFrom[day]">Closed</span>
+            </uib-accordion-heading>
+            <div class="row">
+              <div class="form-group col-xs-4 col-md-offset-2">
+                <em>From</em>
+                <div uib-timepicker name="{{day}}From" id="{{day}}From" ng-model="restaurant.workFrom[day]" hour-step="1" minute-step="30" show-meridian="ismeridian"></div>
+              </div>
+              <div class="form-group col-xs-6">
+                <em>To</em>
+                <!-- TODO: comparison of working hours does not work unless we modify both workFrom and workTo -->
+                <div uib-timepicker ng-class="{'has-error': restaurant.workFrom[day]>restaurant.workTo[day]}" name="{{day}}To" id="{{day}}To" ng-model="restaurant.workTo[day]" hour-step="1" minute-step="30" show-meridian="ismeridian"></div>
+              </div>
+            </div>
+            <!-- invalid business time alert -->
+            <div uib-alert class="alert alert-danger" ng-if="restaurant.workFrom[day]>restaurant.workTo[day]">
+              <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+              This business time is invalid. Please ensure that you are selecting today's business time only. If you are working after midnight, enter the business time for the next day.</div>
+          </div>
+        </uib-accordion>
+      </ng-form>
+    </uib-tab>
+
+    <!-- delivery settings tab -->
+    <uib-tab index="2" heading="Delivery">
+      <ng-form name="delivery">
+        <div style="margin-top:30px;" ng-if="restaurant.delivery">
+
+          <!-- minimum delivery fee -->
+          <div class="form-group form-group-sm" ng-class="{'has-error': settings.delivery.deliveryFee.$error.required && !settings.delivery.deliveryFee.$pristine}">
+            <label for="deliveryFee" class="col-sm-4 control-label">Min Delivery Fee</label>
+            <div class="col-sm-7">
+              <div class="input-group input-group-sm">
+                <span class="input-group-addon">€</span>
+                <input type="number" class="form-control" name="deliveryFee" id="deliveryFee" placeholder="Amount" ng-model="restaurant.deliveryFee" required>
+                <span ng-show="settings.delivery.deliveryFee.$error.required && !settings.delivery.deliveryFee.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- delivery radius -->
+          <!-- TODO:add the raduis modal -->
+          <div class="form-group form-group-sm" ng-class="{'has-error': settings.delivery.radius.$error.required && !settings.delivery.radius.$pristine}">
+            <label for="radius" class="col-sm-4 control-label">Delivery Radius</label>
+            <div class="col-sm-7">
+              <div class="input-group input-group-sm">
+                <input type="number" class="form-control" name="radius" id="radius" placeholder="Radius" ng-model="restaurant.radius" required>
+                <span class="input-group-addon">km</span>
+                <span ng-show="settings.delivery.radius.$error.required && !settings.delivery.radius.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+          <!-- deactivate food delivery -->
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-push-4">
+              <button type="button" class="btn btn-sm" ng-model="restaurant.delivery" uib-btn-checkbox btn-checkbox-true="false" btn-checkbox-false="true">
+                Deactivate Food Delivery
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- if the food delivery is deactivated -->
+        <div style="margin-top:30px;" ng-if="!restaurant.delivery">
+          <div class="bs-callout bs-callout-info">
+            <button type="button" class="btn btn-info" ng-model="restaurant.delivery" uib-btn-checkbox btn-checkbox-true="true" btn-checkbox-false="false">
+              Activate Food Delivery
+            </button>
+          </div>
+        </div>
+      </ng-form>
+    </uib-tab>
+  </uib-tabset>
+  <hr>
+  <button type="submit" id="submit" value="Submit" class="btn btn-success col-xs-6 col-xs-push-3" ng-disabled="settings.$invalid">Update</button>
+</form>

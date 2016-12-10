@@ -5156,7 +5156,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * Data properties:
              *
-             *  - `day` – `{string=}` -
+             *  - `today` – `{string=}` -
              *
              *  - `openOrClosed` – `{string=}` -
              */
