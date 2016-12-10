@@ -274,9 +274,9 @@ angular.module('shifuProfile')
 
   //radius selection dialog box
   $scope.openRadiusDialogBox = function(size, lat, lng) {
+    console.log("The lat and lng"+ lat + " sadasdas "+lng);
     $scope.isCollapsed = false;
-    $scope.lat = lat;
-    $scope.lng = lng;
+
 
     var modalInstance = $uibModal.open({
       animation: $scope.animationsEnabled,
@@ -333,6 +333,7 @@ angular.module('shifuProfile')
     $scope.restaurantId = response[0].id;
     $scope.lat = response[0].lat;
     $scope.lng = response[0].lng;
+    console.log("lat and lffff"+ $scope.lat);
   });
 
   // time picker
@@ -397,6 +398,7 @@ angular.module('shifuProfile')
 
   //radius map for delivery zone
   var map, restaurantMarker, referenceAddressMarker, resLocationLatLng, boundary;
+  console.log(lat+ " "+ lng);
   $scope.getRadius = function() {
     if (!map) {
       resLocationLatLng = {
@@ -427,7 +429,7 @@ angular.module('shifuProfile')
       if (boundary) {
         boundary.setMap(null);
       }
-      if ($scope.radius !== null) {
+      if ($scope.radius != null) {
         boundary = new google.maps.Circle({
           map: map,
           radius: $scope.radius * 1000,
@@ -452,9 +454,12 @@ angular.module('shifuProfile')
 
     });
 
-  };
+
   $scope.done = function() {
     $uibModalInstance.close($scope.radius);
+  };
+  $scope.cancel = function() {
+    $uibModalInstance.dismiss('cancel');
   };
 
 }])
