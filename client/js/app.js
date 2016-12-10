@@ -4,30 +4,32 @@
 angular
   .module('shifuProfile', [
     'lbServices',
+    'ngResource',
+    'ngSanitize',
     'ngAnimate',
     'ui.router',
     'ui.bootstrap',
     'angularFileUpload',
     'ngImgCrop',
     'angular.filter',
-    'ngSanitize',
-    'ngResource',
     'ui.select'
   ])
-  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
-    $urlRouterProvider) {
+  .config(['$stateProvider', '$urlRouterProvider', '$resourceProvider', function($stateProvider,
+    $urlRouterProvider, $resourceProvider) {
     $stateProvider
 
     // common states
       .state('app', {
       url: '/',
-      params : { noResults: null},
+      params: {
+        noResults: null
+      },
       views: {
         'header': {
           templateUrl: 'views/header.html',
           controller: 'HeaderController',
         },
-        'content': {
+        'view': {
           templateUrl: 'views/user.html',
           controller: 'UserController'
         },
@@ -41,7 +43,7 @@ angular
     .state('app.search', {
       url: 'search=:keyword',
       views: {
-        'content@': {
+        'view@': {
           templateUrl: 'views/search.html',
           controller: 'SearchController'
         }
@@ -52,7 +54,7 @@ angular
     .state('app.application', {
       url: 'application',
       views: {
-        'content@': {
+        'view@': {
           templateUrl: 'views/restaurant/restaurant-application.html',
           controller: 'ApplicationController'
         }
@@ -62,7 +64,7 @@ angular
     .state('app.restaurantwizard', {
       url: 'wizard/:address/:zipcode',
       views: {
-        'content@': {
+        'view@': {
           templateUrl: 'views/restaurant/restaurant-wizard.html',
           controller: 'RestaurantWizardController'
         }
@@ -72,9 +74,32 @@ angular
     .state('app.owner', {
       url: 'restaurants/:city/:name',
       views: {
-        'content@': {
+        'view@': {
           templateUrl: 'views/restaurant/restaurant.html',
           controller: 'RestaurantController'
+        },
+        'content@app.owner': {
+          templateUrl: 'views/restaurant/menu.html',
+        }
+      }
+    })
+
+    .state('app.owner.settings', {
+      url: '/settings',
+      views: {
+        'content@app.owner': {
+          templateUrl: 'views/restaurant/settings.html',
+          controller: 'RestaurantSettingsController'
+        }
+      }
+    })
+
+    .state('app.owner.help', {
+      url: '/help',
+      views: {
+        'content@app.owner': {
+          templateUrl: 'views/restaurant/help.html',
+          controller: 'RestaurantHelpController'
         }
       }
     })
@@ -83,7 +108,7 @@ angular
     .state('app.restaurant', {
       url: ':city/:name',
       views: {
-        'content@': {
+        'view@': {
           templateUrl: 'views/customer/restaurant.html',
           controller: 'RestaurantController'
         }
@@ -91,6 +116,9 @@ angular
     });
 
     $urlRouterProvider.otherwise('/');
+
+    // Don't strip trailing slashes from calculated URLs
+    $resourceProvider.defaults.stripTrailingSlashes = false;
   }]);
 
 // APP 2

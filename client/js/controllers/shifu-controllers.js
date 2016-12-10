@@ -1,39 +1,39 @@
 //
 // APP 1 Controllers - shifuProfil
 //'use strict';
+//
+//TODO: change all the http requests to resource requests
 
 angular.module('shifuProfile')
-  .service('commonServices',function(){
-    function distanceCalculation(userLat,userLng,restaurantObj,resLat,resLng){
+  .service('commonServices', function() {
+    function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
 
       var R = 6371;
-      var dLat = deg2rad(resLat-userLat);  // deg2rad below
-      var dLon = deg2rad( resLng-userLng);
+      var dLat = deg2rad(resLat - userLat); // deg2rad below
+      var dLon = deg2rad(resLng - userLng);
       var a =
-          Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(deg2rad(userLat)) * Math.cos(deg2rad(resLat)) *
-          Math.sin(dLon/2) * Math.sin(dLon/2)
-        ;
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(userLat)) * Math.cos(deg2rad(resLat)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       var d = R * c;
 
       //this functionality is only for search page for showing distance to each restaurant
-      if(restaurantObj!=""){
-        restaurantObj.distanceKm=d;
+      if (restaurantObj !== "") {
+        restaurantObj.distanceKm = d;
       }
-      console.log("The distance is "+ d);
+      console.log("The distance is " + d);
       return d;
     }
+
     function deg2rad(deg) {
 
-      return deg * (Math.PI/180)
+      return deg * (Math.PI / 180);
     }
     return {
-      distanceCalculation:distanceCalculation
-    }
+      distanceCalculation: distanceCalculation
+    };
   })
-
-
 
 .controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
 
@@ -83,16 +83,14 @@ angular.module('shifuProfile')
     });
   });
 
-
   // Check if the user has a restaurant yet or not, and display content depending on that
   $http.get('api/users/me/restaurants/count').success(function(data) {
     $scope.restaurantCount = data.count;
-
   });
 
   // add menu item model
-  $scope.open = function(size) {
-    var modalInstance = $uibModal.open({
+  $scope.openMenuModal = function(size) {
+    var menuModal = $uibModal.open({
       animation: $scope.animationsEnabled,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
@@ -101,7 +99,7 @@ angular.module('shifuProfile')
       size: size
     });
 
-    modalInstance.result.then(function(menu) {
+    menuModal.result.then(function(menu) {
       $scope.menu = menu;
     });
   };
@@ -119,12 +117,11 @@ angular.module('shifuProfile')
     var autocomplete;
 
     //fields
-   var componentForm = {
+    var componentForm = {
       route: 'short_name',
       postal_code: 'short_name',
       locality: 'long_name',
       street_number: 'long_name'
-
     };
 
     autocomplete = new google.maps.places.Autocomplete(
@@ -149,8 +146,8 @@ angular.module('shifuProfile')
 
         if (componentForm[addressType]) {
 
-            var val = place.address_components[i][componentForm[addressType]];
-            document.getElementById(addressType).value = val;
+          var val = place.address_components[i][componentForm[addressType]];
+          document.getElementById(addressType).value = val;
 
         }
       }
@@ -250,11 +247,11 @@ angular.module('shifuProfile')
         $scope.restaurantApplication.$setPristine();
         $state.go('app.' +
           'restaurantwizard', {
-          'address': $scope.application.address,
-          'zipcode': $scope.application.zipcode,
-          'lng': $scope.application.lng,
-          'lat': $scope.application.lat
-        });
+            'address': $scope.application.address,
+            'zipcode': $scope.application.zipcode,
+            'lng': $scope.application.lng,
+            'lat': $scope.application.lat
+          });
       }
     );
   };
@@ -267,19 +264,19 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantWizardController', ['$scope','commonServices', '$window','$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope,commonServices, $window, $state, $stateParams, $uibModal,Menu, User, Restaurant) {
+.controller('RestaurantWizardController', ['$scope', 'commonServices', '$window', '$state', '$stateParams', '$uibModal', 'Menu', 'User', 'Restaurant', function($scope, commonServices, $window, $state, $stateParams, $uibModal, Menu, User, Restaurant) {
+
+  $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   $scope.application = {};
   $scope.application.workFrom = {};
   $scope.application.workTo = {};
 
-
-
   //radius selection dialog box
-  $scope.openRadiusDialogBox = function (size,lat,lng) {
+  $scope.openRadiusDialogBox = function(size, lat, lng) {
     $scope.isCollapsed = false;
-    $scope.lat=lat;
-    $scope.lng=lng;
+    $scope.lat = lat;
+    $scope.lng = lng;
 
     var modalInstance = $uibModal.open({
       animation: $scope.animationsEnabled,
@@ -290,57 +287,53 @@ angular.module('shifuProfile')
       size: size,
 
       resolve: {
-        items: function () {
+        items: function() {
           return $scope.items;
         },
-        lat:function () {
+        lat: function() {
           return $scope.lat;
         },
-        lng:function () {
+        lng: function() {
           return $scope.lng;
         }
       }
     });
-    modalInstance.result.then(function (radius) {
-      $scope.application.radius=radius;
+    modalInstance.result.then(function(radius) {
+      $scope.application.radius = radius;
     });
   };
 
-  $scope.openComponentModal = function () {
+  $scope.openComponentModal = function() {
+    modalInstance.result.then(function(radius) {
+      $scope.application.radius = radius;
+    });
+  };
+
+  $scope.openComponentModal = function() {
     var modalInstance = $uibModal.open({
       animation: $scope.animationsEnabled,
       component: 'modalComponent',
       resolve: {
-        items: function () {
+        items: function() {
           return $scope.items;
         }
       }
     });
-    }
-
-  $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
+  };
 
   //get the latest restaurantId of the user, because the user might have multiple restaurants
   $scope.restaurants = User.restaurants({
     id: 'me',
     filter: {
-
       "order": "id DESC",
       "limit": 1,
     }
   }).$promise.then(function(response) {
     $scope.restaurants = response[0];
     $scope.restaurantId = response[0].id;
-    $scope.response=response;
-    $scope.lat=response[0].lat;
-    $scope.lng=response[0].lng;
-
-
+    $scope.lat = response[0].lat;
+    $scope.lng = response[0].lng;
   });
-
-  //get the latest restaurantId of the user, because the user might have multiple restaurants
-
 
   // time picker
   $scope.hstep = 1;
@@ -372,8 +365,6 @@ angular.module('shifuProfile')
     }
   };
 
-
-
   // function to change the tab view
   $scope.tab = 1;
   $scope.select = function(setTab) {
@@ -383,23 +374,6 @@ angular.module('shifuProfile')
     return ($scope.tab === checkTab);
   };
 
-  //
-  // IMAGE UPLOAD MODEL
-  //
-  $scope.open = function(size) {
-    var modalInstance = $uibModal.open({
-      animation: $scope.animationsEnabled,
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      templateUrl: 'addImage.html',
-      controller: 'ImageModelController',
-      size: size
-    });
-
-    modalInstance.result.then(function(image) {
-      $scope.image = image;
-    });
-  };
 
   // submit info
   $scope.newRestaurant = function() {
@@ -419,82 +393,76 @@ angular.module('shifuProfile')
 
 }])
 
-
-
-.controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User','lat','lng',function($scope, $state, FileUploader, $uibModalInstance, User,lat,lng) {
-
-
-
-  // cropped image will be saved here
-  $scope.image = "";
-
-  $scope.initMap=function(){
-
-
-
-  }
+.controller('ModalInstanceCtrl', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', 'lat', 'lng', function($scope, $state, FileUploader, $uibModalInstance, User, lat, lng) {
 
   //radius map for delivery zone
-  var map, restaurantMarker, referenceAddressMarker, resLocationLatLng,boundary;
-  $scope.getRadius=function(){
-
-      resLocationLatLng = {lat: lat, lng: lng};
-
-       if(!map){
-         console.log("here in creating map ");
-         map = new google.maps.Map(document.getElementById('radiusMap'), {
-        zoom: 14,
+  var map, restaurantMarker, referenceAddressMarker, resLocationLatLng, boundary;
+  $scope.getRadius = function() {
+    if (!map) {
+      resLocationLatLng = {
+        lat: lat,
+        lng: lng
+      };
+      map = new google.maps.Map(document.getElementById('radiusMap'), {
         center: resLocationLatLng,
-        scrollwheel: true
-
+        scrollwheel: true,
+        zoom: 14
       });
+
        }
+
+
       restaurantMarker = new google.maps.Marker({
 
         position: resLocationLatLng,
         map: map
       });
-
+    }
     //monitor change in radius input
-    $scope.$watch('radius',function() {
+    $scope.$watch('radius', function() {
 
-      if(referenceAddressMarker){
+      if (referenceAddressMarker) {
         referenceAddressMarker.setMap(null);
       }
-      if(boundary){
+      if (boundary) {
         boundary.setMap(null);
       }
-      if($scope.radius!=null){
+      if ($scope.radius !== null) {
         boundary = new google.maps.Circle({
           map: map,
-          radius:$scope.radius*1000,
+          radius: $scope.radius * 1000,
           fillColor: 'green',
           fillOpacity: 0.3,
           strokeColor: 'green',
           strokeOpacity: 0.5,
-          center:resLocationLatLng
+          center: resLocationLatLng
         });
+
+        //fixing the zoom level
         var bounds = new google.maps.LatLngBounds();
         bounds.extend(boundary.getBounds().getNorthEast());
         bounds.extend(boundary.getBounds().getSouthWest());
         map.fitBounds(bounds);
       }
-
-        //fixing the zoom level
-
-      if($scope.radius===undefined){
-        if(boundary){
+      if ($scope.radius === undefined) {
+        if (boundary) {
           boundary.setMap(null);
         }
       }
+
     });
 
-
-
-  }
-  $scope.done=function(){
+  };
+  $scope.done = function() {
     $uibModalInstance.close($scope.radius);
-  }
+  };
+
+}])
+
+.controller('ImageModalController', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', function($scope, $state, FileUploader, $uibModalInstance, User) {
+
+  // cropped image will be saved here
+  $scope.image = "";
 
   $scope.ok = function() {
     angular.forEach(uploader.queue, function(value, key) {
@@ -518,6 +486,12 @@ angular.module('shifuProfile')
       key: 'value'
     }]
   });
+
+  // uploader event broadcast in case of successful upload
+  uploader.onSuccessItem = function(item, response, status, headers) {
+    console.info('Success', response, status, headers);
+    $scope.$broadcast('uploadCompleted', item);
+  };
 
   // uploader size filter
   uploader.filters.push({
@@ -571,7 +545,7 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('MenuModalController', ['$scope', '$state', '$http', 'FileUploader', '$uibModalInstance', '$stateParams', 'User', 'Restaurant', 'menu', function($scope, $state, $http, FileUploader, $uibModalInstance, $stateParams, User, Restaurant, menu) {
+.controller('MenuModalController', ['$scope', '$state', '$http', 'FileUploader', '$uibModalInstance', '$uibModal', '$stateParams', 'User', 'Restaurant', 'menu', function($scope, $state, $http, FileUploader, $uibModalInstance, $uibModal, $stateParams, User, Restaurant, menu) {
 
   // list of allergies to be added to menu items
   $scope.allergies = ["celery", "gluten", "crustaceans", "eggs", "fish", "lupin", "milk", "molluscs", "mustard", "nuts", "peanuts"];
@@ -613,6 +587,25 @@ angular.module('shifuProfile')
     $http.put('api/menus/' + $scope.menu.id, $scope.menu);
     $scope.newMenuItem.$setPristine();
   };
+
+  //
+  // IMAGE UPLOAD MODAL
+  //
+  $scope.openImageModal = function(size) {
+    var imageModal = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: '../../views/restaurant/addImage.html',
+      controller: 'ImageModalController',
+      size: size
+    });
+
+    imageModal.result.then(function(image) {
+      $scope.menu.image = image;
+    });
+  };
+
 }])
 
 .controller('RatingController', ['$scope', '$state', '$http', '$stateParams', 'User', 'Restaurant', 'Feedback', function($scope, $state, $http, $stateParams, User, Restaurant, Feedback) {
@@ -670,13 +663,14 @@ angular.module('shifuProfile')
 
 }])
 
+.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant) {
 
-.controller('RestaurantController', ['$scope', 'commonServices','$state', '$stateParams', '$filter', '$http', '$uibModal','User', 'Restaurant', function($scope,commonServices, $state, $stateParams, $filter, $http,$uibModal, User, Restaurant) {
+  $scope.restaurant = {};
 
+  // travel meduim direction to the restsurant - car-bicycle-walking
+  $scope.travelMeduim = "";
 
-
-
-
+  $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
 
@@ -689,57 +683,46 @@ angular.module('shifuProfile')
   $http.get('api/restaurants?filter[include]=menus&filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
-
-      $scope.travelMeduim="";
-      console.log(data);
-    //check for delivery and user loccation
-    if(navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        $scope.permission=true;
-        $scope.radius=data[0].radius;
-        $scope.userLat=position.coords.latitude;
-        $scope.userLng= position.coords.longitude;
-        console.log($scope.userLat+" "+ $scope.userLng+ " "+ data[0].lat+" "+ data[0].lng);
-        $scope.currentLocDistanceToRes=commonServices.distanceCalculation($scope.userLat,$scope.userLng,"",data[0].lat,data[0].lng);
-        console.log("The distance "+ $scope.currentLocDistanceToRes);
-        if(data[0].radius>=$scope.currentLocDistanceToRes){
-          $scope.deliveryToCurrentLocation=false;
-          $scope.currentLocDistanceToRes=Math.round($scope.currentLocDistanceToRes*10)/10;
-
-
-        }
-        else{
-          $scope.deliveryToCurrentLocation=true;
-          $scope.currentLocDistanceToRes=Math.round($scope.currentLocDistanceToRes*10)/10;
-        }
-
     $scope.menus = data[0].menus;
-
     // check if the restaurant has a menu
+    // ng-if has a bug in showing an element if the opposite value of a variable is true (like !hasMenu). That is why in this case the values are exchanged and if the restaurant has a menu, then the value is false. So, this way, when showing an alert, we can write ng-if="hasMenu" meaning the restaurant doesn't have a menu, and we wouldn't have the issue with ng-if showing alerts for a second in situations where it should not.
     if ($scope.menus[0]) {
       $scope.hasMenu = false;
-    }
-    else {
+    } else {
       $scope.hasMenu = true;
     }
-
-
-      });
-    }
-
-
-
-
 
     // check if the restaurant is open or closed
     $http.get('api/restaurants/' + $scope.restaurantId + '/openOrClosed').success(function(data) {
       $scope.state = data;
     });
 
+    //check for delivery and user loccation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        $scope.locationPermission = true;
+        $scope.radius = data[0].radius;
+        $scope.userLat = position.coords.latitude;
+        $scope.userLng = position.coords.longitude;
+        console.log($scope.userLat + " " + $scope.userLng + " " + data[0].lat + " " + data[0].lng);
+        $scope.currentLocDistanceToRes = commonServices.distanceCalculation($scope.userLat, $scope.userLng, "", data[0].lat, data[0].lng);
+        console.log("The distance " + $scope.currentLocDistanceToRes);
+        if (data[0].radius >= $scope.currentLocDistanceToRes) {
+          $scope.deliveryToCurrentLocation = true;
+          $scope.currentLocDistanceToRes = Math.round($scope.currentLocDistanceToRes * 10) / 10;
+
+
+        } else {
+          $scope.deliveryToCurrentLocation = false;
+          $scope.currentLocDistanceToRes = Math.round($scope.currentLocDistanceToRes * 10) / 10;
+        }
+      });
+    }
+
     // **************************
     // maps and direction services
     // **************************
-    var travelDetailsInfoWindow,userLoc;
+    var travelDetailsInfoWindow, userLoc;
     $scope.loadMap = function(lat, lng) {
       var directionsService = new google.maps.DirectionsService();
       var directionsDisplay = new google.maps.DirectionsRenderer();
@@ -758,18 +741,14 @@ angular.module('shifuProfile')
         google.maps.event.trigger(map, "resize");
         var bounds = new google.maps.LatLngBounds();
         bounds.extend(resLocationLatLng);
-          if(userLoc){
+        if (userLoc) {
           bounds.extend(userLoc);
           map.fitBounds(bounds);
-          }
-          else{
-            map.fitBounds(bounds);
-            map.setZoom(14);
-          }
-
-
+        } else {
+          map.fitBounds(bounds);
+          map.setZoom(14);
+        }
       });
-
 
       var marker = new google.maps.Marker({
         position: resLocationLatLng,
@@ -788,11 +767,14 @@ angular.module('shifuProfile')
 
     //route render
     function directionServiceRender(directionService, directionsDisplay, resLocationLatLng, map) {
-       userLoc={lat: $scope.userLat,lng: $scope.userLng};
+      userLoc = {
+        lat: $scope.userLat,
+        lng: $scope.userLng
+      };
       console.log($scope.travelMeduim);
       directionService.route({
         origin: resLocationLatLng,
-        destination: userLoc,//user coordinates goes here
+        destination: userLoc, //user coordinates goes here
         travelMode: $scope.travelMeduim
 
       }, function(response, status) {
@@ -820,9 +802,13 @@ angular.module('shifuProfile')
 
   });
 
+  // ****************
+  // modals
+  // *****************
+
   // add menu item model and pass the menu details as a parameter in case we want to update a specific item
-  $scope.open = function(size, menu) {
-    var modalInstance = $uibModal.open({
+  $scope.openMenuModal = function(size, menu) {
+    var menuModal = $uibModal.open({
       animation: $scope.animationsEnabled,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
@@ -836,7 +822,7 @@ angular.module('shifuProfile')
       }
     });
 
-    modalInstance.result.then(function(menu) {
+    menuModal.result.then(function(menu) {
       $scope.menu = menu;
     });
   };
@@ -846,24 +832,40 @@ angular.module('shifuProfile')
     $http.delete('api/menus/' + dishId);
   };
 
+  // IMAGE UPLOAD MODAL
+  $scope.openImageModal = function(size) {
+    var imageModal = $uibModal.open({
+      animation: $scope.animationsEnabled,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: '../../views/restaurant/addImage.html',
+      controller: 'ImageModalController',
+      size: size
+    });
+
+    imageModal.result.then(function(image) {
+      $scope.image = image;
+    });
+  };
+
+  $scope.load = function() {
+    $http.get('/api/containers/me/files/').success(function(data) {
+      console.log(data);
+      $scope.files = data;
+      // TODO: add logo editing
+      // $scope.logo = data[0].logo;
+    });
+  };
+
+  $scope.load();
+
+  $scope.$on('uploadCompleted', function(event) {
+    console.log('uploadCompleted event received');
+  });
+
 }])
 
-.controller('SearchController',['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant','commonServices', function($scope, $state, $stateParams, $http, User, Restaurant,commonServices) {
-  $scope.propertyName="distanceKm";
-  //var value=commonServices.distanceCalculation(12,13);
-
-  $scope.getUserLocation=function() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        $scope.lat = position.coords.latitude;
-        $scope.lng = position.coords.longitude;
-        $scope.gotUserLocation=true;
-        console.log($scope.lat + " " + $scope.lng);
-
-      });
-    }
-  }
-
+.controller('SearchController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', 'commonServices', function($scope, $state, $stateParams, $http, User, Restaurant, commonServices) {
 
   $scope.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -877,24 +879,35 @@ angular.module('shifuProfile')
   $scope.keyword = $stateParams.keyword;
   $scope.noResults = $stateParams.noResults;
 
+  // user location
+  $scope.getUserLocation = function() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        $scope.lat = position.coords.latitude;
+        $scope.lng = position.coords.longitude;
+        $scope.gotUserLocation = true;
+        console.log($scope.lat + " " + $scope.lng);
+
+      });
+    }
+  };
+
   // restaurant results
   $http.get('api/restaurants?filter={"where":{"restaurantName":{"like":"' + $scope.keyword + '","options":"i"}}}').success(function(data) {
     $scope.results = data;
 
-
-    //function to calcualte distance from two lats/lngs
-    $scope.distance=function(lat,lng,obj){
-     return Math.round((commonServices.distanceCalculation(lat,lng,obj,$scope.lat,$scope.lng))*10)/10;
-    }
-
-
-    // check the restaurant's status
+    // check the restaurant's status open or closed
     angular.forEach($scope.results, function(value, key) {
       $http.get('api/restaurants/' + value.id + '/openOrClosed').success(function(data) {
         angular.element(document).find("#" + value.id).append(data.openOrClosed);
       });
     });
   });
+
+  //function to calcualte distance from two lats/lngs to get the user's distance to each restaurant
+  $scope.distance = function(lat, lng, obj) {
+    return Math.round((commonServices.distanceCalculation(lat, lng, obj, $scope.lat, $scope.lng)) * 10) / 10;
+  };
 
   // sort the results
   $scope.sortBy = function(propertyName) {
@@ -909,9 +922,26 @@ angular.module('shifuProfile')
       $scope.propertyName = $scope.propertyNameStatic;
     }
   };
+}])
 
+.controller('RestaurantSettingsController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
 
-
+  // update restaurant information
+  $scope.updated = false;
+  $scope.updateFailed = false;
+  $scope.update = function() {
+    Restaurant.prototype$updateAttributes({
+      id: $scope.restaurantId
+    }, $scope.restaurants[0]).$promise.then(
+      function(response) {
+        $scope.updated = true;
+      },
+      function(error) {
+        $scope.updateFailed = true;
+        $scope.updateError = error;
+      }
+    );
+  };
 
 }])
 
@@ -955,13 +985,6 @@ angular.module('shifuProfile')
   };
 });
 
-// .filter('formatTime', function ($filter) {
-// return function (time) {
-//     var date = time.substring(0,5);
-//     return date;
-// };
-// });
-
 //
 // APP 2 Controllers - shifu
 //
@@ -969,13 +992,12 @@ angular.module('shifu')
 
 .controller('IndexController', ['$scope', '$state', 'User', function($scope, $state, User) {
 
-
   //permission to trace user current location when user visit to landing page
-  if(navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function (position) {
-      $scope.lat=position.coords.latitude;
-      $scope.lng= position.coords.longitude;
-      console.log($scope.lat +" "+ $scope.lng);
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      $scope.lat = position.coords.latitude;
+      $scope.lng = position.coords.longitude;
+      console.log($scope.lat + " " + $scope.lng);
 
     });
   }
