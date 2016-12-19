@@ -27,19 +27,19 @@ angular.module('shifuProfile')
       return d;
     }
 
+    function deg2rad(deg) {
+
+      return deg * (Math.PI / 180);
+    }
+
     function addToCart(item){
-
      cartItems.push(item);
-
     }
     function getCartItems(){
       return cartItems;
     }
 
-    function deg2rad(deg) {
 
-      return deg * (Math.PI / 180);
-    }
     return {
       distanceCalculation: distanceCalculation,
       addToCart:addToCart,
@@ -64,9 +64,12 @@ angular.module('shifuProfile')
 
   $scope.commonServices=commonServices;
   $scope.$watch('commonServices.getCartItems()',function(cartItems){
-    $scope.data=cartItems;
-    console.log(cartItems);
-  })
+    User.cart({'id':'me'}).
+    $promise.then(function(response) {
+      $scope.allCartItems = response.items;
+    });
+  },true)
+
 
 
 
@@ -839,7 +842,7 @@ angular.module('shifuProfile')
         response.items.push(menuItem);
         response.$save();
         commonServices.addToCart(menuItem);
-        commonServices.getCartItems();
+
       },
       function(error) {
         // create the restaurant
