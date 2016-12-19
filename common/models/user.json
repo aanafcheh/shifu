@@ -38,6 +38,11 @@
       "type": "hasMany",
       "model": "feedback",
       "foreignKey": "userId"
+    },
+    "cart": {
+      "type": "hasOne",
+      "model": "cart",
+      "foreignKey": "userId"
     }
   },
   "acls": [],

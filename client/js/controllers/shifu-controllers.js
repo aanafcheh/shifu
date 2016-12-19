@@ -5,9 +5,11 @@
 //TODO: change all the http requests to resource requests
 
 angular.module('shifuProfile')
-  .service('commonServices', function() {
-    function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
+  .service('commonServices',['Menu', function(Menu) {
 
+    var cartItems=[];
+
+    function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
       var R = 6371;
       var dLat = deg2rad(resLat - userLat); // deg2rad below
       var dLon = deg2rad(resLng - userLng);
@@ -22,8 +24,16 @@ angular.module('shifuProfile')
       if (restaurantObj !== "") {
         restaurantObj.distanceKm = d;
       }
-      console.log("The distance is " + d);
       return d;
+    }
+
+    function addToCart(item){
+
+     cartItems.push(item);
+
+    }
+    function getCartItems(){
+      return cartItems;
     }
 
     function deg2rad(deg) {
@@ -31,11 +41,13 @@ angular.module('shifuProfile')
       return deg * (Math.PI / 180);
     }
     return {
-      distanceCalculation: distanceCalculation
+      distanceCalculation: distanceCalculation,
+      addToCart:addToCart,
+      getCartItems:getCartItems
     };
-  })
+  }])
 
-.controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
+.controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart) {
 
 
 
@@ -49,6 +61,15 @@ angular.module('shifuProfile')
   }).$promise.then(function(response) {
     $scope.restaurants = response;
   });
+
+  $scope.commonServices=commonServices;
+  $scope.$watch('commonServices.getCartItems()',function(cartItems){
+    $scope.data=cartItems;
+    console.log(cartItems);
+  })
+
+
+
 
   // query all the restaurants for suggestions
   $scope.allRestaurants = Restaurant.find();
@@ -668,7 +689,7 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant) {
+.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant','Cart', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant,Cart) {
 
   $scope.restaurant = {};
 
@@ -689,6 +710,7 @@ angular.module('shifuProfile')
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
     $scope.menus = data[0].menus;
+    console.log($scope.menus);
     // check if the restaurant has a menu
     // ng-if has a bug in showing an element if the opposite value of a variable is true (like !hasMenu). That is why in this case the values are exchanged and if the restaurant has a menu, then the value is false. So, this way, when showing an alert, we can write ng-if="hasMenu" meaning the restaurant doesn't have a menu, and we wouldn't have the issue with ng-if showing alerts for a second in situations where it should not.
     if ($scope.menus[0]) {
@@ -709,7 +731,6 @@ angular.module('shifuProfile')
         $scope.radius = data[0].radius;
         $scope.userLat = position.coords.latitude;
         $scope.userLng = position.coords.longitude;
-        console.log($scope.userLat + " " + $scope.userLng + " " + data[0].lat + " " + data[0].lng);
         $scope.currentLocDistanceToRes = commonServices.distanceCalculation($scope.userLat, $scope.userLng, "", data[0].lat, data[0].lng);
         console.log("The distance " + $scope.currentLocDistanceToRes);
         if (data[0].radius >= $scope.currentLocDistanceToRes) {
@@ -806,6 +827,31 @@ angular.module('shifuProfile')
     }
 
   });
+
+  //***** add to cart *****//
+
+  $scope.addTocart=function(menuItem){
+    $scope.cart = User.cart({
+          "id":'me'
+      }
+    ).$promise.then(
+      function(response) {
+        response.items.push(menuItem);
+        response.$save();
+        commonServices.addToCart(menuItem);
+        commonServices.getCartItems();
+      },
+      function(error) {
+        // create the restaurant
+        User.cart.create({
+          id:'me'
+        },{"items":[menuItem]});
+
+      });
+  }
+
+
+
 
   // ****************
   // modals
