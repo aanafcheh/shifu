@@ -2,13 +2,21 @@
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#shifu-navbar-collapse" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
+    <div class="navbar-header text-white">
+      <!-- menu -->
+      <button type="button" class="navbar-toggle navbar-btn collapsed pull-left" data-toggle="collapse" data-target="#shifu-navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle menu</span>
+        <i class="fa fa-bars fa-2x fa-fw" aria-hidden="true"></i>
       </button>
+      <!-- profile -->
+      <a ui-sref="app.profile" class="navbar-btn navbar-toggle" style="padding:0;margin-right:10px;"><img class="img-circle" ng-src="{{profilePhoto}}"></a>
+      <!-- notifications -->
+      <a ui-sref="app.notifications" class="btn btn-info navbar-toggle navbar-btn">
+        <span class="fa-stack">
+          <i class="fa fa-bell fa-stack-2x fa-fw" aria-hidden="true"></i>
+          <span class="badge" style="color:red;">2</span>
+        </span>
+      </a>
       <!-- brand -->
       <a class="navbar-brand" href="#">Shifu</a>
     </div>
@@ -53,16 +61,18 @@
       </form>
 
       <!-- right navbar -->
-      <ul class="nav navbar-nav navbar-right" ng-repeat="user in profile">
+      <ul class="nav navbar-nav navbar-right">
         <li class="hidden-xs">
           <button style="margin-right:20px" class="btn btn-default btn-sm navbar-btn" role="button" ui-sref="app.application">Open a Restaurant</button>
         </li>
 
         <!-- notifications dropdown -->
-        <li class="dropdown hidden-xs">
+        <li class="dropdown hidden-xs text-white">
           <label class="btn btn-text" id="notifications" style="margin-right:20px;margin-top:15px;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-bell-o fa-2x" style="color:#ffffff;" aria-hidden="true"></i>
-            <span class="badge" style="color:#d9230f;">2</span>
+            <span class="fa-stack">
+              <i class="fa fa-bell fa-stack-2x fa-fw" aria-hidden="true"></i>
+              <span class="badge" style="color:red;">2</span>
+            </span>
           </label>
           <ul class="dropdown-menu" aria-labelledby="notifications">
             <li class="dropdown-header">Notifications</li>
@@ -99,11 +109,11 @@
 
         <!-- profile settings dropdown -->
         <li class="dropdown hidden-xs">
-          <img class="img-circle img-responsive navbar-btn dropdown-toggle" id="userSettings" ng-src="{{user.profile._json.picture.data.url}}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"/>
+          <img height="44" width="44" class="img-circle img-responsive navbar-btn dropdown-toggle" id="userSettings" ng-src="{{profilePhoto}}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"/>
           <ul class="dropdown-menu" aria-labelledby="userSettings">
             <li class="dropdown-header">Your Restaurants:</li>
-            <li>
-              <a ui-sref="app.owner({city: restaurant.city, name: restaurant.restaurantName})" ng-repeat="restaurant in restaurants">{{restaurant.restaurantName}}
+            <li ng-repeat="restaurant in restaurants">
+              <a ui-sref="app.owner({city: restaurant.city, name: restaurant.restaurantName})">{{restaurant.restaurantName}}
                 -
                 {{restaurant.city | capitalize}}</a>
             </li>
@@ -116,12 +126,13 @@
             </li>
             <li role="separator" class="divider"></li>
             <li>
-              <a href="logout">Log Out</a>
+              <a href="/logout" ng-click="logout()">Log Out</a>
             </li>
           </ul>
         </li>
       </ul>
 
     </div>
+
   </div>
 </nav>

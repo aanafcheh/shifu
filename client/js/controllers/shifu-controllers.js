@@ -42,14 +42,87 @@ angular.module('shifuProfile')
     };
   }])
 
+
 .controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart) {
 
 
+.factory('AppAuth', function($cookies, User, LoopBackAuth, $http) {
+  var self = {
+    logout: function() {
+      LoopBackAuth.clearUser();
+      LoopBackAuth.clearStorage();
+      LoopBackAuth.save();
+    },
+    ensureHasCurrentUser: function(cb) {
+      if (!this.currentUser && $cookies.get('access_token')) {
+        LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId = null;
+        $http.get('/auth/current')
+          .then(function(response) {
+            if (response.data.id) {
+              LoopBackAuth.currentUserId = response.data.id;
+              LoopBackAuth.accessTokenId = $cookies.get('access_token').substring(
+                2, 66);
+            }
+            if (LoopBackAuth.currentUserId === null) {
+              delete $cookies.get('access_token');
+              LoopBackAuth.accessTokenId = null;
+            }
+            LoopBackAuth.save();
+            self.currentUser = response.data;
+            var profile = self.currentUser && self.currentUser.profiles &&
+              self.currentUser.profiles.length && self.currentUser.profiles[
+                0];
+            if (profile) {
+              self.currentUser.name = profile.profile.name;
+              self.currentUser.profilePhoto = profile.profile.photos[0].value;
+            }
+            cb(self.currentUser);
+          }, function() {
+            LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId =
+              null;
+            LoopBackAuth.save();
+            cb({});
+          });
+      } else {
+        if (self.currentUser) {
+          console.log('Using cached current user.');
+        }
+        cb(self.currentUser);
+      }
+    }
+  };
+  return self;
+})
 
-  // query all the needed information
-  $scope.profile = User.identities({
+.controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', 'AppAuth', function($scope, $state, $stateParams, User, Restaurant, AppAuth) {
+
+  // make sure the user is athenticated in angular
+  if (!User.isAuthenticated()) {
+    AppAuth.ensureHasCurrentUser(function() {
+      $scope.currentUser = AppAuth.currentUser;
+    });
+  }
+
+  // logout function to clear logout user and clear local storage
+  $scope.logout = function() {
+    AppAuth.logout(function() {});
+  };
+
+
+  // query user info
+  User.identities({
     id: 'me'
-  });
+  }).$promise.then(function(response) {
+      if (response[0]) {
+        $scope.profilePhoto = response[0].profile.photos[0].value;
+      } else {
+        $scope.profilePhoto = "images/profile.svg";
+      }
+    },
+    function(error) {
+      $scope.profilePhoto = "images/profile.svg";
+    }
+  );
 
   $scope.restaurants = User.restaurants({
     id: 'me'
@@ -298,7 +371,7 @@ angular.module('shifuProfile')
 
   //radius selection dialog box
   $scope.openRadiusDialogBox = function(size, lat, lng) {
-    console.log("The lat and lng"+ lat + " sadasdas "+lng);
+    console.log("The lat and lng" + lat + " sadasdas " + lng);
     $scope.isCollapsed = false;
 
 
@@ -357,7 +430,7 @@ angular.module('shifuProfile')
     $scope.restaurantId = response[0].id;
     $scope.lat = response[0].lat;
     $scope.lng = response[0].lng;
-    console.log("lat and lffff"+ $scope.lat);
+    console.log("lat and lffff" + $scope.lat);
   });
 
   // time picker
@@ -422,7 +495,7 @@ angular.module('shifuProfile')
 
   //radius map for delivery zone
   var map, restaurantMarker, referenceAddressMarker, resLocationLatLng, boundary;
-  console.log(lat+ " "+ lng);
+  console.log(lat + " " + lng);
   $scope.getRadius = function() {
     if (!map) {
       resLocationLatLng = {
@@ -435,48 +508,48 @@ angular.module('shifuProfile')
         zoom: 14
       });
 
-       }
-
-
-      restaurantMarker = new google.maps.Marker({
-
-        position: resLocationLatLng,
-        map: map
-      });
     }
-    //monitor change in radius input
-    $scope.$watch('radius', function() {
 
-      if (referenceAddressMarker) {
-        referenceAddressMarker.setMap(null);
-      }
+
+    restaurantMarker = new google.maps.Marker({
+
+      position: resLocationLatLng,
+      map: map
+    });
+  };
+  //monitor change in radius input
+  $scope.$watch('radius', function() {
+
+    if (referenceAddressMarker) {
+      referenceAddressMarker.setMap(null);
+    }
+    if (boundary) {
+      boundary.setMap(null);
+    }
+    if ($scope.radius !== null) {
+      boundary = new google.maps.Circle({
+        map: map,
+        radius: $scope.radius * 1000,
+        fillColor: 'green',
+        fillOpacity: 0.3,
+        strokeColor: 'green',
+        strokeOpacity: 0.5,
+        center: resLocationLatLng
+      });
+
+      //fixing the zoom level
+      var bounds = new google.maps.LatLngBounds();
+      bounds.extend(boundary.getBounds().getNorthEast());
+      bounds.extend(boundary.getBounds().getSouthWest());
+      map.fitBounds(bounds);
+    }
+    if ($scope.radius === undefined) {
       if (boundary) {
         boundary.setMap(null);
       }
-      if ($scope.radius != null) {
-        boundary = new google.maps.Circle({
-          map: map,
-          radius: $scope.radius * 1000,
-          fillColor: 'green',
-          fillOpacity: 0.3,
-          strokeColor: 'green',
-          strokeOpacity: 0.5,
-          center: resLocationLatLng
-        });
+    }
 
-        //fixing the zoom level
-        var bounds = new google.maps.LatLngBounds();
-        bounds.extend(boundary.getBounds().getNorthEast());
-        bounds.extend(boundary.getBounds().getSouthWest());
-        map.fitBounds(bounds);
-      }
-      if ($scope.radius === undefined) {
-        if (boundary) {
-          boundary.setMap(null);
-        }
-      }
-
-    });
+  });
 
 
   $scope.done = function() {
@@ -703,11 +776,6 @@ angular.module('shifuProfile')
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
 
-  // query all the needed information
-  $scope.profile = User.identities({
-    id: 'me'
-  });
-
   // get the restaurant info
   $http.get('api/restaurants?filter[include]=menus&filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
     $scope.restaurants = data;
@@ -907,7 +975,7 @@ angular.module('shifuProfile')
       console.log(data);
       $scope.files = data;
       // TODO: add logo editing
-      // $scope.logo = data[0].logo;
+      $scope.logo = data[0].name;
     });
   };
 
@@ -1044,7 +1112,11 @@ angular.module('shifuProfile')
 //
 angular.module('shifu')
 
-.controller('IndexController', ['$scope', '$state', 'User', function($scope, $state, User) {
+.controller('IndexController', ['$scope', '$state', '$stateParams', '$location', 'User', '$http', function($scope, $state, $stateParams, $location, User, $http) {
+
+  // check if the user just signed up
+  $scope.verifyEmail = $stateParams.verifyEmail;
+  $scope.newUserEmail = $stateParams.userEmail;
 
   //permission to trace user current location when user visit to landing page
   if (navigator.geolocation) {
@@ -1056,4 +1128,64 @@ angular.module('shifu')
     });
   }
 
-}]);
+  // function to sign a user locally
+  $scope.signinUser = function() {
+    User.login({
+      username: $scope.localUser.username,
+      password: $scope.localUser.password
+    });
+  };
+
+}])
+
+
+.controller('SignupController', ['$scope', '$state', '$http', function($scope, $state, $http) {
+
+  // store verification erros while signing up
+  $scope.error = {};
+
+  // function to register a new user
+  // TODO: check the email and username live
+  $scope.signupNewUser = function() {
+    // if the form is valid, register the user
+    if ($scope.signup.$valid) {
+      $http.post('/api/users', $scope.newUser).then(function successCallback(response) {
+
+        // redirect to this page if successful
+        $state.go('home', {
+          'verifyEmail': true,
+          'userEmail': $scope.newUser.email
+        });
+
+      }, function errorCallback(response) {
+
+        $scope.signup.$submitted = false;
+        console.log(response);
+        if (response.data) {
+          if (response.data.error.details.messages.email) {
+            $scope.error.email = response.data.error.details.messages.email[0];
+          }
+          if (response.data.error.details.messages.username) {
+            $scope.error.username = response.data.error.details.messages.username[0];
+          }
+        }
+      });
+    } else {
+      $scope.signup.$submitted = false;
+    }
+  };
+
+}])
+
+// parse ng-model data to lowercase
+.directive('changeCase', function() {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function(scope, element, attrs, ngModel) {
+      ngModel.$parsers.push(function(str) {
+        return str.toLowerCase();
+      });
+    }
+  };
+});

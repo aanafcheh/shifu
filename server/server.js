@@ -1,41 +1,46 @@
 var loopback = require('loopback');
-var LoopBackContext = require('loopback-context');
-var boot = require('loopback-boot');
-var path = require('path');
-var flash = require('express-flash');
-var PassportConfigurator = require('loopback-component-passport').PassportConfigurator;
-
 var app = module.exports = loopback();
+var boot = require('loopback-boot');
 
-// We need flash messages to see passport errors
-app.use(flash());
+var path = require('path');
+var bodyParser = require('body-parser');
+var flash = require('express-flash');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 
 //put the current user in the current context so it is accessable by remote methods
-app.use(LoopBackContext.perRequest());
-app.use(loopback.token());
-app.use(function setCurrentUser(req, res, next) {
-  if (!req.accessToken) {
-    return next();
-  }
-  app.models.user.findById(req.accessToken.userId, function(err, user) {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return next(new Error('No user with this access token was found.'));
-    }
-    var loopbackContext = LoopBackContext.getCurrentContext();
-    if (loopbackContext) {
-      loopbackContext.set('currentUser', user);
-    }
-    next();
-  });
-});
+// var LoopBackContext = require('loopback-context');
+// app.use(LoopBackContext.perRequest());
+// app.use(loopback.token());
+// app.use(function setCurrentUser(req, res, next) {
+//   if (!req.accessToken) {
+//     return next();
+//   }
+//   app.models.user.findById(req.accessToken.userId, function(err, user) {
+//     if (err) {
+//       return next(err);
+//     }
+//     if (!user) {
+//       return next(new Error('No user with this access token was found.'));
+//     }
+//     var loopbackContext = LoopBackContext.getCurrentContext();
+//     if (loopbackContext) {
+//       loopbackContext.set('currentUser', user);
+//     }
+//     next();
+//   });
+// });
 
 // view engine
 app.set('views', path.join(__dirname, '../client'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
+
+// Bootstrap the application, configure models, datasources and middleware.
+// Sub-apps like REST API are mounted via boot scripts.
+boot(app, __dirname, function(err) {
+  if (err) throw err;
+});
 
 app.start = function() {
   // start the web server
@@ -50,19 +55,7 @@ app.start = function() {
   });
 };
 
-// Bootstrap the application, configure models, datasources and middleware.
-// Sub-apps like REST API are mounted via boot scripts.
-boot(app, __dirname, function(err) {
-  if (err) throw err;
-
-  // The access token is only available after boot
-  app.middleware('auth', loopback.token({
-    model: app.models.accessToken,
-    // specify the name of the logged in user id
-    currentUserLiteral: 'me',
-  }));
-
-  // start the server if `$ node server.js`
-  if (require.main === module)
-    app.start();
-});
+// start the server if `$ node server.js`
+if (require.main === module) {
+  app.start();
+}
