@@ -32,69 +32,61 @@ angular.module('shifuProfile')
       return deg * (Math.PI / 180);
     }
 
-
-
-
-
-
     return {
       distanceCalculation: distanceCalculation
     };
   }])
-
-
-.controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart) {
-
-
-.factory('AppAuth', function($cookies, User, LoopBackAuth, $http) {
-  var self = {
-    logout: function() {
-      LoopBackAuth.clearUser();
-      LoopBackAuth.clearStorage();
-      LoopBackAuth.save();
-    },
-    ensureHasCurrentUser: function(cb) {
-      if (!this.currentUser && $cookies.get('access_token')) {
-        LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId = null;
-        $http.get('/auth/current')
-          .then(function(response) {
-            if (response.data.id) {
-              LoopBackAuth.currentUserId = response.data.id;
-              LoopBackAuth.accessTokenId = $cookies.get('access_token').substring(
-                2, 66);
-            }
-            if (LoopBackAuth.currentUserId === null) {
-              delete $cookies.get('access_token');
-              LoopBackAuth.accessTokenId = null;
-            }
-            LoopBackAuth.save();
-            self.currentUser = response.data;
-            var profile = self.currentUser && self.currentUser.profiles &&
-              self.currentUser.profiles.length && self.currentUser.profiles[
-                0];
-            if (profile) {
-              self.currentUser.name = profile.profile.name;
-              self.currentUser.profilePhoto = profile.profile.photos[0].value;
-            }
-            cb(self.currentUser);
-          }, function() {
-            LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId =
-              null;
-            LoopBackAuth.save();
-            cb({});
-          });
-      } else {
-        if (self.currentUser) {
-          console.log('Using cached current user.');
+  .factory('AppAuth', function($cookies, User, LoopBackAuth, $http) {
+    var self = {
+      logout: function() {
+        LoopBackAuth.clearUser();
+        LoopBackAuth.clearStorage();
+        LoopBackAuth.save();
+      },
+      ensureHasCurrentUser: function(cb) {
+        if (!this.currentUser && $cookies.get('access_token')) {
+          LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId = null;
+          $http.get('/auth/current')
+            .then(function(response) {
+              if (response.data.id) {
+                LoopBackAuth.currentUserId = response.data.id;
+                LoopBackAuth.accessTokenId = $cookies.get('access_token').substring(
+                  2, 66);
+              }
+              if (LoopBackAuth.currentUserId === null) {
+                delete $cookies.get('access_token');
+                LoopBackAuth.accessTokenId = null;
+              }
+              LoopBackAuth.save();
+              self.currentUser = response.data;
+              var profile = self.currentUser && self.currentUser.profiles &&
+                self.currentUser.profiles.length && self.currentUser.profiles[
+                  0];
+              if (profile) {
+                self.currentUser.name = profile.profile.name;
+                self.currentUser.profilePhoto = profile.profile.photos[0].value;
+              }
+              cb(self.currentUser);
+            }, function() {
+              LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId =
+                null;
+              LoopBackAuth.save();
+              cb({});
+            });
+        } else {
+          if (self.currentUser) {
+            console.log('Using cached current user.');
+          }
+          cb(self.currentUser);
         }
-        cb(self.currentUser);
       }
-    }
-  };
-  return self;
-})
+    };
+    return self;
+  })
 
-.controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', 'AppAuth', function($scope, $state, $stateParams, User, Restaurant, AppAuth) {
+
+.controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart','AppAuth',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart,AppAuth) {
+
 
   // make sure the user is athenticated in angular
   if (!User.isAuthenticated()) {
@@ -143,7 +135,7 @@ angular.module('shifuProfile')
     if(newItem!=null){
     $scope.allCartItems.push(newItem);
     }
-  },true)
+  });
   }
 
 
@@ -907,10 +899,18 @@ angular.module('shifuProfile')
       }
     ).$promise.then(
       function(response) {
-        response.items.push(menuItem);
-        response.$save();
-        commonServices.newCartItem=menuItem;
-
+        //TODO: maybe use native for loop, since its faster and  can break the loop, angular for each does not provide loop break;
+        var toAdd=true;
+        angular.forEach(response.items,function(obj){
+          if(obj.id===menuItem.id){
+            toAdd=false;
+          }
+        });
+        if(toAdd){
+          response.items.push(menuItem);
+          response.$save();
+          commonServices.newCartItem=menuItem;
+        }
       },
       function(error) {
         // create the restaurant

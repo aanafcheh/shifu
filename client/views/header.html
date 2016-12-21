@@ -95,12 +95,12 @@
             <li role="separator" class="divider"></li>
             <li>
               <a href="">Added to Cart</a>
-              <div ng-hide></div>
-              <ul ng-repeat="item in allCartItems">
-                <p> Name: {{item.item}}
-                  {{item.category}}
 
-                </p>
+              <ul ng-repeat="item in allCartItems track by $index" >
+
+                {{item.item|uppercase}}<br>
+                  <small >{{item.category}}</small>
+                  <button  class="btn btn-info btn-xs" ng-click="deleteItemFromCart(item.id)">Delete</button>
               </ul>
             </li>
             <li role="separator" class="divider"></li>

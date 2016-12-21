@@ -64,12 +64,12 @@
 
   "cart": {
     "dataSource": "MongoDB",
-    "Email": {
-      "dataSource": "email"
-    },
     "container": {
       "dataSource": "storage",
       "public": true
     }
+  },
+  "Email": {
+    "dataSource": "email"
   }
 }
