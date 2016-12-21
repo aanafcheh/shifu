@@ -28,4 +28,5 @@ module.exports = function(app) {
     c.session = c.session !== false;
     passportConfigurator.configureProvider(s, c);
   }
+
 };

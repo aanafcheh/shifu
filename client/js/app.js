@@ -12,7 +12,8 @@ angular
     'angularFileUpload',
     'ngImgCrop',
     'angular.filter',
-    'ui.select'
+    'ui.select',
+    'ngCookies'
   ])
   .config(['$stateProvider', '$urlRouterProvider', '$resourceProvider', function($stateProvider,
     $urlRouterProvider, $resourceProvider) {
@@ -58,7 +59,7 @@ angular
           templateUrl: 'views/restaurant/restaurant-application.html',
           controller: 'ApplicationController'
         }
-      }
+      },
     })
 
     .state('app.restaurantwizard', {
@@ -103,6 +104,26 @@ angular
         }
       }
     })
+    //restaurant mobile states
+    .state('app.profile', {
+      url: 'profile',
+      views: {
+        'view@': {
+          templateUrl: 'views/mobile/profile.html',
+          controller: 'HeaderController'
+        }
+      }
+    })
+
+    .state('app.notifications', {
+      url: 'notifications',
+      views: {
+        'view@': {
+          templateUrl: 'views/mobile/notifications.html',
+          controller: 'HeaderController'
+        }
+      }
+    })
 
     // customer states
     .state('app.restaurant', {
@@ -132,11 +153,22 @@ angular
   .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
     $urlRouterProvider) {
     $stateProvider
-      .state('app', {
-        url: '',
-        templateUrl: 'views/home.html',
-        controller: 'IndexController'
-      });
+
+      .state('home', {
+      url: '/',
+      params: {
+        verifyEmail: null,
+        userEmail: null
+      },
+      templateUrl: 'views/home.html',
+      controller: 'IndexController'
+    })
+
+    .state('signup', {
+      url: '/signup',
+      templateUrl: 'views/signup.html',
+      controller: 'SignupController'
+    });
 
     $urlRouterProvider.otherwise('/');
   }]);
