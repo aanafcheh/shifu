@@ -73,19 +73,23 @@
             <li role="separator" class="divider"></li>
           </ul>
         </li>
+
+
         <li class="dropdown hidden-xs">
           <label class="btn btn-text" id="cart" style="margin-right:20px;margin-top:15px;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-shopping-cart fa-2x" style="color:#ffffff;" aria-hidden="true"></i>
             <span class="badge" style="color:#d9230f;">2</span>
           </label>
           <ul class="dropdown-menu" aria-labelledby="cart">
-            <li class="dropdown-header">Cart</li>
+            <li class="dropdown-header">Cart{{serviceCartItems[serviceCartItems.length-1]}}</li>
             <li role="separator" class="divider"></li>
             <li>
               <a href="">Added to Cart</a>
+              <div ng-hide></div>
               <ul ng-repeat="item in allCartItems">
                 <p> Name: {{item.item}}
                   {{item.category}}
+
                 </p>
               </ul>
             </li>

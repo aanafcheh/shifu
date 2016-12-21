@@ -5,9 +5,9 @@
 //TODO: change all the http requests to resource requests
 
 angular.module('shifuProfile')
-  .service('commonServices',['Menu', function(Menu) {
+  .service('commonServices',['User','Cart', function(User,Cart) {
 
-    var cartItems=[];
+      this.newCartItem;
 
     function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
       var R = 6371;
@@ -32,18 +32,13 @@ angular.module('shifuProfile')
       return deg * (Math.PI / 180);
     }
 
-    function addToCart(item){
-     cartItems.push(item);
-    }
-    function getCartItems(){
-      return cartItems;
-    }
+
+
+
 
 
     return {
-      distanceCalculation: distanceCalculation,
-      addToCart:addToCart,
-      getCartItems:getCartItems
+      distanceCalculation: distanceCalculation
     };
   }])
 
@@ -62,16 +57,21 @@ angular.module('shifuProfile')
     $scope.restaurants = response;
   });
 
-  $scope.commonServices=commonServices;
-  $scope.$watch('commonServices.getCartItems()',function(cartItems){
-    User.cart({'id':'me'}).
-    $promise.then(function(response) {
-      $scope.allCartItems = response.items;
-    });
+
+  User.cart({'id':'me'}).$promise.then(function(response){
+    $scope.allCartItems=response.items;
+    watchCartItem();
+  })
+
+  function watchCartItem(){
+  $scope.$watch(function(){
+    return commonServices.newCartItem;
+  },function(newItem){
+    if(newItem!=null){
+    $scope.allCartItems.push(newItem);
+    }
   },true)
-
-
-
+  }
 
 
   // query all the restaurants for suggestions
@@ -841,7 +841,7 @@ angular.module('shifuProfile')
       function(response) {
         response.items.push(menuItem);
         response.$save();
-        commonServices.addToCart(menuItem);
+        commonServices.newCartItem=menuItem;
 
       },
       function(error) {
