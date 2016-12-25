@@ -126,16 +126,36 @@ angular.module('shifuProfile')
   User.cart({'id':'me'}).$promise.then(function(response){
     $scope.allCartItems=response.items;
     watchCartItem();
-  })
+})
+
+
 
   function watchCartItem(){
   $scope.$watch(function(){
+    $scope.noOfItemsInCart=$scope.allCartItems.length;
     return commonServices.newCartItem;
   },function(newItem){
     if(newItem!=null){
     $scope.allCartItems.push(newItem);
     }
   });
+  }
+
+  $scope.deleteItemFromCart=function(itemId,$index){
+ User.cart({
+   'id':'me'
+ }).$promise.then(function(response){
+   for(var i=0; i<response.items.length; i++){
+     if(response.items[i].id===itemId){
+       response.items.splice(i,1);
+       response.$save();
+       $scope.allCartItems.splice($index,1);
+     }
+
+   }
+ });
+
+
   }
 
 

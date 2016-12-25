@@ -88,7 +88,7 @@
         <li class="dropdown hidden-xs">
           <label class="btn btn-text" id="cart" style="margin-right:20px;margin-top:15px;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-shopping-cart fa-2x" style="color:#ffffff;" aria-hidden="true"></i>
-            <span class="badge" style="color:#d9230f;">2</span>
+            <span class="badge" style="color:#d9230f;" >{{noOfItemsInCart}}</span>
           </label>
           <ul class="dropdown-menu" aria-labelledby="cart">
             <li class="dropdown-header">Cart{{serviceCartItems[serviceCartItems.length-1]}}</li>
@@ -96,12 +96,14 @@
             <li>
               <a href="">Added to Cart</a>
 
-              <ul ng-repeat="item in allCartItems track by $index" >
+              <ul ng-repeat="item in allCartItems" >
 
                 {{item.item|uppercase}}<br>
                   <small >{{item.category}}</small>
-                  <button  class="btn btn-info btn-xs" ng-click="deleteItemFromCart(item.id)">Delete</button>
+                  <button  class="btn btn-info btn-xs" ng-click="deleteItemFromCart(item.id,$index)">Delete</button>
               </ul>
+              <button  class="btn btn-default btn-xs" >Check Out</button>
+
             </li>
             <li role="separator" class="divider"></li>
           </ul>
