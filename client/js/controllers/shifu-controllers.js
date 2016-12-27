@@ -260,6 +260,11 @@ angular.module('shifuProfile')
 
         }
       }
+      $scope.application.address=document.getElementById("route").value;
+      $scope.application.street_number=document.getElementById("street_number").value;
+      $scope.application.city=document.getElementById("locality").value;
+      $scope.application.zipcode=parseInt(document.getElementById("postal_code").value);
+
 
 
 
