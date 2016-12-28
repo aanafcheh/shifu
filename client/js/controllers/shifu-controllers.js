@@ -8,6 +8,7 @@ angular.module('shifuProfile')
   .service('commonServices',['User','Cart', function(User,Cart) {
 
       this.newCartItem;
+      this.deletedItem;
 
     function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
       var R = 6371;
@@ -32,8 +33,24 @@ angular.module('shifuProfile')
       return deg * (Math.PI / 180);
     }
 
+    function removeCartItem(itemId){
+      User.cart({
+        'id':'me'
+      }).$promise.then(function(response){
+        for(var i=0; i<response.items.length; i++){
+          if(response.items[i].id===itemId){
+            response.items.splice(i,1);
+            response.$save();
+
+          }
+
+        }
+      });
+    }
+
     return {
-      distanceCalculation: distanceCalculation
+      distanceCalculation: distanceCalculation,
+      removeCartItem:removeCartItem
     };
   }])
   .factory('AppAuth', function($cookies, User, LoopBackAuth, $http) {
@@ -126,9 +143,8 @@ angular.module('shifuProfile')
   User.cart({'id':'me'}).$promise.then(function(response){
     $scope.allCartItems=response.items;
     watchCartItem();
-})
-
-
+    deleteFromCheckoutWatch();
+});
 
   function watchCartItem(){
   $scope.$watch(function(){
@@ -141,21 +157,21 @@ angular.module('shifuProfile')
   });
   }
 
+  function deleteFromCheckoutWatch(){
+    $scope.$watch(function(){
+      return commonServices.deletedItem;
+    },function($index){
+      if($index!=null){
+      $scope.allCartItems.splice($index);
+      }
+    });
+  }
+
+
+
   $scope.deleteItemFromCart=function(itemId,$index){
- User.cart({
-   'id':'me'
- }).$promise.then(function(response){
-   for(var i=0; i<response.items.length; i++){
-     if(response.items[i].id===itemId){
-       response.items.splice(i,1);
-       response.$save();
-       $scope.allCartItems.splice($index,1);
-     }
-
-   }
- });
-
-
+    $scope.allCartItems.splice($index,1);
+    commonServices.removeCartItem(itemId);
   }
 
 
@@ -169,6 +185,29 @@ angular.module('shifuProfile')
       'noResults': $scope.noResults
     });
   };
+
+}])
+
+.controller('CheckoutController',['$scope','User','commonServices','Cart',function($scope,User,commonServices,Cart){
+  User.cart({'id':'me'},function(response){
+    $scope.itemsToOrder=response.items;
+    $scope.total=totalPrice();
+  })
+
+  function totalPrice(){
+    var total=0;
+    for(var i=0; i<$scope.itemsToOrder.length; i++){
+      total=total+parseInt($scope.itemsToOrder[i].price);
+    }
+    return total;
+  }
+  $scope.deleteItemFromCart=function(itemId,$index){
+    $scope.total=$scope.total-parseInt($scope.itemsToOrder[$index].price);
+    $scope.itemsToOrder.splice($index,1);
+    commonServices.removeCartItem(itemId);
+    commonServices.deletedItem=$index;
+  };
+
 
 }])
 

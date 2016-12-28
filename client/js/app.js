@@ -134,6 +134,15 @@ angular
           controller: 'RestaurantController'
         }
       }
+    })
+    .state('app.checkout', {
+      url: 'checkout',
+      views: {
+        'view@': {
+          templateUrl: 'views/customer/checkout.html',
+          controller: 'CheckoutController'
+        }
+      }
     });
 
     $urlRouterProvider.otherwise('/');
