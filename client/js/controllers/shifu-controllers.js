@@ -7,8 +7,10 @@
 angular.module('shifuProfile')
   .service('commonServices',['User','Cart', function(User,Cart) {
 
-      this.newCartItem;
-      this.deletedItem;
+      this.newCartItem; //watch latest  item added to cart
+      this.deletedItem; //watch latest deleted item from cart
+      this.deletedItemIndex; //deletedItem index
+
 
     function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
       var R = 6371;
@@ -33,6 +35,7 @@ angular.module('shifuProfile')
       return deg * (Math.PI / 180);
     }
 
+    //function to deleteItem from cart and database
     function removeCartItem(itemId){
       User.cart({
         'id':'me'
@@ -104,7 +107,9 @@ angular.module('shifuProfile')
 
 .controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart','AppAuth',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart,AppAuth) {
 
-
+  commonServices.deletedItemIndex=null;
+  commonServices.deletedItem=null;
+  commonServices.newCartItem=null;
   // make sure the user is athenticated in angular
   if (!User.isAuthenticated()) {
     AppAuth.ensureHasCurrentUser(function() {
@@ -140,12 +145,14 @@ angular.module('shifuProfile')
   });
 
 
+  //get all user cart items
   User.cart({'id':'me'}).$promise.then(function(response){
     $scope.allCartItems=response.items;
     watchCartItem();
     deleteFromCheckoutWatch();
 });
 
+  //watch any item added to cart from restaurant page
   function watchCartItem(){
   $scope.$watch(function(){
     $scope.noOfItemsInCart=$scope.allCartItems.length;
@@ -157,21 +164,24 @@ angular.module('shifuProfile')
   });
   }
 
+  //watch any item deleted from cart checkout page
   function deleteFromCheckoutWatch(){
     $scope.$watch(function(){
       return commonServices.deletedItem;
     },function($index){
-      if($index!=null){
-      $scope.allCartItems.splice($index);
+      if($index!=null && commonServices.deletedItemIndex!=null){
+      $scope.allCartItems.splice(commonServices.deletedItemIndex,1);
       }
     });
   }
 
 
-
+  //delete items from cart from cart itself from header
   $scope.deleteItemFromCart=function(itemId,$index){
-    $scope.allCartItems.splice($index,1);
     commonServices.removeCartItem(itemId);
+    commonServices.deletedItem=itemId;
+    commonServices.deletedItemIndex=$index;
+
   }
 
 
@@ -189,11 +199,15 @@ angular.module('shifuProfile')
 }])
 
 .controller('CheckoutController',['$scope','User','commonServices','Cart',function($scope,User,commonServices,Cart){
+  commonServices.deletedItemIndex=null;
+  commonServices.deletedItem=null;
+  commonServices.newCartItem=null;
   User.cart({'id':'me'},function(response){
     $scope.itemsToOrder=response.items;
     $scope.total=totalPrice();
   })
 
+  //total sum of cart items
   function totalPrice(){
     var total=0;
     for(var i=0; i<$scope.itemsToOrder.length; i++){
@@ -201,12 +215,24 @@ angular.module('shifuProfile')
     }
     return total;
   }
+
+  //delete item from cart(calls service for it)
   $scope.deleteItemFromCart=function(itemId,$index){
-    $scope.total=$scope.total-parseInt($scope.itemsToOrder[$index].price);
-    $scope.itemsToOrder.splice($index,1);
+
     commonServices.removeCartItem(itemId);
-    commonServices.deletedItem=$index;
+    commonServices.deletedItem=itemId;
+    commonServices.deletedItemIndex=$index;
   };
+
+  //watcher of deleted item from cart
+  $scope.$watch(function(){
+    return commonServices.deletedItem;
+  },function($index){
+    if(commonServices.deletedItemIndex!=null){
+      $scope.total=$scope.total-parseInt($scope.itemsToOrder[commonServices.deletedItemIndex].price);
+      $scope.itemsToOrder.splice(commonServices.deletedItemIndex,1);
+    }
+    });
 
 
 }])
@@ -964,16 +990,18 @@ angular.module('shifuProfile')
     ).$promise.then(
       function(response) {
         //TODO: maybe use native for loop, since its faster and  can break the loop, angular for each does not provide loop break;
-        var toAdd=true;
-        angular.forEach(response.items,function(obj){
-          if(obj.id===menuItem.id){
-            toAdd=false;
+        var toAdd = true;
+        for (var i = 0; i < response.items.length; i++) {
+          if (response.items[i].id === menuItem.id) {
+            toAdd = false;
+            break;
           }
-        });
-        if(toAdd){
+        }
+
+        if (toAdd) {
           response.items.push(menuItem);
           response.$save();
-          commonServices.newCartItem=menuItem;
+          commonServices.newCartItem = menuItem;
         }
       },
       function(error) {
@@ -982,7 +1010,8 @@ angular.module('shifuProfile')
           id:'me'
         },{"items":[menuItem]});
 
-      });
+      }
+);
   }
 
 
