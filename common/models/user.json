@@ -64,6 +64,11 @@
       "type": "hasOne",
       "model": "cart",
       "foreignKey": "userId"
+    },
+    "order": {
+      "type": "hasMany",
+      "model": "order",
+      "foreignKey": "userId"
     }
   },
   "acls": [],

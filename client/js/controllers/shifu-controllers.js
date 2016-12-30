@@ -50,10 +50,16 @@ angular.module('shifuProfile')
         }
       });
     }
+    function setDefault(){
+      this.newCartItem=null;
+      this.deletedItem=null;
+      this.deletedItemIndex=null;
+    }
 
     return {
       distanceCalculation: distanceCalculation,
-      removeCartItem:removeCartItem
+      removeCartItem:removeCartItem,
+      setDefault:setDefault
     };
   }])
   .factory('AppAuth', function($cookies, User, LoopBackAuth, $http) {
@@ -107,9 +113,7 @@ angular.module('shifuProfile')
 
 .controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart','AppAuth',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart,AppAuth) {
 
-  commonServices.deletedItemIndex=null;
-  commonServices.deletedItem=null;
-  commonServices.newCartItem=null;
+  commonServices.setDefault();
   // make sure the user is athenticated in angular
   if (!User.isAuthenticated()) {
     AppAuth.ensureHasCurrentUser(function() {
@@ -198,10 +202,12 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('CheckoutController',['$scope','User','commonServices','Cart',function($scope,User,commonServices,Cart){
-  commonServices.deletedItemIndex=null;
-  commonServices.deletedItem=null;
-  commonServices.newCartItem=null;
+.controller('CheckoutController',['$scope','User','commonServices','Cart','Order',function($scope,User,commonServices,Cart,Order){
+  $scope.number=1;
+  commonServices.setDefault();
+  $scope.check=function(){
+    console.log($scope.number);
+  }
   User.cart({'id':'me'},function(response){
     $scope.itemsToOrder=response.items;
     $scope.total=totalPrice();
@@ -233,6 +239,22 @@ angular.module('shifuProfile')
       $scope.itemsToOrder.splice(commonServices.deletedItemIndex,1);
     }
     });
+
+  //post cart items
+  $scope.checkout=function(){
+
+     angular.forEach($scope.itemsToOrder,function(obj){
+       var quantity=parseInt(angular.element(document).find("#"+obj.item).val());
+       User.order.create({id:'me'},{'restaurantId':obj.restaurantId,'itemId':obj.id,'quantity':quantity}).$promise.then(function(obj){
+          User.cart({id:'me'}).$promise.then(function(response){
+            response.items=[];
+            response.$save();
+          });
+      },function(error){
+      });
+    });
+  };
+
 
 
 }])

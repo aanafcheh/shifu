@@ -1,33 +1,46 @@
 
 <div>
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-4">
       Item
+    </div>
+    <div class="col-sm-4">
+      Quantity
     </div>
     <div class="col-sm-4">
       Cost
     </div>
+
   </div>
       <div class="row" ng-repeat="item in itemsToOrder" style="padding: 5px;">
-      <div class="col-sm-8">
-        {{item.item}}
-        {{$index}}
-      </div>
       <div class="col-sm-4">
-       {{item.price}}
-        <button  class="btn btn-info btn-xs" ng-click="deleteItemFromCart(item.id,$index)">Delete</button>
+        {{item.item}}
 
       </div>
+        <div class="col-sm-4">
+          <input type="number" id="{{item.item}}" placeholder="quantity" value="1"  />
+        </div>
+      <div class="col-sm-4" >
+        {{number * item.price}}
+        <button  class="btn btn-info btn-xs" ng-click="deleteItemFromCart(item.id,$index)">Delete</button>
+
+
+      </div>
+
         </div>
 <hr>
   <div class="row">
+
     <div class="col-sm-8">
      Total
     </div>
-    <div class="col-sm-4">
-{{total}}
+    <div class="col-sm-4" >
+    {{total}}
+
     </div>
 
   </div>
+  <button  class="btn btn-danger btn-xs" ng-click="check()">Check</button>
+  <button  class="btn btn-danger btn-xs" ng-click="checkout()">CheckOut</button>
 </div>
 

@@ -61,7 +61,6 @@
     "dataSource": "MongoDB",
     "public": true
   },
-
   "cart": {
     "dataSource": "MongoDB",
     "container": {
@@ -71,5 +70,12 @@
   },
   "Email": {
     "dataSource": "email"
+  },
+  "order": {
+    "dataSource": "MongoDB",
+    "container": {
+      "dataSource": "storage",
+      "public": true
+    }
   }
 }

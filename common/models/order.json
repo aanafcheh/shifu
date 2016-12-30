@@ -1,14 +1,19 @@
 {
-  "name": "cart",
-  "plural": "carts",
+  "name": "order",
+  "plural": "orders",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "items": {
-      "type": "array"
+    "itemId": {
+      "type": "string",
+      "required": true
+    },
+    "quantity": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
