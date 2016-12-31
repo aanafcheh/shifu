@@ -217,7 +217,7 @@ angular.module('shifuProfile')
   function totalPrice(){
     var total=0;
     for(var i=0; i<$scope.itemsToOrder.length; i++){
-      total=total+parseInt($scope.itemsToOrder[i].price);
+      total=total+parseInt($scope.itemsToOrder[i].price * $scope.itemsToOrder[i].quantity);
     }
     return total;
   }
@@ -235,20 +235,20 @@ angular.module('shifuProfile')
     return commonServices.deletedItem;
   },function($index){
     if(commonServices.deletedItemIndex!=null){
-      $scope.total=$scope.total-parseInt($scope.itemsToOrder[commonServices.deletedItemIndex].price);
+      $scope.total=$scope.total-parseInt($scope.itemsToOrder[commonServices.deletedItemIndex].price* $scope.itemsToOrder[commonServices.deletedItemIndex].quantity);
       $scope.itemsToOrder.splice(commonServices.deletedItemIndex,1);
     }
     });
 
-  //post cart items
+  //post cart items as orders
   $scope.checkout=function(){
-
      angular.forEach($scope.itemsToOrder,function(obj){
-       var quantity=parseInt(angular.element(document).find("#"+obj.item).val());
-       User.order.create({id:'me'},{'restaurantId':obj.restaurantId,'itemId':obj.id,'quantity':quantity}).$promise.then(function(obj){
+       User.order.create({id:'me'},{'restaurantId':obj.restaurantId,'itemId':obj.id,'quantity':obj.quantity}).$promise.then(function(obj){
           User.cart({id:'me'}).$promise.then(function(response){
             response.items=[];
             response.$save();
+            alert("Your order has been placed");
+
           });
       },function(error){
       });
@@ -1005,7 +1005,8 @@ angular.module('shifuProfile')
 
   //***** add to cart *****//
 
-  $scope.addTocart=function(menuItem){
+  $scope.addTocart=function(menuItem,quantity){
+    menuItem.quantity=quantity;
     $scope.cart = User.cart({
           "id":'me'
       }

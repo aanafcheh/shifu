@@ -146,7 +146,10 @@
    <ul ng-repeat="menu in menus">
 
        <ul>{{menu.item}}
-       <button class="btn btn-info btn-xs" ng-click="addTocart(menu)"><i class="fa fa-cart-plus" aria-hidden="true"></i></i>Add to Cart</button></ul>
+
+       <input type="number" id="{{menu.item}}" placeholder="Quantity" value="1" ng-model="quantity" />
+         <button class="btn btn-info btn-xs" ng-click="addTocart(menu,quantity)"><i class="fa fa-cart-plus" aria-hidden="true"></i></i>Add to Cart</button></ul>
+
 
      </ul>
  </div>
