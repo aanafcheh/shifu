@@ -1,12 +1,13 @@
 var loopback = require('loopback');
 var app = module.exports = loopback();
 var boot = require('loopback-boot');
-
 var path = require('path');
 var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+
+
 
 //put the current user in the current context so it is accessable by remote methods
 // var LoopBackContext = require('loopback-context');

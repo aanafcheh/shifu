@@ -113,6 +113,7 @@ angular.module('shifuProfile')
 
 .controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart','AppAuth',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart,AppAuth) {
 
+
   commonServices.setDefault();
   // make sure the user is athenticated in angular
   if (!User.isAuthenticated()) {
@@ -224,7 +225,6 @@ angular.module('shifuProfile')
 
   //delete item from cart(calls service for it)
   $scope.deleteItemFromCart=function(itemId,$index){
-
     commonServices.removeCartItem(itemId);
     commonServices.deletedItem=itemId;
     commonServices.deletedItemIndex=$index;
@@ -1005,6 +1005,7 @@ angular.module('shifuProfile')
 
   //***** add to cart *****//
 
+  $scope.quantity=1;
   $scope.addTocart=function(menuItem,quantity){
     menuItem.quantity=quantity;
     $scope.cart = User.cart({
