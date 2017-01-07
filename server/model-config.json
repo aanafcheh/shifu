@@ -78,7 +78,12 @@
       "public": true
     }
   },
-  "notification": {
+  "notifications": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+
+  "orderNotification": {
     "dataSource": "MongoDB",
     "public": true
   }

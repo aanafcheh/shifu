@@ -1,0 +1,41 @@
+{
+  "name": "orderNotification",
+  "plural": "orderNotifications",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "required": true
+    },
+    "delivery_address": {
+      "type": "string",
+      "required": true
+    },
+    "quantity": {
+      "type": "string",
+      "required": true
+    },
+    "itemId": {
+      "type": "string",
+      "required": true
+    },
+    "Date": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "notification": {
+      "type": "belongsTo",
+      "model": "notifications",
+      "foreignKey": "notificationsId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

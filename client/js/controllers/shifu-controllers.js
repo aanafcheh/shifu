@@ -869,7 +869,13 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant','Cart', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant,Cart) {
+.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant','Cart','Notifications','OrderNotification', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant,Cart,Notifications,OrderNotification) {
+
+$scope.notificatoins=Notifications.ordernotifications({
+  "id":"587114462f81b98022c1f1a0"
+});
+  console.log($scope.notificatoins);
+
 
   $scope.restaurant = {};
 

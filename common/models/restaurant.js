@@ -3,6 +3,8 @@ var LoopBackContext = require('loopback-context');
 
 module.exports = function(Restaurant) {
 
+
+
   // get the restaurant id at /restaurants/restaurantId
   // Restaurant.restaurantId = function(cb) {
   //

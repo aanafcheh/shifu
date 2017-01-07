@@ -65,6 +65,11 @@
       "model": "cart",
       "foreignKey": "userId"
     },
+    "notificationsContainer": {
+      "type": "hasOne",
+      "model": "notificationsContainer",
+      "foreignKey": "userId"
+    },
     "order": {
       "type": "hasMany",
       "model": "order",
