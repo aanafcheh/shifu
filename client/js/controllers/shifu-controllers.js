@@ -194,10 +194,15 @@ angular.module('shifuProfile')
    });
 
 
-  $scope.notifications=User.notificationsContainer({'id':'me'}).$promise.then(function(response){
-    $http.get('api/orderNotifications/notification/'+response.id).success(function(data){
-      console.log("the data are "+data);
+  function notificationPolling(containerId){
+    $http.get('api/orderNotifications/notification/'+containerId).success(function(data){
+      console.log(JSON.stringify(data));
+      notificationPolling(containerId);
     })
+  }
+
+  $scope.notifications=User.notificationsContainer({'id':'me'}).$promise.then(function(response){
+      notificationPolling(response.id);
     NotificationsContainer.orderNotifications({'id':response.id},function(res){
       console.log(res);
     },function(err){

@@ -6,11 +6,15 @@ var eventEmitter = new events.EventEmitter();
 
 module.exports = function(Ordernotification) {
   Ordernotification.notificationPolling= function(containerId,cb){
+    var timeout=setTimeout(function(){
+      cb(null,"");
+      console.log("tiime out");
+    },30000);
     var listener=function(){
-      eventEmitter.once('newOrder',function(data){
-       if(containerId===data){
-         cb(null,data);
-       }
+      eventEmitter.once('newOrder',function(newNotification){
+        //clearTimeout(timeout);
+        console.log(newNotification.notificationsContainerId + " "+ containerId);
+         cb(null,newNotification);
 
       });
     };
@@ -38,10 +42,8 @@ module.exports = function(Ordernotification) {
   );
 
   Ordernotification.notificationPost=function(req,cb){
-    console.log("The obj" );
-
     Ordernotification.create({"notificationsContainerId":req.body.id,'quantity':req.body.quantity,'itemId':req.body.itemId,'customerId':req.body.customerId},function(err,data){
-      eventEmitter.emit("newOrder",req.body.id);
+      eventEmitter.emit("newOrder",data);
       cb(null,data);
     });
 
