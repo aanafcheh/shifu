@@ -78,7 +78,7 @@
       "public": true
     }
   },
-  "notifications": {
+  "notificationsContainer": {
     "dataSource": "MongoDB",
     "public": true
   },

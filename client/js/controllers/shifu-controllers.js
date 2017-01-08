@@ -111,7 +111,7 @@ angular.module('shifuProfile')
   })
 
 
-.controller('HeaderController', ['$scope', 'commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart','AppAuth',function($scope,commonServices, $state, $stateParams, User, Restaurant,Cart,AppAuth) {
+.controller('HeaderController', ['$scope', '$http','commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart','AppAuth','NotificationsContainer',function($scope,$http,commonServices, $state, $stateParams, User, Restaurant,Cart,AppAuth,NotificationsContainer) {
 
 
   commonServices.setDefault();
@@ -121,6 +121,7 @@ angular.module('shifuProfile')
       $scope.currentUser = AppAuth.currentUser;
     });
   }
+
 
   // logout function to clear logout user and clear local storage
   $scope.logout = function() {
@@ -188,6 +189,24 @@ angular.module('shifuProfile')
     commonServices.deletedItemIndex=$index;
 
   }
+  User.notificationsContainer({'id':'me'}).$promise.then(function(response){},function(err){
+     User.notificationsContainer.create({id:'me'},{});
+   });
+
+
+  $scope.notifications=User.notificationsContainer({'id':'me'}).$promise.then(function(response){
+    $http.get('api/orderNotifications/notification/'+response.id).success(function(data){
+      console.log("the data are "+data);
+    })
+    NotificationsContainer.orderNotifications({'id':response.id},function(res){
+      console.log(res);
+    },function(err){
+      console.log(err);
+    })
+    console.log(response);
+  },function(error){
+    console.log(error);
+  })
 
 
   // query all the restaurants for suggestions
@@ -203,7 +222,7 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('CheckoutController',['$scope','User','commonServices','Cart','Order',function($scope,User,commonServices,Cart,Order){
+.controller('CheckoutController',['$scope','$http','User','commonServices','Cart','Order','OrderNotification','NotificationsContainer',function($scope,$http,User,commonServices,Cart,Order,OrderNotification,NotificationsContainer){
   $scope.number=1;
   commonServices.setDefault();
   $scope.check=function(){
@@ -242,17 +261,30 @@ angular.module('shifuProfile')
 
   //post cart items as orders
   $scope.checkout=function(){
-     angular.forEach($scope.itemsToOrder,function(obj){
-       User.order.create({id:'me'},{'restaurantId':obj.restaurantId,'itemId':obj.id,'quantity':obj.quantity}).$promise.then(function(obj){
-          User.cart({id:'me'}).$promise.then(function(response){
-            response.items=[];
-            response.$save();
-            alert("Your order has been placed");
+    User.notificationsContainer({id:'me'}).$promise.then(function(res){
+      angular.forEach($scope.itemsToOrder,function(obj){
+        User.order.create({id:'me'},{'restaurantId':obj.restaurantId,'itemId':obj.id,'quantity':obj.quantity}).$promise.then(function(obj1){
+          console.log("the object"+ obj);
 
-          });
-      },function(error){
+            $http.post('api/orderNotifications/notification',{"id":res.id,'quantity':obj.quantity,'itemId':obj.id,'customerId':res.userId,"restaurantId":obj.restaurantId}).success(function(data){
+              console.log(data);
+            });
+            // NotificationsContainer.orderNotifications.create({id:res.id},{'quantity':obj.quantity,'itemId':obj.id,'customerId':res.userId});
+        },function(error){
+        });
       });
+      User.cart({id:'me'}).$promise.then(function(response){
+        response.items=[];
+        response.$save();
+        alert("Your order has been placed");
+
+      });
+
+    },function(err){
+      console.log(err);
     });
+
+
   };
 
 
@@ -869,12 +901,8 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant','Cart','Notifications','OrderNotification', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant,Cart,Notifications,OrderNotification) {
+.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant','Cart','OrderNotification', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant,Cart,OrderNotification) {
 
-$scope.notificatoins=Notifications.ordernotifications({
-  "id":"587114462f81b98022c1f1a0"
-});
-  console.log($scope.notificatoins);
 
 
   $scope.restaurant = {};

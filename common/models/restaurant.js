@@ -81,6 +81,7 @@ module.exports = function(Restaurant) {
   // check if the restaurant is open or closed
   Restaurant.openOrClosed = function(restaurantId, cb) {
 
+
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     var now = new Date();
     // get the current time and current day of the week

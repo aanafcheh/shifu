@@ -10,10 +10,10 @@
     "customerId": {
       "type": "string",
       "required": true
+
     },
     "delivery_address": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "quantity": {
       "type": "string",
@@ -24,16 +24,15 @@
       "required": true
     },
     "Date": {
-      "type": "date",
-      "required": true
+      "type": "date"
     }
   },
   "validations": [],
   "relations": {
-    "notification": {
+    "notificationsContainer": {
       "type": "belongsTo",
-      "model": "notifications",
-      "foreignKey": "notificationsId"
+      "model": "notificationsContainer",
+      "foreignKey": "notificationsContainerId"
     }
   },
   "acls": [],

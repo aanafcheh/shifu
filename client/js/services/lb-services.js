@@ -424,6 +424,30 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               method: "PUT",
             },
 
+            // INTERNAL. Use User.notificationsContainer() instead.
+            "prototype$__get__notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "GET",
+            },
+
+            // INTERNAL. Use User.notificationsContainer.create() instead.
+            "prototype$__create__notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "POST",
+            },
+
+            // INTERNAL. Use User.notificationsContainer.update() instead.
+            "prototype$__update__notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "PUT",
+            },
+
+            // INTERNAL. Use User.notificationsContainer.destroy() instead.
+            "prototype$__destroy__notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "DELETE",
+            },
+
             /**
              * @ngdoc method
              * @name lbServices.User#prototype$__get__accessTokens
@@ -1531,6 +1555,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
             // INTERNAL. Use Order.user() instead.
             "::get::Order::user": {
               url: urlBase + "/orders/:id/user",
+              method: "GET",
+            },
+
+            // INTERNAL. Use NotificationsContainer.user() instead.
+            "::get::NotificationsContainer::user": {
+              url: urlBase + "/notificationsContainer/:id/user",
               method: "GET",
             },
 
@@ -3260,6 +3290,201 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
         R.order.updateById = function() {
           var TargetResource = $injector.get("Order");
           var action = TargetResource["::updateById::User::order"];
+          return action.apply(R, arguments);
+        };
+    /**
+     * @ngdoc object
+     * @name lbServices.User.notificationsContainer
+     * @header lbServices.User.notificationsContainer
+     * @object
+     * @description
+     *
+     * The object `User.notificationsContainer` groups methods
+     * manipulating `NotificationsContainer` instances related to `User`.
+     *
+     * Call {@link lbServices.User#notificationsContainer User.notificationsContainer()}
+     * to query all related instances.
+     */
+
+
+            /**
+             * @ngdoc method
+             * @name lbServices.User#notificationsContainer
+             * @methodOf lbServices.User
+             *
+             * @description
+             *
+             * Fetches hasOne relation notificationsContainer.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - User id
+             *
+             *  - `refresh` – `{boolean=}` -
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `NotificationsContainer` object.)
+             * </em>
+             */
+        R.notificationsContainer = function() {
+          var TargetResource = $injector.get("NotificationsContainer");
+          var action = TargetResource["::get::User::notificationsContainer"];
+          return action.apply(R, arguments);
+        };
+
+            /**
+             * @ngdoc method
+             * @name lbServices.User.notificationsContainer#create
+             * @methodOf lbServices.User.notificationsContainer
+             *
+             * @description
+             *
+             * Creates a new instance in notificationsContainer of this model.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - User id
+             *
+             * @param {Object} postData Request data.
+             *
+             * This method expects a subset of model properties as request parameters.
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `NotificationsContainer` object.)
+             * </em>
+             */
+        R.notificationsContainer.create = function() {
+          var TargetResource = $injector.get("NotificationsContainer");
+          var action = TargetResource["::create::User::notificationsContainer"];
+          return action.apply(R, arguments);
+        };
+
+            /**
+             * @ngdoc method
+             * @name lbServices.User.notificationsContainer#createMany
+             * @methodOf lbServices.User.notificationsContainer
+             *
+             * @description
+             *
+             * Creates a new instance in notificationsContainer of this model.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - User id
+             *
+             * @param {Object} postData Request data.
+             *
+             * This method expects a subset of model properties as request parameters.
+             *
+             * @param {function(Array.<Object>,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Array.<Object>} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `NotificationsContainer` object.)
+             * </em>
+             */
+        R.notificationsContainer.createMany = function() {
+          var TargetResource = $injector.get("NotificationsContainer");
+          var action = TargetResource["::createMany::User::notificationsContainer"];
+          return action.apply(R, arguments);
+        };
+
+            /**
+             * @ngdoc method
+             * @name lbServices.User.notificationsContainer#destroy
+             * @methodOf lbServices.User.notificationsContainer
+             *
+             * @description
+             *
+             * Deletes notificationsContainer of this model.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - User id
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * This method returns no data.
+             */
+        R.notificationsContainer.destroy = function() {
+          var TargetResource = $injector.get("NotificationsContainer");
+          var action = TargetResource["::destroy::User::notificationsContainer"];
+          return action.apply(R, arguments);
+        };
+
+            /**
+             * @ngdoc method
+             * @name lbServices.User.notificationsContainer#update
+             * @methodOf lbServices.User.notificationsContainer
+             *
+             * @description
+             *
+             * Update notificationsContainer of this model.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - User id
+             *
+             * @param {Object} postData Request data.
+             *
+             * This method expects a subset of model properties as request parameters.
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `NotificationsContainer` object.)
+             * </em>
+             */
+        R.notificationsContainer.update = function() {
+          var TargetResource = $injector.get("NotificationsContainer");
+          var action = TargetResource["::update::User::notificationsContainer"];
           return action.apply(R, arguments);
         };
 
@@ -10056,13 +10281,13 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
 
 /**
  * @ngdoc object
- * @name lbServices.Notifications
- * @header lbServices.Notifications
+ * @name lbServices.NotificationsContainer
+ * @header lbServices.NotificationsContainer
  * @object
  *
  * @description
  *
- * A $resource object for interacting with the `Notifications` model.
+ * A $resource object for interacting with the `NotificationsContainer` model.
  *
  * ## Example
  *
@@ -10072,71 +10297,77 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
  *
  */
   module.factory(
-    "Notifications",
+    "NotificationsContainer",
     [
       'LoopBackResource', 'LoopBackAuth', '$injector', '$q',
       function(LoopBackResource, LoopBackAuth, $injector, $q) {
         var R = LoopBackResource(
-        urlBase + "/notifications/:id",
+        urlBase + "/notificationsContainer/:id",
           { 'id': '@id' },
           {
 
-            // INTERNAL. Use Notifications.ordernotifications.findById() instead.
-            "prototype$__findById__ordernotifications": {
-              params: {
-                'fk': '@fk',
-              },
-              url: urlBase + "/notifications/:id/ordernotifications/:fk",
+            // INTERNAL. Use NotificationsContainer.user() instead.
+            "prototype$__get__user": {
+              url: urlBase + "/notificationsContainer/:id/user",
               method: "GET",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.destroyById() instead.
-            "prototype$__destroyById__ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications.findById() instead.
+            "prototype$__findById__orderNotifications": {
               params: {
                 'fk': '@fk',
               },
-              url: urlBase + "/notifications/:id/ordernotifications/:fk",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/:fk",
+              method: "GET",
+            },
+
+            // INTERNAL. Use NotificationsContainer.orderNotifications.destroyById() instead.
+            "prototype$__destroyById__orderNotifications": {
+              params: {
+                'fk': '@fk',
+              },
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/:fk",
               method: "DELETE",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.updateById() instead.
-            "prototype$__updateById__ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications.updateById() instead.
+            "prototype$__updateById__orderNotifications": {
               params: {
                 'fk': '@fk',
               },
-              url: urlBase + "/notifications/:id/ordernotifications/:fk",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/:fk",
               method: "PUT",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications() instead.
-            "prototype$__get__ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications() instead.
+            "prototype$__get__orderNotifications": {
               isArray: true,
-              url: urlBase + "/notifications/:id/ordernotifications",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications",
               method: "GET",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.create() instead.
-            "prototype$__create__ordernotifications": {
-              url: urlBase + "/notifications/:id/ordernotifications",
+            // INTERNAL. Use NotificationsContainer.orderNotifications.create() instead.
+            "prototype$__create__orderNotifications": {
+              url: urlBase + "/notificationsContainer/:id/orderNotifications",
               method: "POST",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.destroyAll() instead.
-            "prototype$__delete__ordernotifications": {
-              url: urlBase + "/notifications/:id/ordernotifications",
+            // INTERNAL. Use NotificationsContainer.orderNotifications.destroyAll() instead.
+            "prototype$__delete__orderNotifications": {
+              url: urlBase + "/notificationsContainer/:id/orderNotifications",
               method: "DELETE",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.count() instead.
-            "prototype$__count__ordernotifications": {
-              url: urlBase + "/notifications/:id/ordernotifications/count",
+            // INTERNAL. Use NotificationsContainer.orderNotifications.count() instead.
+            "prototype$__count__orderNotifications": {
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/count",
               method: "GET",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#create
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#create
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10163,18 +10394,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "create": {
-              url: urlBase + "/notifications",
+              url: urlBase + "/notificationsContainer",
               method: "POST",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#createMany
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#createMany
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10201,19 +10432,19 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "createMany": {
               isArray: true,
-              url: urlBase + "/notifications",
+              url: urlBase + "/notificationsContainer",
               method: "POST",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#upsert
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#upsert
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10240,18 +10471,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "upsert": {
-              url: urlBase + "/notifications",
+              url: urlBase + "/notificationsContainer",
               method: "PUT",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#replaceOrCreate
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#replaceOrCreate
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10278,18 +10509,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "replaceOrCreate": {
-              url: urlBase + "/notifications/replaceOrCreate",
+              url: urlBase + "/notificationsContainer/replaceOrCreate",
               method: "POST",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#upsertWithWhere
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#upsertWithWhere
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10315,18 +10546,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "upsertWithWhere": {
-              url: urlBase + "/notifications/upsertWithWhere",
+              url: urlBase + "/notificationsContainer/upsertWithWhere",
               method: "POST",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#exists
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#exists
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10351,14 +10582,14 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *  - `exists` – `{boolean=}` -
              */
             "exists": {
-              url: urlBase + "/notifications/:id/exists",
+              url: urlBase + "/notificationsContainer/:id/exists",
               method: "GET",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#findById
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#findById
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10382,18 +10613,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "findById": {
-              url: urlBase + "/notifications/:id",
+              url: urlBase + "/notificationsContainer/:id",
               method: "GET",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#replaceById
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#replaceById
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10419,18 +10650,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "replaceById": {
-              url: urlBase + "/notifications/:id/replace",
+              url: urlBase + "/notificationsContainer/:id/replace",
               method: "POST",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#find
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#find
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10452,19 +10683,19 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "find": {
               isArray: true,
-              url: urlBase + "/notifications",
+              url: urlBase + "/notificationsContainer",
               method: "GET",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#findOne
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#findOne
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10486,18 +10717,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "findOne": {
-              url: urlBase + "/notifications/findOne",
+              url: urlBase + "/notificationsContainer/findOne",
               method: "GET",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#updateAll
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#updateAll
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10524,14 +10755,14 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              * Information related to the outcome of the operation
              */
             "updateAll": {
-              url: urlBase + "/notifications/update",
+              url: urlBase + "/notificationsContainer/update",
               method: "POST",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#deleteById
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#deleteById
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10553,18 +10784,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "deleteById": {
-              url: urlBase + "/notifications/:id",
+              url: urlBase + "/notificationsContainer/:id",
               method: "DELETE",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#count
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#count
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10589,14 +10820,14 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *  - `count` – `{number=}` -
              */
             "count": {
-              url: urlBase + "/notifications/count",
+              url: urlBase + "/notificationsContainer/count",
               method: "GET",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#prototype$updateAttributes
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#prototype$updateAttributes
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10622,18 +10853,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
             "prototype$updateAttributes": {
-              url: urlBase + "/notifications/:id",
+              url: urlBase + "/notificationsContainer/:id",
               method: "PUT",
             },
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#createChangeStream
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#createChangeStream
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10663,8 +10894,81 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *  - `changes` – `{ReadableStream=}` -
              */
             "createChangeStream": {
-              url: urlBase + "/notifications/change-stream",
+              url: urlBase + "/notificationsContainer/change-stream",
               method: "POST",
+            },
+
+            /**
+             * @ngdoc method
+             * @name lbServices.NotificationsContainer#notificationPolling
+             * @methodOf lbServices.NotificationsContainer
+             *
+             * @description
+             *
+             * <em>
+             * (The remote method definition does not provide any description.)
+             * </em>
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *   This method does not accept any parameters.
+             *   Supply an empty object or omit this argument altogether.
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `NotificationsContainer` object.)
+             * </em>
+             */
+            "notificationPolling": {
+              url: urlBase + "/notificationsContainer",
+              method: "GET",
+            },
+
+            // INTERNAL. Use User.notificationsContainer() instead.
+            "::get::User::notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "GET",
+            },
+
+            // INTERNAL. Use User.notificationsContainer.create() instead.
+            "::create::User::notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "POST",
+            },
+
+            // INTERNAL. Use User.notificationsContainer.createMany() instead.
+            "::createMany::User::notificationsContainer": {
+              isArray: true,
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "POST",
+            },
+
+            // INTERNAL. Use User.notificationsContainer.update() instead.
+            "::update::User::notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "PUT",
+            },
+
+            // INTERNAL. Use User.notificationsContainer.destroy() instead.
+            "::destroy::User::notificationsContainer": {
+              url: urlBase + "/users/:id/notificationsContainer",
+              method: "DELETE",
+            },
+
+            // INTERNAL. Use OrderNotification.notificationsContainer() instead.
+            "::get::OrderNotification::notificationsContainer": {
+              url: urlBase + "/orderNotifications/:id/notificationsContainer",
+              method: "GET",
             },
           }
         );
@@ -10673,8 +10977,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#patchOrCreate
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#patchOrCreate
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10701,15 +11005,15 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
         R["patchOrCreate"] = R["upsert"];
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#updateOrCreate
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#updateOrCreate
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10736,15 +11040,15 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
         R["updateOrCreate"] = R["upsert"];
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#patchOrCreateWithWhere
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#patchOrCreateWithWhere
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10770,15 +11074,15 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
         R["patchOrCreateWithWhere"] = R["upsertWithWhere"];
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#update
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#update
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10808,8 +11112,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#destroyById
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#destroyById
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10831,15 +11135,15 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
         R["destroyById"] = R["deleteById"];
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#removeById
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#removeById
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10861,15 +11165,15 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
         R["removeById"] = R["deleteById"];
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#patchAttributes
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#patchAttributes
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
@@ -10895,7 +11199,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * <em>
              * (The remote method definition does not provide any description.
-             * This usually means the response is a `Notifications` object.)
+             * This usually means the response is a `NotificationsContainer` object.)
              * </em>
              */
         R["patchAttributes"] = R["prototype$updateAttributes"];
@@ -10903,37 +11207,73 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
 
         /**
         * @ngdoc property
-        * @name lbServices.Notifications#modelName
-        * @propertyOf lbServices.Notifications
+        * @name lbServices.NotificationsContainer#modelName
+        * @propertyOf lbServices.NotificationsContainer
         * @description
         * The name of the model represented by this $resource,
-        * i.e. `Notifications`.
+        * i.e. `NotificationsContainer`.
         */
-        R.modelName = "Notifications";
+        R.modelName = "NotificationsContainer";
 
+
+            /**
+             * @ngdoc method
+             * @name lbServices.NotificationsContainer#user
+             * @methodOf lbServices.NotificationsContainer
+             *
+             * @description
+             *
+             * Fetches belongsTo relation user.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - PersistedModel id
+             *
+             *  - `refresh` – `{boolean=}` -
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `User` object.)
+             * </em>
+             */
+        R.user = function() {
+          var TargetResource = $injector.get("User");
+          var action = TargetResource["::get::NotificationsContainer::user"];
+          return action.apply(R, arguments);
+        };
     /**
      * @ngdoc object
-     * @name lbServices.Notifications.ordernotifications
-     * @header lbServices.Notifications.ordernotifications
+     * @name lbServices.NotificationsContainer.orderNotifications
+     * @header lbServices.NotificationsContainer.orderNotifications
      * @object
      * @description
      *
-     * The object `Notifications.ordernotifications` groups methods
-     * manipulating `OrderNotification` instances related to `Notifications`.
+     * The object `NotificationsContainer.orderNotifications` groups methods
+     * manipulating `OrderNotification` instances related to `NotificationsContainer`.
      *
-     * Call {@link lbServices.Notifications#ordernotifications Notifications.ordernotifications()}
+     * Call {@link lbServices.NotificationsContainer#orderNotifications NotificationsContainer.orderNotifications()}
      * to query all related instances.
      */
 
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications#ordernotifications
-             * @methodOf lbServices.Notifications
+             * @name lbServices.NotificationsContainer#orderNotifications
+             * @methodOf lbServices.NotificationsContainer
              *
              * @description
              *
-             * Queries ordernotifications of notifications.
+             * Queries orderNotifications of notificationsContainer.
              *
              * @param {Object=} parameters Request parameters.
              *
@@ -10956,20 +11296,20 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              * This usually means the response is a `OrderNotification` object.)
              * </em>
              */
-        R.ordernotifications = function() {
+        R.orderNotifications = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::get::Notifications::ordernotifications"];
+          var action = TargetResource["::get::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications.ordernotifications#count
-             * @methodOf lbServices.Notifications.ordernotifications
+             * @name lbServices.NotificationsContainer.orderNotifications#count
+             * @methodOf lbServices.NotificationsContainer.orderNotifications
              *
              * @description
              *
-             * Counts ordernotifications of notifications.
+             * Counts orderNotifications of notificationsContainer.
              *
              * @param {Object=} parameters Request parameters.
              *
@@ -10991,20 +11331,20 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              *  - `count` – `{number=}` -
              */
-        R.ordernotifications.count = function() {
+        R.orderNotifications.count = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::count::Notifications::ordernotifications"];
+          var action = TargetResource["::count::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications.ordernotifications#create
-             * @methodOf lbServices.Notifications.ordernotifications
+             * @name lbServices.NotificationsContainer.orderNotifications#create
+             * @methodOf lbServices.NotificationsContainer.orderNotifications
              *
              * @description
              *
-             * Creates a new instance in ordernotifications of this model.
+             * Creates a new instance in orderNotifications of this model.
              *
              * @param {Object=} parameters Request parameters.
              *
@@ -11029,20 +11369,20 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              * This usually means the response is a `OrderNotification` object.)
              * </em>
              */
-        R.ordernotifications.create = function() {
+        R.orderNotifications.create = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::create::Notifications::ordernotifications"];
+          var action = TargetResource["::create::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications.ordernotifications#createMany
-             * @methodOf lbServices.Notifications.ordernotifications
+             * @name lbServices.NotificationsContainer.orderNotifications#createMany
+             * @methodOf lbServices.NotificationsContainer.orderNotifications
              *
              * @description
              *
-             * Creates a new instance in ordernotifications of this model.
+             * Creates a new instance in orderNotifications of this model.
              *
              * @param {Object=} parameters Request parameters.
              *
@@ -11067,20 +11407,20 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              * This usually means the response is a `OrderNotification` object.)
              * </em>
              */
-        R.ordernotifications.createMany = function() {
+        R.orderNotifications.createMany = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::createMany::Notifications::ordernotifications"];
+          var action = TargetResource["::createMany::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications.ordernotifications#destroyAll
-             * @methodOf lbServices.Notifications.ordernotifications
+             * @name lbServices.NotificationsContainer.orderNotifications#destroyAll
+             * @methodOf lbServices.NotificationsContainer.orderNotifications
              *
              * @description
              *
-             * Deletes all ordernotifications of this model.
+             * Deletes all orderNotifications of this model.
              *
              * @param {Object=} parameters Request parameters.
              *
@@ -11098,26 +11438,26 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * This method returns no data.
              */
-        R.ordernotifications.destroyAll = function() {
+        R.orderNotifications.destroyAll = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::delete::Notifications::ordernotifications"];
+          var action = TargetResource["::delete::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications.ordernotifications#destroyById
-             * @methodOf lbServices.Notifications.ordernotifications
+             * @name lbServices.NotificationsContainer.orderNotifications#destroyById
+             * @methodOf lbServices.NotificationsContainer.orderNotifications
              *
              * @description
              *
-             * Delete a related item by id for ordernotifications.
+             * Delete a related item by id for orderNotifications.
              *
              * @param {Object=} parameters Request parameters.
              *
              *  - `id` – `{*}` - PersistedModel id
              *
-             *  - `fk` – `{*}` - Foreign key for ordernotifications
+             *  - `fk` – `{*}` - Foreign key for orderNotifications
              *
              * @param {function(Object,Object)=} successCb
              *   Success callback with two arguments: `value`, `responseHeaders`.
@@ -11131,26 +11471,26 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *
              * This method returns no data.
              */
-        R.ordernotifications.destroyById = function() {
+        R.orderNotifications.destroyById = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::destroyById::Notifications::ordernotifications"];
+          var action = TargetResource["::destroyById::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications.ordernotifications#findById
-             * @methodOf lbServices.Notifications.ordernotifications
+             * @name lbServices.NotificationsContainer.orderNotifications#findById
+             * @methodOf lbServices.NotificationsContainer.orderNotifications
              *
              * @description
              *
-             * Find a related item by id for ordernotifications.
+             * Find a related item by id for orderNotifications.
              *
              * @param {Object=} parameters Request parameters.
              *
              *  - `id` – `{*}` - PersistedModel id
              *
-             *  - `fk` – `{*}` - Foreign key for ordernotifications
+             *  - `fk` – `{*}` - Foreign key for orderNotifications
              *
              * @param {function(Object,Object)=} successCb
              *   Success callback with two arguments: `value`, `responseHeaders`.
@@ -11167,26 +11507,26 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              * This usually means the response is a `OrderNotification` object.)
              * </em>
              */
-        R.ordernotifications.findById = function() {
+        R.orderNotifications.findById = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::findById::Notifications::ordernotifications"];
+          var action = TargetResource["::findById::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
             /**
              * @ngdoc method
-             * @name lbServices.Notifications.ordernotifications#updateById
-             * @methodOf lbServices.Notifications.ordernotifications
+             * @name lbServices.NotificationsContainer.orderNotifications#updateById
+             * @methodOf lbServices.NotificationsContainer.orderNotifications
              *
              * @description
              *
-             * Update a related item by id for ordernotifications.
+             * Update a related item by id for orderNotifications.
              *
              * @param {Object=} parameters Request parameters.
              *
              *  - `id` – `{*}` - PersistedModel id
              *
-             *  - `fk` – `{*}` - Foreign key for ordernotifications
+             *  - `fk` – `{*}` - Foreign key for orderNotifications
              *
              * @param {Object} postData Request data.
              *
@@ -11207,9 +11547,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              * This usually means the response is a `OrderNotification` object.)
              * </em>
              */
-        R.ordernotifications.updateById = function() {
+        R.orderNotifications.updateById = function() {
           var TargetResource = $injector.get("OrderNotification");
-          var action = TargetResource["::updateById::Notifications::ordernotifications"];
+          var action = TargetResource["::updateById::NotificationsContainer::orderNotifications"];
           return action.apply(R, arguments);
         };
 
@@ -11243,6 +11583,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
         urlBase + "/orderNotifications/:id",
           { 'id': '@id' },
           {
+
+            // INTERNAL. Use OrderNotification.notificationsContainer() instead.
+            "prototype$__get__notificationsContainer": {
+              url: urlBase + "/orderNotifications/:id/notificationsContainer",
+              method: "GET",
+            },
 
             /**
              * @ngdoc method
@@ -11778,62 +12124,62 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               method: "POST",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.findById() instead.
-            "::findById::Notifications::ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications.findById() instead.
+            "::findById::NotificationsContainer::orderNotifications": {
               params: {
                 'fk': '@fk',
               },
-              url: urlBase + "/notifications/:id/ordernotifications/:fk",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/:fk",
               method: "GET",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.destroyById() instead.
-            "::destroyById::Notifications::ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications.destroyById() instead.
+            "::destroyById::NotificationsContainer::orderNotifications": {
               params: {
                 'fk': '@fk',
               },
-              url: urlBase + "/notifications/:id/ordernotifications/:fk",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/:fk",
               method: "DELETE",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.updateById() instead.
-            "::updateById::Notifications::ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications.updateById() instead.
+            "::updateById::NotificationsContainer::orderNotifications": {
               params: {
                 'fk': '@fk',
               },
-              url: urlBase + "/notifications/:id/ordernotifications/:fk",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/:fk",
               method: "PUT",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications() instead.
-            "::get::Notifications::ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications() instead.
+            "::get::NotificationsContainer::orderNotifications": {
               isArray: true,
-              url: urlBase + "/notifications/:id/ordernotifications",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications",
               method: "GET",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.create() instead.
-            "::create::Notifications::ordernotifications": {
-              url: urlBase + "/notifications/:id/ordernotifications",
+            // INTERNAL. Use NotificationsContainer.orderNotifications.create() instead.
+            "::create::NotificationsContainer::orderNotifications": {
+              url: urlBase + "/notificationsContainer/:id/orderNotifications",
               method: "POST",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.createMany() instead.
-            "::createMany::Notifications::ordernotifications": {
+            // INTERNAL. Use NotificationsContainer.orderNotifications.createMany() instead.
+            "::createMany::NotificationsContainer::orderNotifications": {
               isArray: true,
-              url: urlBase + "/notifications/:id/ordernotifications",
+              url: urlBase + "/notificationsContainer/:id/orderNotifications",
               method: "POST",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.destroyAll() instead.
-            "::delete::Notifications::ordernotifications": {
-              url: urlBase + "/notifications/:id/ordernotifications",
+            // INTERNAL. Use NotificationsContainer.orderNotifications.destroyAll() instead.
+            "::delete::NotificationsContainer::orderNotifications": {
+              url: urlBase + "/notificationsContainer/:id/orderNotifications",
               method: "DELETE",
             },
 
-            // INTERNAL. Use Notifications.ordernotifications.count() instead.
-            "::count::Notifications::ordernotifications": {
-              url: urlBase + "/notifications/:id/ordernotifications/count",
+            // INTERNAL. Use NotificationsContainer.orderNotifications.count() instead.
+            "::count::NotificationsContainer::orderNotifications": {
+              url: urlBase + "/notificationsContainer/:id/orderNotifications/count",
               method: "GET",
             },
           }
@@ -12081,6 +12427,42 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
         */
         R.modelName = "OrderNotification";
 
+
+            /**
+             * @ngdoc method
+             * @name lbServices.OrderNotification#notificationsContainer
+             * @methodOf lbServices.OrderNotification
+             *
+             * @description
+             *
+             * Fetches belongsTo relation notificationsContainer.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - PersistedModel id
+             *
+             *  - `refresh` – `{boolean=}` -
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `NotificationsContainer` object.)
+             * </em>
+             */
+        R.notificationsContainer = function() {
+          var TargetResource = $injector.get("NotificationsContainer");
+          var action = TargetResource["::get::OrderNotification::notificationsContainer"];
+          return action.apply(R, arguments);
+        };
 
 
         return R;

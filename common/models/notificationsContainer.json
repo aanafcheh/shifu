@@ -12,7 +12,7 @@
     "orderNotifications": {
       "type": "hasMany",
       "model": "orderNotification",
-      "foreignKey": "notificationsId"
+      "foreignKey": "notificationsContainerId"
     },
     "user": {
       "type": "belongsTo",
