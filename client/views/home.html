@@ -1,24 +1,88 @@
+<!DOCTYPE html>
 <div class="container">
 
-  <!-- promotions -->
+  <div class="row" ng-if="verifyEmail">
+    <div class="alert alert-info alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong>A verification link has been sent to {{newUserEmail}}.</strong>
+      You may sign in after you have successfully verified your email address.
+    </div>
+  </div>
+
   <div class="row">
-    <div class="col-md-8">
-      <h1>Cook & Make Money From Home</h1>
+    <!-- registration form -->
+    <div class="col-sm-4 col-sm-push-8">
+      <div class="panel">
+        <div class="panel-heading text-center">
+          <h3 class="panel-title">LOGIN OR REGISTER WITH:</h3>
+        </div>
+        <div class="panel-body">
+          <!-- social login -->
+          <a href="/auth/facebook" class="btn btn-info btn-block" role="button">
+            <span class="fa fa-facebook fa-lg"></span>
+            FACEBOOK</a>
+
+          <a href="/auth/google" class="btn btn-danger btn-block" role="button">
+            <span class="fa fa-google-plus fa-lg"></span>
+            GOOGLE</a>
+          <!-- local login -->
+          <div class="login-or">
+            <hr class="hr-or">
+            <span class="span-or">or</span>
+          </div>
+
+        <!-- TODO: improve verification when login in. check if a email has not been verified. Check if an account with that username exist. Make veriication more specific. -->
+          <div ng-if="loginError" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <strong><i class="fa fa-exclamation-triangle fa-lg" aria-hidden="true"></i> Login failed!</strong><br>
+            Please make sure you entered your credentials correctly and your email address is verified.
+          </div>
+
+          <form role="form" ng-submit="signinUser()" method="post" novalidate>
+            <div class="form-group">
+              <div class="input-group input-group-sm">
+                <span class="input-group-addon">
+                  <i class="fa fa-user fa-lg fa-fw"></i>
+                </span>
+                <input type="text" class="form-control" name="username" placeholder="Username" ng-model="localUser.username">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group input-group-sm">
+                <span class="input-group-addon">
+                  <i class="fa fa-key fa-lg fa-fw"></i>
+                </span>
+                <input type="password" class="form-control" name="password" placeholder="Password" ng-model="localUser.password">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              Sign in
+            </button>
+            <!-- TODO: remember me -->
+            <label class="checkbox-inline pull-left">
+              <input type="checkbox" id="rememberMe" value="true" checked>
+              Remember me
+            </label>
+            <a type="button" class="pull-right">Forgot password?</a>
+          </form>
+        </div>
+        <!-- create an account -->
+        <div class="text-center">
+          <button id="register" type="button" class="btn btn-link" ui-sref="app.signup">Create account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- promotions -->
+    <div class="col-sm-8 col-sm-pull-4 text-white text-shadow-white">
+      <h1>Cook &amp; Make Money From Home</h1>
       <h1>Register Now! We will help in every step.</h1>
       <hr>
     </div>
 
-    <!-- registration form -->
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title"><strong>Login or Register with:</strong></h3>
-        </div>
-        <div class="panel-body">
-          <a href="/auth/facebook" class="btn btn-lg btn-primary" role="button"><span class="fa fa-facebook"></span> FACEBOOK</a>
-           <a href="/auth/google" class="btn btn-lg btn-danger" role="button"><span class="fa fa-google-plus"></span> GOOGLE</a>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

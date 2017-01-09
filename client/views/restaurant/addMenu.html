@@ -1,77 +1,92 @@
 <!DOCTYPE html>
-<!-- Add items to the menu model -->
-<!-- header -->
-<div class="modal-header">
-  <h3 class="modal-title" id="modal-title">Add Items:</h3>
-</div>
+<div class="portlet">
 
-<!-- body -->
-<form name="newMenuItem" role="form" novalidate>
-  <div class="modal-body" id="modal-body">
-    <div class="media">
-      <div class="media-left">
-        <!-- TODO: add the image model -->
-        <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="open('lg')">
-          <i class="fa fa-camera"></i>
-        </button>
-        <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
+  <div class="portlet-title">
+    <div class="caption caption-green">
+      <!-- show the title depending on if the user is adding or updating -->
+      <div ng-if="!menu.id">
+        <i class="fa fa-cutlery" aria-hidden="true"></i>
+        <span class="caption-subject text-uppercase">
+          Add New Items to Your Menu</span>
       </div>
-      <div class="media-body">
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="form-group has-feedback" ng-class="{'has-error': newMenuItem.itemName.$error.required && newMenuItem.itemName.$touched}">
-              <input type="text" class="form-control input-sm" name="itemName" id="itemName" placeholder="Item Name" ng-model="menu.item" ng-class="{'has-error': newMenuItem.itemName.$error.required && newMenuItem.itemName.$touched}" change-case required>
-              <span ng-show="newMenuItem.itemName.$error.required && !newMenuItem.itemName.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            </div>
-            <div class="form-group">
-              <!-- TODO: add a info popover that gives a link to a page of all the description of allergies -->
-              <ui-select multiple ng-model="menu.allergies" theme="bootstrap" close-on-select="false" title="Add allergies" append-to-body="true" position="auto">
-                <ui-select-match placeholder="Select allergies...">{{$item}}</ui-select-match>
-                <ui-select-choices repeat="allergy in allergies | filter:$select.search">
-                  {{allergy}}
-                </ui-select-choices>
-              </ui-select>
-            </div>
+      <div ng-if="menu.id">
+        <i class="fa fa-pencil" aria-hidden="true"></i>
+        <span class="caption-subject text-uppercase">
+          Edit Menu</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="portlet-body">
+    <form name="newMenuItem" role="form" novalidate>
+      <div class="modal-body" id="modal-body">
+        <div class="media">
+          <div class="media-left">
+            <!-- TODO: add the image modal -->
+            <button ng-if="!menu.image" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="openImageModal('md')">
+              <i class="fa fa-camera"></i>
+            </button>
+            <img ng-if="menu.image" class="img-circle" height="64" width="64" ng-src="{{menu.image}}" role="button" ng-click="openImageModal('md')"/>
           </div>
-          <div class="col-sm-6">
-            <!-- delivery fee -->
-            <div class="form-group has-feedback" ng-class="{'has-error': newMenuItem.itemPrice.$error.required && !newMenuItem.itemPrice.$pristine}">
-              <div class="input-group">
-                <div class="input-group-addon input-sm">€</div>
-                <input type="number" class="form-control input-sm" name="itemPrice" id="itemPrice" placeholder="Price" ng-model="menu.price" required>
-                <span ng-show="newMenuItem.itemPrice.$error.required && !newMenuItem.itemPrice.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <div class="media-body">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group has-feedback" ng-class="{'has-error': newMenuItem.itemName.$error.required && newMenuItem.itemName.$touched}">
+                  <input type="text" class="form-control input-sm" name="itemName" id="itemName" placeholder="Item Name" ng-model="menu.item" ng-class="{'has-error': newMenuItem.itemName.$error.required && newMenuItem.itemName.$touched}" change-case required>
+                  <span ng-show="newMenuItem.itemName.$error.required && !newMenuItem.itemName.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                </div>
+                <div class="form-group">
+                  <!-- TODO: add a info popover that gives a link to a page of all the description of allergies -->
+                  <ui-select multiple ng-model="menu.allergies" theme="bootstrap" close-on-select="false" title="Add allergies" append-to-body="true" position="auto">
+                    <ui-select-match placeholder="Select allergies...">{{$item}}</ui-select-match>
+                    <ui-select-choices repeat="allergy in allergies | filter:$select.search">
+                      {{allergy}}
+                    </ui-select-choices>
+                  </ui-select>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <!-- delivery fee -->
+                <div class="form-group has-feedback" ng-class="{'has-error': newMenuItem.itemPrice.$error.required && !newMenuItem.itemPrice.$pristine}">
+                  <div class="input-group">
+                    <div class="input-group-addon input-sm">€</div>
+                    <input type="number" class="form-control input-sm" name="itemPrice" id="itemPrice" placeholder="Price" ng-model="menu.price" required>
+                    <span ng-show="newMenuItem.itemPrice.$error.required && !newMenuItem.itemPrice.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                  </div>
+                </div>
+                <select ng-init="menu.category = menu.category || 'main'" class="form-control input-sm" name="itemCategory" id="itemCategory" ng-model="menu.category" required>
+                  <option value="main">Main Meal</option>
+                  <option value="dessert">Dessert</option>
+                  <option value="appetizer">Appetizer</option>
+                  <option value="beverage">Beverage</option>
+                </select>
               </div>
             </div>
-            <select ng-init="menu.category = menu.category || 'main'" class="form-control input-sm" name="itemCategory" id="itemCategory" ng-model="menu.category" required>
-              <option value="main">Main Meal</option>
-              <option value="dessert">Dessert</option>
-              <option value="appetizer">Appetizer</option>
-              <option value="beverage">Beverage</option>
-            </select>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- footer -->
-  <!-- submit the info -->
-  <div class="modal-footer">
-    <div class="row">
-      <div class="col-md-6 col-md-offset-3">
-        <div class="btn-group btn-group-justified" role="group">
-          <div class="btn-group" role="group">
-            <!-- add a new menu -->
-            <button ng-if="!menu.id" ng-disabled="newMenuItem.$invalid" type="submit" id="add" value="Submit" class="btn btn-primary" ng-click="ok()">Add</button>
-            <!-- update the menu -->
-            <button ng-if="menu.id" ng-disabled="newMenuItem.$invalid" type="submit" id="save" value="Submit" class="btn btn-primary" ng-click="save()">Save</button>
-          </div>
-          <!-- cancel -->
-          <div class="btn-group" role="group">
-            <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+      <!-- footer -->
+      <!-- submit the info -->
+      <div class="modal-footer">
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3">
+            <div class="btn-group btn-group-justified" role="group">
+              <div class="btn-group" role="group">
+                <!-- add a new menu -->
+                <button ng-if="!menu.id" ng-disabled="newMenuItem.$invalid" type="submit" id="add" value="Submit" class="btn btn-primary" ng-click="ok()">Add</button>
+                <!-- update the menu -->
+                <button ng-if="menu.id" ng-disabled="newMenuItem.$invalid" type="submit" id="save" value="Submit" class="btn btn-primary" ng-click="save()">Save</button>
+              </div>
+              <!-- cancel -->
+              <div class="btn-group" role="group">
+                <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      
+    </form>
   </div>
-</form>
+</div>

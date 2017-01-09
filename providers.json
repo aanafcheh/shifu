@@ -7,11 +7,14 @@
     "authPath": "/auth/local",
     "successRedirect": "/",
     "failureRedirect": "/login",
-    "failureFlash": true
+    "failureFlash": true,
+    "setAccessToken": true,
+    "session": true
   },
   "facebook-login": {
     "provider": "facebook",
     "module": "passport-facebook",
+    "profileFields": ["gender", "link", "locale", "name", "timezone", "verified", "email", "photos", "updated_time"],
     "clientID": "1708417312752856",
     "clientSecret": "fc13213ffd0df8544b754da45bc630dd",
     "callbackURL": "/auth/facebook/callback",
@@ -20,7 +23,20 @@
     "successRedirect": "/",
     "failureRedirect": "/login",
     "scope": ["email"],
-    "authType": "rerequest",
+    "failureFlash": true
+  },
+  "google-login": {
+    "provider": "google",
+    "module": "passport-google-oauth",
+    "strategy": "OAuth2Strategy",
+    "clientID": "734871803365-pb457i64eh1dvtce6tvdk9tou41v046o.apps.googleusercontent.com",
+    "clientSecret": "NmEOSpNehQCjaCuHH4-yfsZG",
+    "callbackURL": "/auth/google/callback",
+    "authPath": "/auth/google",
+    "callbackPath": "/auth/google/callback",
+    "successRedirect": "/",
+    "failureRedirect": "/login",
+    "scope": ["email", "profile"],
     "failureFlash": true
   }
 }

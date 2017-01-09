@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header text-white">
+      <!-- menu -->
+      <button type="button" class="navbar-toggle navbar-btn collapsed pull-left" data-toggle="collapse" data-target="#shifu-navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle menu</span>
+        <i class="fa fa-bars fa-2x fa-fw" aria-hidden="true"></i>
+      </button>
+      <!-- profile -->
+      <a ui-sref="app.profile" class="navbar-btn navbar-toggle" style="padding:0;margin-right:10px;"><img height="50" width="50" class="img-circle" ng-src="{{profilePhoto}}"></a>
+      <!-- notifications -->
+      <a ui-sref="app.notifications" class="btn btn-info navbar-toggle navbar-btn">
+        <span class="fa-stack">
+          <i class="fa fa-bell fa-stack-2x fa-fw" aria-hidden="true"></i>
+          <span class="badge" style="color:red;">2</span>
+        </span>
+      </a>
+      <!-- brand -->
+      <a class="navbar-brand" ui-sref="app">Shifu</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="shifu-navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li>
+          <a ui-sref="app">Home</a>
+        </li>
+        <li>
+          <a href="">Getting Started</a>
+        </li>
+        <li class="visible-xs-block">
+          <a ui-sref="app.application">Open a New Restaurant</a>
+        </li>
+      </ul>
+
+      <!-- *** -->
+      <!-- search box -->
+      <form class="navbar-form navbar-left" role="search" ng-submit="search()">
+        <div class="form-group">
+          <div class="input-group input-group-sm searchbar" style="margin-top:5px;">
+            <input
+              type="text"
+              name="search"
+              class="form-control"
+              placeholder="Search for restaurant in your area"
+              ng-model="result"
+              uib-typeahead="result.restaurantName for result in allRestaurants | filter:$viewValue | limitTo:5"
+              typeahead-loading="loadingRestaurants"
+              typeahead-no-results="noResults"
+              typeahead-append-to-body="true">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+              </button>
+            </span>
+            <i ng-show="loadingRestaurants" class="glyphicon glyphicon-refresh"></i>
+          </div>
+        </div>
+      </form>
+
+      <!-- right navbar -->
+      <ul class="nav navbar-nav navbar-right">
+        <li class="hidden-xs">
+          <button style="margin-right:20px" class="btn btn-default btn-sm navbar-btn" role="button" ui-sref="app.application">Open a Restaurant</button>
+        </li>
+
+        <!-- notifications dropdown -->
+        <li class="dropdown hidden-xs text-white">
+          <label class="btn btn-text" id="notifications" style="margin-right:20px;margin-top:15px;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="fa-stack">
+              <i class="fa fa-bell fa-stack-2x fa-fw" aria-hidden="true"></i>
+              <span class="badge" style="color:red;">2</span>
+            </span>
+          </label>
+          <ul class="dropdown-menu" aria-labelledby="notifications">
+            <li class="dropdown-header">Notifications</li>
+            <li role="separator" class="divider"></li>
+            <li>
+              <a href="">Put the notification description here.</a>
+            </li>
+            <li role="separator" class="divider"></li>
+          </ul>
+        </li>
+
+        <!-- cart -->
+        <li class="dropdown hidden-xs">
+          <label class="btn btn-text" id="cart" style="margin-right:20px;margin-top:15px;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-shopping-cart fa-2x" style="color:#ffffff;" aria-hidden="true"></i>
+            <span class="badge" style="color:#d9230f;" >{{noOfItemsInCart}}</span>
+          </label>
+          <ul class="dropdown-menu" aria-labelledby="cart">
+            <li class="dropdown-header">Cart{{serviceCartItems[serviceCartItems.length-1]}}</li>
+            <li role="separator" class="divider"></li>
+            <li>
+              <a href="">Added to Cart</a>
+
+              <ul ng-repeat="item in allCartItems" >
+
+                {{item.item|uppercase}}<br>
+                  <small >{{item.category}}</small>
+                  <button  class="btn btn-info btn-xs" ng-click="deleteItemFromCart(item.id,$index)">Delete</button>
+              </ul>
+              <button  class="btn btn-default btn-xs" ui-sref=".checkout" >Check Out</button>
+
+            </li>
+            <li role="separator" class="divider"></li>
+          </ul>
+        </li>
+
+        <!-- profile settings dropdown -->
+        <li class="dropdown hidden-xs">
+          <img height="44" width="44" class="img-circle img-responsive navbar-btn dropdown-toggle" id="userSettings" ng-src="{{profilePhoto}}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"/>
+          <ul class="dropdown-menu" aria-labelledby="userSettings">
+            <li class="dropdown-header">Your Restaurants:</li>
+            <li ng-repeat="restaurant in restaurants">
+              <a ui-sref="app.owner({city: restaurant.city, name: restaurant.restaurantName})">{{restaurant.restaurantName}}
+                -
+                {{restaurant.city | capitalize}}</a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li>
+              <a ui-sref="app.application">Open a New Restaurant</a>
+            </li>
+            <li>
+              <a ui-sref="app.settings">Settings</a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li>
+              <a href="/logout" ng-click="logout()">Log Out</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+
+  </div>
+</nav>

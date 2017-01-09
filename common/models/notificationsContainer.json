@@ -1,0 +1,26 @@
+{
+  "name": "notificationsContainer",
+  "plural": "notificationsContainer",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {
+    "orderNotifications": {
+      "type": "hasMany",
+      "model": "orderNotification",
+      "foreignKey": "notificationsContainerId"
+    },
+    "user": {
+      "type": "belongsTo",
+      "model": "user",
+      "foreignKey": "userId"
+    }
+    },
+
+  "acls": [],
+  "methods": {}
+}

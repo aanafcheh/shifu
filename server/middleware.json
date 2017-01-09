@@ -3,7 +3,10 @@
     "loopback#favicon": {}
   },
   "initial": {
-    "compression": {},
+    "compression": {
+      "enabled": false
+    },
+    "express-flash": {},
     "cors": {
       "params": {
         "origin": true,
@@ -32,15 +35,16 @@
   },
   "session:before": {
     "cookie-parser": {
-      "params": "test secret"
+      "params": "hnsuidzj%Y#$Y%&ESHRbaenrjbgnweh583wh"
     }
   },
   "session": {
     "express-session": {
       "params": {
-        "secret": "ola amigo",
+        "secret": "hnsuidzj%Y#$Y%&ESHRbaenrjbgnweh583wh",
         "saveUninitialized": true,
-        "resave": true
+        "resave": true,
+        "cookie": "{ secure: true }"
       }
     }
   },

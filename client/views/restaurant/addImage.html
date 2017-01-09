@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<div class="portlet portlet-bordered">
+  <div class="portlet-title">
+    <div class="caption caption-green">
+      <i class="fa fa-camera" aria-hidden="true"></i>
+      <span class="caption-subject text-uppercase">
+        Add an Image</span>
+      <span class="caption-helper">optional</span>
+    </div>
+    <div class="actions">
+      <div class="form-group">
+        <button class="btn btn-default" role="button" ngf-select ng-model="image" accept="image/*">
+          Select Picture</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="portlet-body">
+    <div class="row text-center" ng-show="image">
+      <div class="col-md-6">
+        <strong>Crop:</strong>
+          <div ngf-drop ng-model="image" ngf-pattern="image/*" class="cropArea center-block">
+            <img-crop image="image  | ngfDataUrl" result-image="croppedImage"></img-crop>
+          </div>
+      </div>
+      <div class="col-md-6">
+        <strong>Preview:</strong>
+        <div><img class="img-circle center-block" ng-src="{{croppedImage}}"/></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="btn-group btn-group-justified" role="group" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button class="btn btn-primary" ng-click="ok(croppedImage, 'logo', image.name, restaurant.restaurantName)" ng-disabled="!image">Upload</button>
+          </div>
+          <div class="btn-group" role="group">
+            <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

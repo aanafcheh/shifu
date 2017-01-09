@@ -14,9 +14,9 @@
       "./mixins"
     ]
   },
-  "user": {
+  "User": {
     "dataSource": "MongoDB",
-    "public": true
+    "public": false
   },
   "accessToken": {
     "dataSource": "MongoDB",
@@ -30,6 +30,13 @@
     "dataSource": "MongoDB",
     "public": true
   },
+  "user": {
+    "dataSource": "MongoDB",
+    "public": true,
+    "options": {
+      "emailVerificationRequired": true
+    }
+  },
   "ACL": {
     "dataSource": "MongoDB",
     "public": false
@@ -42,10 +49,6 @@
     "dataSource": "MongoDB",
     "public": false
   },
-  "container": {
-    "dataSource": "storage",
-    "public": true
-  },
   "restaurant": {
     "dataSource": "MongoDB",
     "public": true
@@ -57,5 +60,29 @@
   "feedback": {
     "dataSource": "MongoDB",
     "public": true
-  }
+  },
+  "cart": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+  "order": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+  "notificationsContainer": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+
+  "orderNotification": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+  "Email": {
+    "dataSource": "email"
+  },
+  "container": {
+   "dataSource": "storage",
+   "public": true
+ }
 }

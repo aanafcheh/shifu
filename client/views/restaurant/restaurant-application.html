@@ -23,18 +23,21 @@
         </div>
         <div class="form-group">
           <!-- ng-init is used to set the default value of restaurant. The restaurant value and the No radio value are the same so it is checked by default. Using html attribute checked does not work when using ng-model -->
-          <label class="radio-inline" ng-init="application.hasRestaurant = 'false'">
-            <input type="radio" name="restaurantOwner" id="restaurantOwner1" value="false" ng-model="application.hasRestaurant" ng-click="uploader1.clearQueue()">
+          <label class="radio-inline">
+            <input type="radio" name="restaurantOwner" id="restaurantOwner1" value="false" ng-model="application.hasRestaurant">
             No
           </label>
           <label class="radio-inline">
-            <input type="radio" name="restaurantOwner" id="restaurantOwner2" value="true" ng-model="application.hasRrestaurant" ng-click="uploader1.clearQueue()">
+            <input type="radio" name="restaurantOwner" id="restaurantOwner2" value="true" ng-model="application.hasRestaurant">
             Yes
           </label>
         </div>
 
         <hr>
 
+        <h3>
+          <i class="fa fa-user" aria-hidden="true"></i>
+          Personal Info</h3>
         <!-- full name -->
         <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.nameInput.$error.required && !restaurantApplication.nameInput.$pristine}">
           <label for="nameInput">Full Name</label>
@@ -49,8 +52,53 @@
           <span ng-show="restaurantApplication.ssnInput.$error.required && !restaurantApplication.ssnInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
+        <hr>
+
+        <h3>
+          <i class="fa fa-cutlery" aria-hidden="true"></i>
+          Restaurant Info</h3>
+        <!-- restaurantName -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.restaurantName.$error.required && !restaurantApplication.restaurantName.$pristine}">
+          <label for="restaurantName">Restaurant Name</label>
+          <input type="text" class="form-control" name="restaurantName" id="restaurantName" placeholder="Restaurant Name" ng-model="application.restaurantName" required>
+          <span ng-show="restaurantApplication.restaurantName.$error.required && !restaurantApplication.restaurantName.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+        </div>
+
+        <!--TODO: validation does not support auto filled fields from address. Instead of autocompleting a field by id, try to set the value of the autocomplete equally to the ng model of the input-->
+        <!-- restaurant address -->
+        <!-- TODO: sometimees the country name is filled in the street address box, but we only want the street address -->
+        <!-- TODO: use leaflet for lcation services instead -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine}">
+          <label for="route">Restaurant Address</label>
+          <input ng-focus="initAutocomplete()" type="text" class="form-control" name="addressInput" id="route" placeholder="Street Address" ng-model="application.address" change-case required>
+          <span ng-show="restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+        </div>
+
+        <!-- street number -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.street_number.$error.required && !restaurantApplication.street_number.$pristine}">
+          <input type="text" class="form-control" name="street_number" id="street_number" placeholder="Street Number" ng-model="application.street_number" change-case required>
+          <span ng-show="restaurantApplication.street_number.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+        </div>
+
+        <!-- city -->
+        <div class="form-group">
+          <div class="form-inline">
+            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine}">
+              <input type="text" class="form-control" name="cityInput" id="locality" placeholder="City" ng-model="application.city" change-case required>
+              <span ng-show="restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <!-- zipcode -->
+            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine}">
+              <input type="number" class="form-control" name="zipCodeInput" id="postal_code" placeholder="ZIP Code" ng-model="application.zipcode" required>
+              <span ng-show="restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+
         <!-- email address -->
-        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.emailInput.$error.email && restaurantApplication.emailInput.$touched}">
+        <!-- TODO: add email verification -->
+        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.emailInput.$invalid && restaurantApplication.emailInput.$touched}">
           <label for="emailInput">Email</label>
           <input type="email" class="form-control" name="emailInput" id="emailInput" placeholder="Email" ng-model="application.email" change-case required>
           <span ng-show="restaurantApplication.emailInput.$error.email && restaurantApplication.emailInput.$touched" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
@@ -66,29 +114,6 @@
           <span ng-show="restaurantApplication.phoneInput.$error.required && !restaurantApplication.phoneInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
         </div>
 
-        <!-- restaurant address -->
-        <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine}">
-          <label for="route">Restaurant Address</label>
-          <input ng-focus="initAutocomplete()" type="text" class="form-control" name="addressInput" id="route" placeholder="Restaurant Street Address" ng-model="application.address" change-case required>
-          <span ng-show="restaurantApplication.addressInput.$error.required && !restaurantApplication.addressInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-        </div>
-
-        <!-- city -->
-        <div class="form-group">
-          <div class="form-inline">
-            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine}">
-              <input type="text" class="form-control" name="cityInput" id="locality" placeholder="City" ng-model="application.city" change-case required>
-              <span ng-show="restaurantApplication.cityInput.$error.required && !restaurantApplication.cityInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            </div>
-
-            <!-- zipcode -->
-            <div class="form-group has-feedback" ng-class="{'has-error': restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine}">
-              <input type="number" class="form-control" name="zipCodeInput" id="postal_code" placeholder="Zip Code" ng-model="application.zipcode" required>
-              <span ng-show="restaurantApplication.zipCodeInput.$error.required && !restaurantApplication.zipCodeInput.$pristine" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            </div>
-          </div>
-        </div>
-
         <div class="form-group" ng-show="application.hasRestaurant !== 'true'" ng-hide="application.hasRestaurant == 'true'">
           <label for="propertyOwner">Are you the real estate owner of the restaurant address above?</label>
           <p class="help-block">
@@ -97,100 +122,134 @@
         </div>
 
         <!-- property owner -->
-        <div class="form-group" ng-init="application.propertyOwner='false'" ng-if="application.hasRestaurant !== 'true'" ng-hide="application.hasRestaurant == 'true'">
+        <div class="form-group" ng-if="application.hasRestaurant !== 'true'" ng-hide="application.hasRestaurant == 'true'">
           <label class="radio-inline">
-            <input type="radio" name="propertyOwner" id="propertyOwner1" value="false" ng-model="application.propertyOwner" ng-click="uploader1.clearQueue()">
+            <input type="radio" name="propertyOwner" id="propertyOwner1" value="false" ng-model="application.propertyOwner">
             No
           </label>
           <label class="radio-inline">
-            <input type="radio" name="propertyOwner" id="propertyOwner2" value="true" ng-model="application.propertyOwner" ng-click="uploader1.clearQueue()">
+            <input type="radio" name="propertyOwner" id="propertyOwner2" value="true" ng-model="application.propertyOwner">
             Yes
           </label>
         </div>
 
-        <!-- file inputs -->
-        <h2>Attachments</h2>
-        <p class="help-block">
-          <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-          Only jpg, png, jpeg, bmp and gif file types are accepted.<br>
-          <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-          The maximum file size is 4MB.</p>
         <hr>
 
+        <!-- file inputs -->
+        <h3>
+          <i class="fa fa-paperclip" aria-hidden="true"></i>
+          Attachments</h3>
+        <p class="help-block">
+          <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+          Only images and pdf documents are accepted.<br>
+          <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+          The maximum file size is 2MB.</p>
+
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-xs-12">
 
             <!-- Health Certificate -->
             <div class="row">
-              <div>
+              <div class="col-xs-12">
                 <div class="form-group" ng-if="application.hasRestaurant !== 'true'">
-                  <label class="btn btn-default" role="button" for="healthCertInputFile">Choose File
-                    <input type="file" name="healthCertInputFile" id="healthCertInputFile" class="hidden" nv-file-select uploader="uploader1" ng-click="uploader1.clearQueue()" ng-model="application.healthCert" valid-file required>
+                  <label class="btn btn-info btn-xs" role="button" for="healthCertInputFile">Choose File
+                    <input
+                      class="hidden"
+                      type="file"
+                      name="healthCertInputFile"
+                      id="healthCertInputFile"
+                      ngf-select
+                      ng-model="application.healthCert"
+                      accept="image/*,application/pdf"
+                      ngf-max-size="2MB"
+                      ngf-pattern="'image/*,application/pdf'"
+                      required
+                      ngf-model-invalid="errorFile">
                   </label>
-                  <label for="healthCertInputFile">Health Certificate
-                    <span class="text-danger" ng-show="restaurantApplication.healthCertInputFile.$invalid && !restaurantApplication.healthCertInputFile.$pristine">
-                      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>Required</span>
-                  </label>
+                  <label for="healthCertInputFile">Health Certificate</label>
+                  <small ng-if="application.healthCert">
+                    <br>
+                    <i class="fa fa-file-o" aria-hidden="true"></i>
+                    {{application.healthCert.name}}</small>
+                  <span class="text-danger">
+                    <i class="fa fa-exclamation-circle" ng-show="restaurantApplication.healthCertInputFile.$error.pattern">
+                      Only images and pdf documents are accepted</i><br>
+                    <i class="fa fa-exclamation-circle" ng-show="restaurantApplication.healthCertInputFile.$error.maxSize">
+                      File is too large
+                      {{errorFile.size / 1000000|number:1}}MB: Maximum 2MB</i>
+                  </span>
                 </div>
               </div>
             </div>
 
             <!-- Real State Owner Permission -->
-            <!-- uses uploader number 2 -->
             <div class="row">
-              <div>
-                <div class="form-group" ng-if="application.propertyOwner !== 'true' && application.hasRestaurant !== 'true'" ng-hide="application.propertyOwner == 'true'">
-                  <label class="btn btn-default" role="button" for="realStatePerInputFile">Choose File
-                    <input type="file" name="realStatePerInputFile" id="realStatePerInputFile" class="hidden" nv-file-select uploader="uploader2" ng-click="uploader2.clearQueue()" ng-model="application.realStatePer" valid-file required>
+              <div class="col-xs-12">
+                <div class="form-group" ng-if="application.propertyOwner !== 'true' && application.hasRestaurant !== 'true'">
+                  <label class="btn btn-info btn-xs" role="button" for="realStatePerInputFile">Choose File
+                    <input
+                      class="hidden"
+                      type="file"
+                      name="realStatePerInputFile"
+                      id="realStatePerInputFile"
+                      ngf-select
+                      ng-model="application.realStatePer"
+                      accept="image/*,application/pdf"
+                      ngf-max-size="2MB"
+                      ngf-pattern="'image/*,application/pdf'"
+                      required
+                      ngf-model-invalid="errorFile">
                   </label>
-                  <label for="realStatePerInputFile">Real State Owner Permission
-                    <span class="text-danger" ng-show="restaurantApplication.realStatePerInputFile.$invalid && !restaurantApplication.realStatePerInputFile.$pristine">
-                      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>Required</span>
-                  </label>
+                  <label for="realStatePerInputFile">Real State Owner Permission</label>
+                  <small ng-if="application.realStatePer">
+                    <br>
+                    <i class="fa fa-file-o" aria-hidden="true"></i>
+                    {{application.realStatePer.name}}</small>
+                  <span class="text-danger">
+                    <i class="fa fa-exclamation-circle" ng-show="restaurantApplication.realStatePerInputFile.$error.pattern">
+                      Only images and pdf documents are accepted</i><br>
+                    <i class="fa fa-exclamation-circle" ng-show="restaurantApplication.realStatePerInputFile.$error.maxSize">
+                      File is too large
+                      {{errorFile.size / 1000000|number:1}}MB: Maximum 2MB</i>
+                  </span>
                 </div>
               </div>
             </div>
 
             <!-- Food Authority Report -->
             <div class="row">
-              <div>
-                <div class="form-group" ng-if="application.hasRestaurant == 'true'" ng-hide="application.hasRestaurant !== 'true'">
-                  <label class="btn btn-default" role="button" for="foodAuthReportInputFile">Choose File
-                    <input type="file" name="foodAuthReportInputFile" id="foodAuthReportInputFile" class="hidden" nv-file-select uploader="uploader1" ng-click="uploader1.clearQueue()" ng-model="application.foodAuthReport" valid-file required>
+              <div class="col-xs-12">
+                <div class="form-group" ng-if="application.hasRestaurant == 'true'">
+                  <label class="btn btn-info btn-xs" role="button" for="foodAuthReportInputFile">Choose File
+                    <input
+                      class="hidden"
+                      type="file"
+                      name="foodAuthReportInputFile"
+                      id="foodAuthReportInputFile"
+                      ngf-select
+                      ng-model="application.foodAuthReport"
+                      accept="image/*,application/pdf"
+                      ngf-max-size="2MB"
+                      ngf-pattern="'image/*,application/pdf'"
+                      required
+                      ngf-model-invalid="errorFile">
                   </label>
-                  <label for="foodAuthReportInputFile">Food Authority Report
-                    <span class="text-danger" ng-show="restaurantApplication.foodAuthReportInputFile.$invalid && !restaurantApplication.foodAuthReportInputFile.$pristine">
-                      <i class="fa fa-exclamation-circle" aria-hidden="true"></i>Required</span>
-                  </label>
+                  <label for="foodAuthReportInputFile">Food Authority Report</label>
+                  <small ng-if="application.foodAuthReport">
+                    <br>
+                    <i class="fa fa-file-o" aria-hidden="true"></i>
+                    {{application.foodAuthReport.name}}</small>
+                  <span class="text-danger">
+                    <i class="fa fa-exclamation-circle" ng-show="restaurantApplication.foodAuthReportInputFile.$error.pattern">
+                      Only images and pdf documents are accepted</i><br>
+                    <i class="fa fa-exclamation-circle" ng-show="restaurantApplication.foodAuthReportInputFile.$error.maxSize">
+                      File is too large
+                      {{errorFile.size / 1000000|number:1}}MB: Maximum 2MB</i>
+                  </span>
                 </div>
               </div>
             </div>
-
           </div>
-
-          <div class="col-md-6">
-            <ul class="list-unstyled text-success">
-              <!-- uploader 1 -->
-              <dl ng-repeat="item in uploader1.queue">
-                <dd>
-                  <span>
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </span>
-                  {{ item.file.name }}
-                </dd>
-              </dl>
-              <!-- uploader 2 -->
-              <dl ng-repeat="item in uploader2.queue">
-                <dd>
-                  <span>
-                    <i class="glyphicon glyphicon-ok"></i>
-                  </span>
-                  {{item.file.name }}
-                </dd>
-              </dl>
-            </ul>
-          </div>
-
         </div>
 
         <hr>
@@ -203,8 +262,4 @@
       </form>
     </div>
   </div>
-  <!-- google places api -->
-
 </div>
-
-

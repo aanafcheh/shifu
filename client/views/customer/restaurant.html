@@ -1,46 +1,58 @@
 <!DOCTYPE html>
 <div class="container">
 
-  <!-- restaurant profile badge -->
+  <!-- show an alert if the restaurant does not delievr to the user's address -->
+  <div class="row" ng-if="locationPermission && !deliveryToCurrentLocation">
+    <div class="col-xs-12">
+      <div class="alert alert-info" role="alert">
+        <i class="fa fa-exclamation-circle fa-lg" aria-hidden="true"></i>
+        This restaurant does not delivery to your current address. You may change your address during checkout or make a take-away order.</div>
+    </div>
+  </div>
 
   <div class="row">
     <div class="col-md-8" ng-repeat="restaurant in restaurants">
-
       <div class="panel panel-default" ng-init="loadMap(restaurant.lat,restaurant.lng)">
+
+        <!-- working hours popover -->
+        <i class="fa fa-clock-o fa-lg text-muted pull-right" style="margin:10px;" aria-hidden="true" uib-popover-template="'openinghours.html'" popover-trigger="'mouseenter'" popover-placement="left-top"></i>
         <div class="panel-body">
           <div class="row">
-            <div class="col-xs-6">
+
+            <!-- restaurant badge -->
+            <div class="col-sm-6 col-md-5 col-lg-6">
               <div class="row">
-                <div class="media">
-                  <div class="media-left media-middle">
-                    <img class="img-circle" height="64" width="64" ng-src="{{restaurant.logo}}" alt="{{restaurant.restaurantName}}">
-                  </div>
-                  <div class="media-body">
-                    <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
-                    <i class="fa fa-map-marker" aria-hidden="true"></i>
-                    {{restaurant.address | capitalize}}
-                    <br>
-                    {{restaurant.zipcode}},
-                    {{restaurant.city | capitalize}}
-                    <br>
-                    <!-- TODO: put main method of communication here only -->
-                    <i class="fa fa-mobile" aria-hidden="true"></i>
-                    {{restaurant.phoneNumber}}
-                    <!-- <br>
-                    <i class="fa fa-envelope" aria-hidden="true"></i>
-                    {{restaurant.email}} -->
+                <div class="col-xs-11 col-xs-push-1 col-sm-12 col-sm-push-0">
+                  <div class="media">
+                    <div class="media-left">
+                      <img class="img-circle" height="64" width="64" ng-src="{{restaurant.logo}}" alt="{{restaurant.restaurantName}}">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
+                      <i class="fa fa-map-marker" aria-hidden="true"></i>
+                      {{restaurant.address | capitalize}}
+                      <br>
+                      {{restaurant.zipcode}},
+                      {{restaurant.city | capitalize}}
+                      <br>
+                      <!-- TODO: put main method of communication here only -->
+                      <i class="fa fa-mobile" aria-hidden="true"></i>
+                      {{restaurant.phoneNumber}}
+                      <!-- <br>
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                        {{restaurant.email}} -->
+                    </div>
                   </div>
                 </div>
               </div>
-
               <!-- rating -->
               <div class="row">
-                <div class="col-xs-12">
-                  <div ng-controller="RatingController" style="margin-top:10px;">
+                <div class="col-xs-10 col-xs-push-2 col-sm-12 col-sm-push-0">
+                  <div style="margin-top:15px" ng-controller="RatingController">
                     <!-- if the user has not rated the restaurant, show the restauant average rating -->
                     <span
                       ng-show="!userRated"
-                      style="font-size:23px"
+                      class="h3"
                       uib-rating
                       ng-model="restaurant.avgRate"
                       max="max"
@@ -53,7 +65,7 @@
                     <!-- otherwise show the user rating -->
                     <span
                       ng-show="userRated"
-                      style="font-size:23px"
+                      class="h3"
                       uib-rating
                       ng-model="userFeedback.rate"
                       max="max"
@@ -70,74 +82,96 @@
             </div>
 
             <!-- restaurant quick info  -->
-            <div class="col-xs-6 h4 text-right">
-              <span class="label label-success">{{state.openOrClosed}}</span>
-              <!-- paid delivery -->
-              <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
-              <!-- free delivery -->
-              <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
-              <!-- pick-up only -->
-              <span ng-if="!restaurant.deliveryFee" class="label label-primary">Pick-up Only</span>
-              <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
-                -
-                {{restaurant.workTo[today] | date:'shortTime'}}</span>
+            <div class="col-sm-6 col-md-7 col-lg-6">
+              <div class="row text-center h4">
+                <span class="label label-success">{{state.openOrClosed}}</span>
+                <span ng-if="restaurant.delivery">
+                  <!-- paid delivery -->
+                  <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
+                  <!-- free delivery -->
+                  <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
+                </span>
+                <!-- pick-up only -->
+                <!-- TODO: if we use "!restaurant.delivery" in ng-if instead, even though the actual value of restaurant.delivery is false, the pick-up only label does not show up, this method works in other pages but not here? -->
+                <span ng-if="!restaurant.deliveryFee && restaurant.deliveryFee !== 0 || !restaurant.delivery" class="label label-primary">Pick-up Only</span>
+                <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
+                  -
+                  {{restaurant.workTo[today] | date:'shortTime'}}</span>
+              </div>
+              <hr>
+              <!-- TODO: estimate the delivery fee and show it -->
+              <!-- TODO: show delivery time instead of delivery distance -->
+              <div class="row bs-callout-sm" ng-if="locationPermission">
+                <dl class="dl-horizontal" style="margin:0;">
+                  <dt>Distance to Restaurant:</dt>
+                  <dd>≈{{currentLocDistanceToRes}}km</dd>
+                  <div ng-if="!deliveryToCurrentLocation">
+                    <dt>Delivery Radius:</dt>
+                    <dd>{{radius}}km</dd>
+                  </div>
+                </dl>
+              </div>
             </div>
           </div>
-
-
-
-
-
-
-
-
-
         </div>
       </div>
     </div>
 
-    <!-- TODO: center map when in full screen -->
     <!-- google map -->
     <div class="col-md-4">
       <div class="panel panel-default">
         <!-- travel meduim -->
         <div class="btn-group btn-group-justified btn-group-sm">
           <label class="btn btn-text" ng-model="travelMeduim" uib-btn-radio="'DRIVING'" ng-click="changeMeduim()">
-            <i class="fa fa-car" aria-hidden="true"></i>
+            <i class="fa fa-car fa-lg" aria-hidden="true"></i>
           </label>
           <label class="btn btn-text" ng-model="travelMeduim" uib-btn-radio="'WALKING'" ng-click="changeMeduim()">
-            <i class="fa fa-male" aria-hidden="true"></i>
+            <i class="fa fa-male fa-lg" aria-hidden="true"></i>
           </label>
           <label class="btn btn-text" ng-model="travelMeduim" uib-btn-radio="'BICYCLING'" ng-click="changeMeduim()">
-            <i class="fa fa-bicycle" aria-hidden="true"></i>
+            <i class="fa fa-bicycle fa-lg" aria-hidden="true"></i>
           </label>
         </div>
+        <hr class="hrline">
         <div class="panel-body">
           <div id="map" style="height: 300px;"></div>
         </div>
-        <div class="panel-footer">
-          <div ng-if="permission">
-          <h6  ng-if="deliveryToCurrentLocation">
-            <i class="glyphicon glyphicon-check" aria-hidden="true"></i> Delivers to your current location<br>
-            <i class="glyphicon glyphicon-map-marker" aria-hidden="true"></i> Distance to Restaurant: Approx. {{currentLocDistanceToRes}} Km
-          </h6>
-          <h6  ng-if="!deliveryToCurrentLocation">
-            <i class="glyphicon glyphicon-remove-sign" aria-hidden="true"></i> Does not deliver to your current location <br>
-            <i class="glyphicon glyphicon-info-sign" aria-hidden="true"></i> Delivery Radius: {{radius}} Km <br>
-            <i class="glyphicon glyphicon-map-marker" aria-hidden="true"></i> Distance to restaurant: {{currentLocDistanceToRes}} Km
-          </h6>
-          </div>
-
-        </div>
       </div>
-
     </div>
+
   </div>
 
 
+ <div ng-if="menus">
+   <ul ng-repeat="menu in menus">
+
+       <ul>{{menu.item}}
+
+       <input type="number" id="{{menu.item}}" placeholder="Quantity" value="1" ng-model="quantity" />
+         <button class="btn btn-info btn-xs" ng-click="addTocart(menu,quantity)"><i class="fa fa-cart-plus" aria-hidden="true"></i></i>Add to Cart</button></ul>
 
 
-
-
+     </ul>
+ </div>
 </div>
+
+<!-- opening hours popover template -->
+<script type="text/ng-template" id="openinghours.html">
+  <div>
+    <ul class="list-unstyled" ng-repeat="day in weekdays">
+      <li>
+        <div class="row" ng-if="restaurant.workFrom[day]">
+          <div class="col-xs-4">
+            <b>{{day}}:</b>
+          </div>
+          <div class="col-xs-8">
+            {{restaurant.workFrom[day] | date:'shortTime'}}
+            -
+            {{restaurant.workTo[day] | date:'shortTime'}}
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</script>
 

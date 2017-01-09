@@ -1,60 +1,29 @@
 <!DOCTYPE html>
 <div class="container-fluid">
 
-  <!-- restaurant application status -->
-  <div class="row">
-    <div class="panel panel-default">
-      <div class="panel-body text-center">
-        <ul class="list-inline">
-          <li>
-            <span class="glyphicon glyphicon-check text-success" aria-hidden="true"></span>
-            Application Received
-          </li>
-          <li>
-            <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
-          </li>
-          <li>
-            <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
-            Proccessing
-          </li>
-          <li>
-            <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
-          </li>
-          <li>
-            <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span>
-            Restaurant Registered
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<!-- TODO: add a restaurant application status -->
+<!-- TODO: make the restaurant wizard abstract -->
 
   <!-- restaurant profile badge -->
   <div class="row">
-    <div class="col-xs-12 col-md-4 col-lg-3" ng-repeat="restaurant in restaurants">
+    <div class="col-xs-12 col-md-4 col-lg-3">
       <div class="panel panel-default">
-        <div class="panel-body">
+        <div class="panel-body" ng-repeat="restaurant in restaurants">
+          <!-- restaurant profile photo -->
           <div class="row center-block text-center">
             <div class="col-xs-12">
-              <button ng-if="!image" type="button" class="btn btn-primary btn-circle btn-xl">
+              <!-- show if there is no logo -->
+              <button ng-if="!logo" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="openImageModal('md', restaurant)">
                 <i class="fa fa-cutlery" aria-hidden="true"></i>
               </button>
-              <img ng-if="image" class="img-circle" height="64" width="64" ng-src="{{image}}"/>
+              <!-- show if a logo already exists -->
+              <img ng-if="logo" class="img-circle" height="64" width="64" ng-src="/api/containers/{{restaurant.userId}}/download/{{restaurant.restaurantName +'-logo'}}" role="button" ng-click="openImageModal('md', restaurant)"/>
             </div>
           </div>
           <div class="row text-center">
 
             <div class="col-xs-12">
-              <!-- TODO: should we show the address? -->
               <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
-              <!-- <address class="text-capitalize">
-              <i class="fa fa-map-marker" aria-hidden="true"></i>
-              {{restaurant.address}}<br>
-              {{restaurant.zipcode}},
-              {{restaurant.city}}<br>
-              <i class="fa fa-mobile" aria-hidden="true"></i>
-              {{restaurant.phoneNumber}}
-            </address> -->
             </div>
           </div>
           <div class="row text-center">
@@ -69,12 +38,14 @@
           <div class="row text-center">
             <div class="col-xs-12">
               <span class="label label-success">{{state.openOrClosed}}</span>
-              <!-- paid delivery -->
-              <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
-              <!-- free delivery -->
-              <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
+              <span ng-if="restaurant.delivery">
+                <!-- paid delivery -->
+                <span ng-if="restaurant.deliveryFee" class="label label-primary">Delivery From &euro;{{restaurant.deliveryFee}}</span>
+                <!-- free delivery -->
+                <span ng-if="restaurant.deliveryFee === 0" class="label label-primary">Free Delivery</span>
+              </span>
               <!-- pick-up only -->
-              <span ng-if="!restaurant.deliveryFee" class="label label-primary">Pick-up Only</span>
+              <span ng-if="!restaurant.delivery" class="label label-primary">Pick-up Only</span>
               <span class="label label-default" ng-if="restaurant.workFrom[today]">{{restaurant.workFrom[today] | date:'shortTime'}}
                 -
                 {{restaurant.workTo[today] | date:'shortTime'}}</span>
@@ -82,15 +53,15 @@
           </div>
         </div>
         <div class="list-group">
-          <a class="list-group-item">
+          <a class="list-group-item" ui-sref="app.owner">
             <span class="badge">2</span>
             <i class="glyphicon glyphicon-home"></i>
             Overview
           </a>
-          <a class="list-group-item">
+          <a class="list-group-item" ui-sref="app.owner.settings">
             <i class="glyphicon glyphicon-user"></i>
             Settings</a>
-          <a class="list-group-item">
+          <a class="list-group-item" ui-sref="app.owner.help">
             <i class="glyphicon glyphicon-flag"></i>
             Help
           </a>
@@ -98,61 +69,11 @@
       </div>
     </div>
 
-    <!-- restaurant menu -->
-    <div class="col-xs-12 col-md-6 ng-cloak">
-      <!-- alert if the restaurant has no menus -->
-      <div class="row" ng-if="hasMenu">
-        <div class="alert alert-info text-center" role="alert">You do not have a menu currently. Click on this button to add new items:
-          <button ng-click="open('md')" type="button" class="btn btn-success btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-            Add
-          </button>
-        </div>
-      </div>
-
-      <!-- add menu button -->
-      <div class="row" ng-if="menus[0]" >
-        <button style="margin:10px" ng-click="open('md')" type="button" class="btn btn-success btn-xs hidden-xs pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-          Add
-        </button>
-
-        <!-- TODO: make the info update live -->
-        <uib-tabset>
-          <uib-tab index="$index + 1" ng-repeat="item in menus | unique: 'category' | orderBy:'-category'" heading="{{item.category | capitalize}}">
-            <div class="table-responsive">
-              <!-- TODO: should I put a table header -->
-              <table class="table">
-                <tr ng-repeat="menu in menus | filter:item.category">
-                  <td class="text-capitalize">{{menu.item}}</td>
-                  <td class="text-capitalize">
-                    <span class="label label-info">{{menu.allergies | join:', ' }}</span>
-                  </td>
-                  <td>€{{menu.price}}</td>
-                  <td class="text-right">
-                    <button ng-click="open('md', menu)" type="button" class="btn btn-info btn-xs" aria-haspopup="true" aria-expanded="false">
-                      <span class="glyphicon glyphicon-edit"></span>
-                      Edit
-                    </button>
-                    <button ng-click="delete(menu.id)" type="button" class="btn btn-danger btn-xs" aria-expanded="false">
-                      <span class="glyphicon glyphicon-remove"></span>
-                      Del
-                    </button>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </uib-tab>
-        </uib-tabset>
-
-        <!-- add menu button for small screens -->
-        <button style="margin:10px" ng-click="open('md')" type="button" class="btn btn-success btn-xs visible-xs-inline-block pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-          Add
-        </button>
-
-      </div>
+    <!-- show based on the selecion from the list group above -->
+    <div class="col-xs-12 col-md-6">
+      <div ui-view="content"></div>
     </div>
+
   </div>
 
 </div>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4 col-sm-push-8">
+      <div class="panel">
+        <div class="panel-heading text-center">
+          <h3 class="panel-title">SIGN UP</h3>
+        </div>
+        <div class="panel-body">
+          <form name="signup" role="form" ng-submit="signupNewUser()" novalidate>
+
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.name.$invalid && signup.name.$touched)}">
+              <input type="text" class="form-control" name="name" id="name" placeholder="Full Name" ng-model="newUser.name" change-case required>
+              <span ng-show="(signup.name.$invalid && signup.name.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.username.$invalid && signup.username.$touched)}">
+              <label ng-if="error.username" class="control-label text-danger" for="username"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{error.username}}</label>
+              <input type="text" class="form-control" name="username" id="username" placeholder="Username" ng-model="newUser.username" change-case  required>
+              <span ng-show="(signup.username.$invalid && signup.username.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.email.$invalid && signup.email.$touched)}">
+              <label ng-if="error.email" class="control-label text-danger" for="email"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{error.email}}</label>
+              <input type="email" class="form-control" name="email" id="email" placeholder="Email" ng-model="newUser.email" change-case required>
+              <span ng-show="(signup.email.$invalid && signup.email.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.password.$invalid && signup.password.$touched)}">
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password" ng-model="newUser.password" required>
+              <span ng-show="(signup.password.$invalid && signup.password.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.phoneNumber.$invalid && signup.phoneNumber.$touched)}">
+              <input type="number" class="form-control" name="phoneNumber" id="phoneNumber" placeholder="Mobile Number" ng-model="newUser.phoneNumber" required>
+              <span ng-show="(signup.phoneNumber.$invalid && signup.phoneNumber.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <!-- user address -->
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.address.$invalid && signup.address.$touched)}">
+              <input type="text" class="form-control" name="address" id="address" placeholder="Street Address" ng-model="newUser.address" change-case required>
+              <span ng-show="(signup.address.$invalid && signup.address.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <!-- city -->
+            <!-- TODO: suggest citis and fill in the zipcode automatically -->
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.city.$invalid && signup.city.$touched)}">
+              <input type="text" class="form-control" name="city" id="city" placeholder="City" ng-model="newUser.city" change-case required>
+              <span ng-show="(signup.city.$invalid && signup.city.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <!-- zipcode -->
+            <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.zipcode.$invalid && signup.zipcode.$touched)}">
+              <input type="number" class="form-control" name="zipcode" id="zipcode" placeholder="ZIP Code" ng-model="newUser.zipcode" required>
+              <span ng-show="(signup.zipcode.$invalid && signup.zipcode.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            </div>
+
+            <!-- form error in case some fields are not filled out -->
+            <div ng-if="signupError" class="alert alert-danger alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <strong>Please fill out all the fields.</strong>
+            </div>
+
+            <button id="register" type="submit" class="btn btn-success btn-block"><span ng-if="signup.$submitted && signup.$valid"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i> CREATING...</span><span ng-if="!signup.$submitted">CREATE ACCOUNT </span></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,7 +6,32 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "phoneNumber": {
+      "type": "number",
+      "required": true
+    },
+    "address": {
+      "type": "string",
+      "required": true
+    },
+    "city": {
+      "type": "string",
+      "required": true
+    },
+    "zipcode": {
+      "type": "number",
+      "required": true
+    },
+    "username": {
+      "type": "string",
+      "required": true
+    }
+  },
   "validations": [],
   "relations": {
     "accessTokens": {
@@ -37,6 +62,21 @@
     "feedbacks": {
       "type": "hasMany",
       "model": "feedback",
+      "foreignKey": "userId"
+    },
+    "cart": {
+      "type": "hasOne",
+      "model": "cart",
+      "foreignKey": "userId"
+    },
+    "notificationsContainer": {
+      "type": "hasOne",
+      "model": "notificationsContainer",
+      "foreignKey": "userId"
+    },
+    "order": {
+      "type": "hasMany",
+      "model": "order",
       "foreignKey": "userId"
     }
   },
