@@ -15,24 +15,5 @@
     "provider": "filesystem",
     "root": "./server/storage",
     "maxFileSize": "4194304"
-  },
-  "email": {
-    "name": "email",
-    "connector": "mail",
-    "transports": [
-      {
-        "type": "smtp",
-        "host": "smtp.gmail.com",
-        "secure": true,
-        "port": 465,
-        "tls": {
-          "rejectUnauthorized": false
-        },
-        "auth": {
-          "user": "shifupandadumplings@gmail.com",
-          "pass": "shifu01631"
-        }
-      }
-    ]
   }
 }

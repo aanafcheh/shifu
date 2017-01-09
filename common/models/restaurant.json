@@ -55,11 +55,6 @@
       "type": "hasMany",
       "model": "feedback",
       "foreignKey": "restaurantId"
-    },
-    "order": {
-      "type": "hasMany",
-      "model": "order",
-      "foreignKey": "restaurantId"
     }
   },
   "acls": [],

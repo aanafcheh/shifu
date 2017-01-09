@@ -12,8 +12,7 @@ angular
     'angularFileUpload',
     'ngImgCrop',
     'angular.filter',
-    'ui.select',
-    'ngCookies'
+    'ui.select'
   ])
   .config(['$stateProvider', '$urlRouterProvider', '$resourceProvider', function($stateProvider,
     $urlRouterProvider, $resourceProvider) {
@@ -59,7 +58,7 @@ angular
           templateUrl: 'views/restaurant/restaurant-application.html',
           controller: 'ApplicationController'
         }
-      },
+      }
     })
 
     .state('app.restaurantwizard', {
@@ -104,26 +103,6 @@ angular
         }
       }
     })
-    //restaurant mobile states
-    .state('app.profile', {
-      url: 'profile',
-      views: {
-        'view@': {
-          templateUrl: 'views/mobile/profile.html',
-          controller: 'HeaderController'
-        }
-      }
-    })
-
-    .state('app.notifications', {
-      url: 'notifications',
-      views: {
-        'view@': {
-          templateUrl: 'views/mobile/notifications.html',
-          controller: 'HeaderController'
-        }
-      }
-    })
 
     // customer states
     .state('app.restaurant', {
@@ -132,15 +111,6 @@ angular
         'view@': {
           templateUrl: 'views/customer/restaurant.html',
           controller: 'RestaurantController'
-        }
-      }
-    })
-    .state('app.checkout', {
-      url: 'checkout',
-      views: {
-        'view@': {
-          templateUrl: 'views/customer/checkout.html',
-          controller: 'CheckoutController'
         }
       }
     });
@@ -162,22 +132,11 @@ angular
   .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
     $urlRouterProvider) {
     $stateProvider
-
-      .state('home', {
-      url: '/',
-      params: {
-        verifyEmail: null,
-        userEmail: null
-      },
-      templateUrl: 'views/home.html',
-      controller: 'IndexController'
-    })
-
-    .state('signup', {
-      url: '/signup',
-      templateUrl: 'views/signup.html',
-      controller: 'SignupController'
-    });
+      .state('app', {
+        url: '',
+        templateUrl: 'views/home.html',
+        controller: 'IndexController'
+      });
 
     $urlRouterProvider.otherwise('/');
   }]);

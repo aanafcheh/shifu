@@ -4,9 +4,8 @@
   },
   "initial": {
     "compression": {
-      "enabled": false
+      "enabled":false
     },
-    "express-flash": {},
     "cors": {
       "params": {
         "origin": true,
@@ -35,16 +34,15 @@
   },
   "session:before": {
     "cookie-parser": {
-      "params": "hnsuidzj%Y#$Y%&ESHRbaenrjbgnweh583wh"
+      "params": "test secret"
     }
   },
   "session": {
     "express-session": {
       "params": {
-        "secret": "hnsuidzj%Y#$Y%&ESHRbaenrjbgnweh583wh",
+        "secret": "ola amigo",
         "saveUninitialized": true,
-        "resave": true,
-        "cookie": "{ secure: true }"
+        "resave": true
       }
     }
   },
