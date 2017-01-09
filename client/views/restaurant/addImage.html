@@ -9,24 +9,23 @@
     </div>
     <div class="actions">
       <div class="form-group">
-        <label class="btn btn-default" role="button" for="menuItemImage">Choose File
-          <input type="file" name="menuItemImage" id="menuItemImage" class="hidden" nv-file-select uploader="uploader" ng-click="uploader.clearQueue()" ng-model="image" valid-file required>
-        </label>
+        <button class="btn btn-default" role="button" ngf-select ng-model="image" accept="image/*">
+          Select Picture</button>
       </div>
     </div>
   </div>
 
   <div class="portlet-body">
-    <div class="row text-center" ng-repeat="item in uploader.queue">
+    <div class="row text-center" ng-show="image">
       <div class="col-md-6">
         <strong>Crop:</strong>
-        <div class="cropArea text-center center-block">
-          <img-crop image="item.image" result-image="item.croppedImage"></img-crop>
-        </div>
+          <div ngf-drop ng-model="image" ngf-pattern="image/*" class="cropArea center-block">
+            <img-crop image="image  | ngfDataUrl" result-image="croppedImage"></img-crop>
+          </div>
       </div>
       <div class="col-md-6">
         <strong>Preview:</strong>
-        <div><img class="img-circle center-block" ng-src="{{item.croppedImage}}"/></div>
+        <div><img class="img-circle center-block" ng-src="{{croppedImage}}"/></div>
       </div>
     </div>
 
@@ -34,7 +33,7 @@
       <div class="col-md-6 col-md-offset-3">
         <div class="btn-group btn-group-justified" role="group" style="margin-top:20px">
           <div class="btn-group" role="group">
-            <button class="btn btn-primary" ng-click="ok()" ng-disabled="!image">Upload</button>
+            <button class="btn btn-primary" ng-click="ok(croppedImage, 'logo', image.name, restaurant.restaurantName)" ng-disabled="!image">Upload</button>
           </div>
           <div class="btn-group" role="group">
             <button class="btn btn-default" ng-click="cancel()">Cancel</button>

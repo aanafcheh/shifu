@@ -7,7 +7,9 @@
     "authPath": "/auth/local",
     "successRedirect": "/",
     "failureRedirect": "/login",
-    "failureFlash": true
+    "failureFlash": true,
+    "setAccessToken": true,
+    "session": true
   },
   "facebook-login": {
     "provider": "facebook",

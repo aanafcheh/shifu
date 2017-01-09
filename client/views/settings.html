@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<!-- // TODO: improve this page -->
+<div class="container">
+  <div class="row">
+    Delete Retaurants:
+    <button ng-click="deleteAll()" class="btn btn-danger" type="button">delete ALL</button>
+    <hr>
+
+    <ul>
+      <li ng-repeat="restaurant in restaurants">{{restaurant.restaurantName}} <button ng-click="delete(restaurant.id)" class="btn btn-danger btn-xs" type="button">delete</button><hr></li>
+    </ul>
+  </div>
+</div>

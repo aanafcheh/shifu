@@ -79,6 +79,7 @@ module.exports = function(Restaurant) {
   // check if the restaurant is open or closed
   Restaurant.openOrClosed = function(restaurantId, cb) {
 
+
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     var now = new Date();
     // get the current time and current day of the week
@@ -88,7 +89,7 @@ module.exports = function(Restaurant) {
 
     Restaurant.findById(restaurantId, function(err, instance) {
 
-      if (instance.workFrom[today]) {
+      if (instance.workFrom && instance.workFrom[today]) {
         var workingFrom = instance.workFrom[today].toTimeString();
         var workingTo = instance.workTo[today].toTimeString();
         if (currentTime < workingFrom || currentTime > workingTo) {

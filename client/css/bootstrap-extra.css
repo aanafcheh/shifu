@@ -427,33 +427,3 @@ http://bootsnipp.com/snippets/featured/portlets-like-panels
 .navbar-light {
   background: rgba(76, 175, 80, 0.2);
 }
-
-.alert-labeled{
-  padding: 0px;
-}
-
-.alert-labeled-row{
-    display: table-row;
-    padding: 0px;
-}
-
-.alert-labelled-cell{
-    padding: 10px;
-    display: table-cell;
-    vertical-align: middle;
-}
-
-.alert-labeled .close > *{
-    padding:10px;
-    display: table-cell;
-    vertical-align: middle;
-}
-
-.alert-label{
-    vertical-align: middle;
-    background: #BCE8F1;
-    width: auto;
-    padding: 10px 15px;
-    height: 100%;
-    font-size:1.1em;
-}

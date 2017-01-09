@@ -5,36 +5,82 @@
 //TODO: change all the http requests to resource requests
 
 angular.module('shifuProfile')
-  .service('commonServices', function() {
-    function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
 
-      var R = 6371;
-      var dLat = deg2rad(resLat - userLat); // deg2rad below
-      var dLon = deg2rad(resLng - userLng);
-      var a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(userLat)) * Math.cos(deg2rad(resLat)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c;
+.service('commonServices', ['User', 'Cart', function(User, Cart) {
 
-      //this functionality is only for search page for showing distance to each restaurant
-      if (restaurantObj !== "") {
-        restaurantObj.distanceKm = d;
+  // this.newCartItem; //watch latest  item added to cart
+  // this.deletedItem; //watch latest deleted item from cart
+  // this.deletedItemIndex; //deletedItem index
+
+
+  function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
+    var R = 6371;
+    var dLat = deg2rad(resLat - userLat); // deg2rad below
+    var dLon = deg2rad(resLng - userLng);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(userLat)) * Math.cos(deg2rad(resLat)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+
+    //this functionality is only for search page for showing distance to each restaurant
+    if (restaurantObj !== "") {
+      restaurantObj.distanceKm = d;
+    }
+    return d;
+  }
+
+  function deg2rad(deg) {
+
+    return deg * (Math.PI / 180);
+  }
+
+  //function to deleteItem from cart and database
+  function removeCartItem(itemId) {
+    User.cart({
+      'id': 'me'
+    }).$promise.then(function(response) {
+      for (var i = 0; i < response.items.length; i++) {
+        if (response.items[i].id === itemId) {
+          response.items.splice(i, 1);
+          response.$save();
+
+        }
+
       }
-      console.log("The distance is " + d);
-      return d;
+    });
+  }
+
+  function setDefault() {
+    this.newCartItem = null;
+    this.deletedItem = null;
+    this.deletedItemIndex = null;
+  }
+
+  return {
+    distanceCalculation: distanceCalculation,
+    removeCartItem: removeCartItem,
+    setDefault: setDefault
+  };
+}])
+
+// this code will run before running the controllers. this is used to check if the user is authenticated and redirect
+.run(function($rootScope, $state, User, AppAuth) {
+  $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+    $rootScope.backgroundImage = !User.isAuthenticated();
+    if (toState.authenticate && !User.isAuthenticated()) {
+      $rootScope.backgroundImage = User.isAuthenticated();
+      AppAuth.ensureHasCurrentUser(function() {
+        $rootScope.currentUser = AppAuth.currentUser;
+        if (!User.isAuthenticated()) {
+          $state.transitionTo("app.home");
+          event.preventDefault();
+        }
+      });
     }
-
-    function deg2rad(deg) {
-
-      return deg * (Math.PI / 180);
-    }
-    return {
-      distanceCalculation: distanceCalculation
-    };
-  })
-
+  });
+})
 
 .factory('AppAuth', function($cookies, User, LoopBackAuth, $http) {
   var self = {
@@ -54,7 +100,7 @@ angular.module('shifuProfile')
                 2, 66);
             }
             if (LoopBackAuth.currentUserId === null) {
-              delete $cookies.get('access_token');
+              // delete $cookies.get('access_token');
               LoopBackAuth.accessTokenId = null;
             }
             LoopBackAuth.save();
@@ -84,20 +130,48 @@ angular.module('shifuProfile')
   return self;
 })
 
-.controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', 'AppAuth', function($scope, $state, $stateParams, User, Restaurant, AppAuth) {
+.factory('FileUploader', function(Upload, $timeout) {
+  return {
+    upload: function(file, type, name, restaurant) {
 
-  // make sure the user is athenticated in angular
-  if (!User.isAuthenticated()) {
-    AppAuth.ensureHasCurrentUser(function() {
-      $scope.currentUser = AppAuth.currentUser;
-    });
-  }
+      if (type == "document") {
+        file = Upload.rename(file, restaurant + "-" + name + file.name.substring(file.name.lastIndexOf('.')));
+        console.log(document);
+      }
+      if (type == "logo") {
+        file = Upload.dataUrltoBlob(file, restaurant + "-" + type);
+      }
+
+      file.upload = Upload.upload({
+        url: '/api/containers/me/upload',
+        data: {
+          file: file
+        },
+      }).then(function(response) {
+        console.log(response);
+        $timeout(function() {
+          file.result = response.data;
+        });
+      }, function(response) {
+        if (response.status > 0)
+          $scope.errorMsg = response.status + ': ' + response.data;
+      }, function(evt) {
+        // Math.min is to fix IE which reports 200% sometimes
+        file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+      });
+    }
+  };
+})
+
+
+.controller('HeaderController', ['$scope', '$http', 'commonServices', '$state', '$stateParams', 'User', 'Restaurant', 'Cart', 'AppAuth', 'NotificationsContainer', function($scope, $http, commonServices, $state, $stateParams, User, Restaurant, Cart, AppAuth, NotificationsContainer) {
+
+  commonServices.setDefault();
 
   // logout function to clear logout user and clear local storage
   $scope.logout = function() {
     AppAuth.logout(function() {});
   };
-
 
   // query user info
   User.identities({
@@ -120,6 +194,80 @@ angular.module('shifuProfile')
     $scope.restaurants = response;
   });
 
+
+  //get all user cart items
+  User.cart({
+    'id': 'me'
+  }).$promise.then(function(response) {
+    $scope.allCartItems = response.items;
+    watchCartItem();
+    deleteFromCheckoutWatch();
+  });
+
+  //watch any item added to cart from restaurant page
+  function watchCartItem() {
+    $scope.$watch(function() {
+      $scope.noOfItemsInCart = $scope.allCartItems.length;
+      return commonServices.newCartItem;
+    }, function(newItem) {
+      if (newItem !== null) {
+        $scope.allCartItems.push(newItem);
+      }
+    });
+  }
+
+  //watch any item deleted from cart checkout page
+  function deleteFromCheckoutWatch() {
+    $scope.$watch(function() {
+      return commonServices.deletedItem;
+    }, function($index) {
+      if ($index !== null && commonServices.deletedItemIndex !== null) {
+        $scope.allCartItems.splice(commonServices.deletedItemIndex, 1);
+      }
+    });
+  }
+
+
+  //delete items from cart from cart itself from header
+  $scope.deleteItemFromCart = function(itemId, $index) {
+    commonServices.removeCartItem(itemId);
+    commonServices.deletedItem = itemId;
+    commonServices.deletedItemIndex = $index;
+
+  };
+  User.notificationsContainer({
+    'id': 'me'
+  }).$promise.then(function(response) {}, function(err) {
+    User.notificationsContainer.create({
+      id: 'me'
+    }, {});
+  });
+
+
+  function notificationPolling(containerId) {
+    $http.get('api/orderNotifications/notification/' + containerId).success(function(data) {
+      console.log(JSON.stringify(data));
+      notificationPolling(containerId);
+    });
+  }
+
+  $scope.notifications = User.notificationsContainer({
+    'id': 'me'
+  }).$promise.then(function(response) {
+    notificationPolling(response.id);
+    NotificationsContainer.orderNotifications({
+      'id': response.id
+    }, function(res) {
+      console.log(res);
+    }, function(err) {
+      console.log(err);
+    });
+    console.log(response);
+  }, function(error) {
+    console.log(error);
+  });
+
+
   // query all the restaurants for suggestions
   $scope.allRestaurants = Restaurant.find();
 
@@ -133,6 +281,159 @@ angular.module('shifuProfile')
 
 }])
 
+.controller('CheckoutController', ['$scope', '$http', 'User', 'commonServices', 'Cart', 'Order', 'OrderNotification', 'NotificationsContainer', function($scope, $http, User, commonServices, Cart, Order, OrderNotification, NotificationsContainer) {
+  $scope.number = 1;
+  commonServices.setDefault();
+  $scope.check = function() {
+    console.log($scope.number);
+  };
+  User.cart({
+    'id': 'me'
+  }, function(response) {
+    $scope.itemsToOrder = response.items;
+    $scope.total = totalPrice();
+  });
+
+  //total sum of cart items
+  function totalPrice() {
+    var total = 0;
+    for (var i = 0; i < $scope.itemsToOrder.length; i++) {
+      total = total + parseInt($scope.itemsToOrder[i].price * $scope.itemsToOrder[i].quantity);
+    }
+    return total;
+  }
+
+  //delete item from cart(calls service for it)
+  $scope.deleteItemFromCart = function(itemId, $index) {
+    commonServices.removeCartItem(itemId);
+    commonServices.deletedItem = itemId;
+    commonServices.deletedItemIndex = $index;
+  };
+
+  //watcher of deleted item from cart
+  $scope.$watch(function() {
+    return commonServices.deletedItem;
+  }, function($index) {
+    if (commonServices.deletedItemIndex !== null) {
+      $scope.total = $scope.total - parseInt($scope.itemsToOrder[commonServices.deletedItemIndex].price * $scope.itemsToOrder[commonServices.deletedItemIndex].quantity);
+      $scope.itemsToOrder.splice(commonServices.deletedItemIndex, 1);
+    }
+  });
+
+  //post cart items as orders
+  $scope.checkout = function() {
+    User.notificationsContainer({
+      id: 'me'
+    }).$promise.then(function(res) {
+      angular.forEach($scope.itemsToOrder, function(obj) {
+        User.order.create({
+          id: 'me'
+        }, {
+          'restaurantId': obj.restaurantId,
+          'itemId': obj.id,
+          'quantity': obj.quantity
+        }).$promise.then(function(obj1) {
+          console.log("the object" + obj);
+
+          $http.post('api/orderNotifications/notification', {
+            "id": res.id,
+            'quantity': obj.quantity,
+            'itemId': obj.id,
+            'customerId': res.userId,
+            "restaurantId": obj.restaurantId
+          }).success(function(data) {
+            console.log(data);
+          });
+          // NotificationsContainer.orderNotifications.create({id:res.id},{'quantity':obj.quantity,'itemId':obj.id,'customerId':res.userId});
+        }, function(error) {});
+      });
+      User.cart({
+        id: 'me'
+      }).$promise.then(function(response) {
+        response.items = [];
+        response.$save();
+        alert("Your order has been placed");
+
+      });
+
+    }, function(err) {
+      console.log(err);
+    });
+
+
+  };
+
+}])
+
+.controller('IndexController', ['$scope', '$state', '$stateParams', '$window', '$location', 'User', '$http', function($scope, $state, $stateParams, $window, $location, User, $http) {
+
+  // check if the user just signed up
+  $scope.verifyEmail = $stateParams.verifyEmail;
+  $scope.newUserEmail = $stateParams.userEmail;
+
+  // function to sign a user locally
+  //TODO: remember the user
+  $scope.signinUser = function() {
+
+    User.login({
+        include: 'user',
+        rememberMe: $scope.rememberMe
+      }, {
+        username: $scope.localUser.username,
+        password: $scope.localUser.password
+      },
+      function(user) {
+        $state.go('app');
+      },
+      function(error) {
+        $scope.loginError = true;
+        console.log(error.data.error.message);
+      }
+    );
+  };
+
+}])
+
+.controller('SignupController', ['$scope', '$state', '$http', function($scope, $state, $http) {
+
+  // store verification erros while signing up
+  $scope.error = {};
+
+  // function to register a new user
+  // TODO: check the email and username live
+  $scope.signupNewUser = function() {
+
+    // if the form is valid, register the user
+    if ($scope.signup.$valid) {
+      $http.post('/api/users', $scope.newUser).then(function successCallback(response) {
+
+        // redirect to this page if successful
+        $state.go('app.home', {
+          'verifyEmail': true,
+          'userEmail': $scope.newUser.email
+        });
+
+      }, function errorCallback(response) {
+
+        $scope.signup.$submitted = false;
+        console.log(response);
+        if (response.data) {
+          if (response.data.error.details.messages.email) {
+            $scope.error.email = response.data.error.details.messages.email[0];
+          }
+          if (response.data.error.details.messages.username) {
+            $scope.error.username = response.data.error.details.messages.username[0];
+          }
+        }
+      });
+    } else {
+      $scope.signupError = true;
+      $scope.signup.$submitted = false;
+    }
+  };
+
+}])
+
 .controller('UserController', ['$scope', '$filter', '$state', '$stateParams', '$http', 'User', 'Restaurant', '$uibModal', function($scope, $filter, $state, $stateParams, $http, User, Restaurant, $uibModal) {
 
   // get the name of today to show the working hours accordingly
@@ -142,8 +443,20 @@ angular.module('shifuProfile')
 
   $scope.restaurants = User.restaurants({
     id: 'me'
-  }).$promise.then(function(response) {
-    $scope.restaurants = response;
+  });
+  $scope.restaurants.$promise.then(function(response) {
+
+    // Check if the user has a restaurant yet or not, and display content depending on that
+    $scope.restaurantCount = User.restaurants.count({
+      id: 'me'
+    }).$promise.then(function(response) {
+      if (response.count === 1) {
+        $state.go('app.owner', {
+          'city': $scope.restaurants[0].city,
+          'name': $scope.restaurants[0].restaurantName
+        });
+      }
+    });
 
     // check the status of a list of restaurants in a user profile or in search results
     angular.forEach(response, function(value, key) {
@@ -153,33 +466,14 @@ angular.module('shifuProfile')
     });
   });
 
-  // Check if the user has a restaurant yet or not, and display content depending on that
-  $http.get('api/users/me/restaurants/count').success(function(data) {
-    $scope.restaurantCount = data.count;
-  });
-
-  // add menu item model
-  $scope.openMenuModal = function(size) {
-    var menuModal = $uibModal.open({
-      animation: $scope.animationsEnabled,
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      templateUrl: '../../views/restaurant/addMenu.html',
-      controller: 'ModalInstanceCtrl',
-      size: size
-    });
-
-    menuModal.result.then(function(menu) {
-      $scope.menu = menu;
-    });
-  };
-
-
 }])
 
 .controller('ApplicationController', ['$scope', '$state', '$stateParams', '$window', 'User', 'Restaurant', 'FileUploader', function($scope, $state, $stateParams, $window, User, Restaurant, FileUploader) {
 
+  // restaurant application form will be stored here
   $scope.application = {};
+  $scope.application.hasRestaurant = 'false';
+  $scope.application.propertyOwner = 'false';
 
   //function for autocomplete google address for restaurant home address
   $scope.initAutocomplete = function() {
@@ -221,6 +515,11 @@ angular.module('shifuProfile')
 
         }
       }
+      $scope.application.address = document.getElementById("route").value;
+      $scope.application.street_number = document.getElementById("street_number").value;
+      $scope.application.city = document.getElementById("locality").value;
+      $scope.application.zipcode = parseInt(document.getElementById("postal_code").value);
+
 
 
 
@@ -230,66 +529,13 @@ angular.module('shifuProfile')
   };
 
   //
-  //  Uploader
-  //
-
-  // uploader1
-  var uploader1 = $scope.uploader1 = new FileUploader({
-    scope: $scope,
-    url: '/api/containers/me/upload',
-    formData: [{
-      key: 'value'
-    }]
-  });
-
-  // uploader1 size filter
-  uploader1.filters.push({
-    name: 'sizeLimit',
-    fn: function(item) {
-      return item.size <= 4194304;
-    }
-  });
-  // uploader1 image filter
-  uploader1.filters.push({
-    name: 'imageFilter',
-    fn: function(item /*{File|FileLikeObject}*/ , options) {
-      var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-      return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-    }
-  });
-
-  // uploader2
-  var uploader2 = $scope.uploader2 = new FileUploader({
-    scope: $scope,
-    url: '/api/containers/me/upload',
-    formData: [{
-      key: 'value'
-    }]
-  });
-
-  // uploader2 size filter
-  uploader2.filters.push({
-    name: 'sizeLimit',
-    fn: function(item) {
-      return item.size <= 4194304;
-    }
-  });
-  // uploader2 image filter
-  uploader2.filters.push({
-    name: 'imageFilter',
-    fn: function(item /*{File|FileLikeObject}*/ , options) {
-      var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-      return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-    }
-  });
-
-  //
   // post the form
   //
 
 
   //form submit function
   // in this function we query restaurants with the same address as the application form, on success an error will be shown that a restaurant with the same address exists otherwise the applicaiton will be submitted
+  // TODO: check if a similar restaurant exists in the backend as well, for secuity reasons
   $scope.newRestaurant = function() {
 
     $scope.restaurant = Restaurant.findOne({
@@ -306,22 +552,30 @@ angular.module('shifuProfile')
         $scope.restaurantApplication.$setPristine();
       },
       function(error) {
-        // create the restaurant
-        User.restaurants.create({
-          id: 'me'
-        }, $scope.application);
 
-        // upload the documents and go to the restaurant wizard
-        $scope.uploader1.uploadAll();
-        $scope.uploader2.uploadAll();
-        $scope.restaurantApplication.$setPristine();
-        $state.go('app.' +
-          'restaurantwizard', {
+        // if the form is valid submit the data
+        if ($scope.restaurantApplication.$valid) {
+          // create the restaurant
+          User.restaurants.create({
+            id: 'me'
+          }, $scope.application);
+
+          // upload the documents and go to the restaurant wizard
+          if ($scope.application.healthCert) {
+            FileUploader.upload($scope.application.healthCert, "document", "healthCert", $scope.application.restaurantName);
+          }
+          if ($scope.application.realStatePer) {
+            FileUploader.upload($scope.application.realStatePer, "document", "realStatePer", $scope.application.restaurantName);
+          }
+          if ($scope.application.foodAuthReport) {
+            FileUploader.upload($scope.application.foodAuthReport, "document", "foodAuthReport", $scope.application.restaurantName);
+          }
+          $scope.restaurantApplication.$setPristine();
+          $state.go('app.restaurantwizard', {
             'address': $scope.application.address,
-            'zipcode': $scope.application.zipcode,
-            'lng': $scope.application.lng,
-            'lat': $scope.application.lat
+            'zipcode': $scope.application.zipcode
           });
+        }
       }
     );
   };
@@ -534,88 +788,22 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('ImageModalController', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', function($scope, $state, FileUploader, $uibModalInstance, User) {
+.controller('ImageModalController', ['$scope', '$state', 'FileUploader', '$uibModalInstance', 'User', 'restaurant', function($scope, $state, FileUploader, $uibModalInstance, User, restaurant) {
+  // TODO: add the new uploader
+
+  // get the restaurant information that are injected to this controller
+  $scope.restaurant = restaurant;
 
   // cropped image will be saved here
-  $scope.image = "";
+  $scope.croppedImage = "";
 
-  $scope.ok = function() {
-    angular.forEach(uploader.queue, function(value, key) {
-      $scope.image = value.croppedImage;
-    });
-    $scope.uploader.uploadAll();
-    $uibModalInstance.close($scope.image);
+  $scope.ok = function(file, type, name, restaurant) {
+    FileUploader.upload(file, type, name, restaurant);
+    $uibModalInstance.close($scope.croppedImage);
   };
 
   $scope.cancel = function() {
     $uibModalInstance.dismiss('cancel');
-  };
-
-  /*
-  Uploader
-   */
-  var uploader = $scope.uploader = new FileUploader({
-    scope: $scope,
-    url: '/api/containers/me/upload',
-    formData: [{
-      key: 'value'
-    }]
-  });
-
-  // uploader event broadcast in case of successful upload
-  uploader.onSuccessItem = function(item, response, status, headers) {
-    console.info('Success', response, status, headers);
-    $scope.$broadcast('uploadCompleted', item);
-  };
-
-  // uploader size filter
-  uploader.filters.push({
-    name: 'sizeLimit',
-    fn: function(item) {
-      return item.size <= 4194304;
-    }
-  });
-  // uploader image filter
-  uploader.filters.push({
-    name: 'imageFilter',
-    fn: function(item /*{File|FileLikeObject}*/ , options) {
-      var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-      return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-    }
-  });
-
-  // show preview with cropping
-  uploader.onAfterAddingFile = function(item) {
-    item.croppedImage = '';
-    var reader = new FileReader();
-    reader.onload = function(event) {
-      $scope.$apply(function() {
-        item.image = event.target.result;
-      });
-    };
-    reader.readAsDataURL(item._file);
-  };
-
-  // Upload Blob(cropped image) instead of file.
-  // https: //developer.mozilla.org/en-US/docs/Web/API/FormData
-  //   https: //github.com/nervgh/angular-file-upload/issues/208
-  uploader.onBeforeUploadItem = function(item) {
-    var blob = dataURItoBlob(item.croppedImage);
-    item._file = blob;
-  };
-
-  // Converts data uri to Blob. Necessary for uploading.
-  // http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata
-  var dataURItoBlob = function(dataURI) {
-    var binary = atob(dataURI.split(',')[1]);
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    var array = [];
-    for (var i = 0; i < binary.length; i++) {
-      array.push(binary.charCodeAt(i));
-    }
-    return new Blob([new Uint8Array(array)], {
-      type: mimeString
-    });
   };
 
 }])
@@ -683,6 +871,7 @@ angular.module('shifuProfile')
 
 }])
 
+
 .controller('RatingController', ['$scope', '$state', '$http', '$stateParams', 'User', 'Restaurant', 'Feedback', function($scope, $state, $http, $stateParams, User, Restaurant, Feedback) {
   $scope.max = 5;
   $scope.isReadonly = false;
@@ -738,7 +927,7 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant) {
+.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant', 'Container', 'OrderNotification', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant, Container, OrderNotification) {
 
   $scope.restaurant = {};
 
@@ -754,6 +943,7 @@ angular.module('shifuProfile')
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
     $scope.menus = data[0].menus;
+    console.log($scope.menus);
     // check if the restaurant has a menu
     // ng-if has a bug in showing an element if the opposite value of a variable is true (like !hasMenu). That is why in this case the values are exchanged and if the restaurant has a menu, then the value is false. So, this way, when showing an alert, we can write ng-if="hasMenu" meaning the restaurant doesn't have a menu, and we wouldn't have the issue with ng-if showing alerts for a second in situations where it should not.
     if ($scope.menus[0]) {
@@ -767,6 +957,13 @@ angular.module('shifuProfile')
       $scope.state = data;
     });
 
+    // get the restaurant logo
+    $http.get('/api/containers/me/download/' + $scope.restaurants[0].restaurantName + '-logo').then(function successCallback(response) {
+      $scope.logo = true;
+    }, function errorCallback(response) {
+      $scope.logo = false;
+    });
+
     //check for delivery and user loccation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
@@ -774,7 +971,6 @@ angular.module('shifuProfile')
         $scope.radius = data[0].radius;
         $scope.userLat = position.coords.latitude;
         $scope.userLng = position.coords.longitude;
-        console.log($scope.userLat + " " + $scope.userLng + " " + data[0].lat + " " + data[0].lng);
         $scope.currentLocDistanceToRes = commonServices.distanceCalculation($scope.userLat, $scope.userLng, "", data[0].lat, data[0].lng);
         console.log("The distance " + $scope.currentLocDistanceToRes);
         if (data[0].radius >= $scope.currentLocDistanceToRes) {
@@ -872,6 +1068,42 @@ angular.module('shifuProfile')
 
   });
 
+  //***** add to cart *****//
+
+  $scope.quantity = 1;
+  $scope.addTocart = function(menuItem, quantity) {
+    menuItem.quantity = quantity;
+    $scope.cart = User.cart({
+      "id": 'me'
+    }).$promise.then(
+      function(response) {
+        //TODO: maybe use native for loop, since its faster and  can break the loop, angular for each does not provide loop break;
+        var toAdd = true;
+        for (var i = 0; i < response.items.length; i++) {
+          if (response.items[i].id === menuItem.id) {
+            toAdd = false;
+            break;
+          }
+        }
+
+        if (toAdd) {
+          response.items.push(menuItem);
+          response.$save();
+          commonServices.newCartItem = menuItem;
+        }
+      },
+      function(error) {
+        // create the restaurant
+        User.cart.create({
+          id: 'me'
+        }, {
+          "items": [menuItem]
+        });
+
+      }
+    );
+  };
+
   // ****************
   // modals
   // *****************
@@ -903,35 +1135,25 @@ angular.module('shifuProfile')
   };
 
   // IMAGE UPLOAD MODAL
-  $scope.openImageModal = function(size) {
+  $scope.openImageModal = function(size, restaurant) {
     var imageModal = $uibModal.open({
       animation: $scope.animationsEnabled,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
       templateUrl: '../../views/restaurant/addImage.html',
       controller: 'ImageModalController',
-      size: size
+      size: size,
+      resolve: {
+        restaurant: function() {
+          return restaurant;
+        }
+      }
     });
 
     imageModal.result.then(function(image) {
       $scope.image = image;
     });
   };
-
-  $scope.load = function() {
-    $http.get('/api/containers/me/files/').success(function(data) {
-      console.log(data);
-      $scope.files = data;
-      // TODO: add logo editing
-      $scope.logo = data[0].name;
-    });
-  };
-
-  $scope.load();
-
-  $scope.$on('uploadCompleted', function(event) {
-    console.log('uploadCompleted event received');
-  });
 
 }])
 
@@ -994,6 +1216,33 @@ angular.module('shifuProfile')
   };
 }])
 
+.controller('UserSettingsController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
+
+  $scope.restaurants = User.restaurants({
+    id: 'me'
+  });
+
+  $scope.delete = function(restaurantId) {
+    Restaurant.feedbacks.destroyAll({
+      id: restaurantId
+    });
+    Restaurant.menus.destroyAll({
+      id: restaurantId
+    });
+    Restaurant.deleteById({
+      id: restaurantId
+    });
+  };
+
+  // TODO: does this method delete restaurant relations such as menus and feedbacks as well?
+  $scope.deleteAll = function() {
+    User.restaurants.destroyAll({
+      id: 'me'
+    });
+  };
+
+}])
+
 .controller('RestaurantSettingsController', ['$scope', '$state', '$stateParams', '$http', 'User', 'Restaurant', function($scope, $state, $stateParams, $http, User, Restaurant) {
 
   // update restaurant information
@@ -1052,88 +1301,5 @@ angular.module('shifuProfile')
 .filter('capitalize', function() {
   return function(input) {
     return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
-  };
-});
-
-//
-// APP 2 Controllers - shifu
-//
-angular.module('shifu')
-
-.controller('IndexController', ['$scope', '$state', '$stateParams', '$location', 'User', '$http', function($scope, $state, $stateParams, $location, User, $http) {
-
-  // check if the user just signed up
-  $scope.verifyEmail = $stateParams.verifyEmail;
-  $scope.newUserEmail = $stateParams.userEmail;
-
-  //permission to trace user current location when user visit to landing page
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      $scope.lat = position.coords.latitude;
-      $scope.lng = position.coords.longitude;
-      console.log($scope.lat + " " + $scope.lng);
-
-    });
-  }
-
-  // function to sign a user locally
-  $scope.signinUser = function() {
-    User.login({
-      username: $scope.localUser.username,
-      password: $scope.localUser.password
-    });
-  };
-
-}])
-
-
-.controller('SignupController', ['$scope', '$state', '$http', function($scope, $state, $http) {
-
-  // store verification erros while signing up
-  $scope.error = {};
-
-  // function to register a new user
-  // TODO: check the email and username live
-  $scope.signupNewUser = function() {
-    // if the form is valid, register the user
-    if ($scope.signup.$valid) {
-      $http.post('/api/users', $scope.newUser).then(function successCallback(response) {
-
-        // redirect to this page if successful
-        $state.go('home', {
-          'verifyEmail': true,
-          'userEmail': $scope.newUser.email
-        });
-
-      }, function errorCallback(response) {
-
-        $scope.signup.$submitted = false;
-        console.log(response);
-        if (response.data) {
-          if (response.data.error.details.messages.email) {
-            $scope.error.email = response.data.error.details.messages.email[0];
-          }
-          if (response.data.error.details.messages.username) {
-            $scope.error.username = response.data.error.details.messages.username[0];
-          }
-        }
-      });
-    } else {
-      $scope.signup.$submitted = false;
-    }
-  };
-
-}])
-
-// parse ng-model data to lowercase
-.directive('changeCase', function() {
-  return {
-    restrict: 'A',
-    require: 'ngModel',
-    link: function(scope, element, attrs, ngModel) {
-      ngModel.$parsers.push(function(str) {
-        return str.toLowerCase();
-      });
-    }
   };
 });

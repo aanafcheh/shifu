@@ -61,11 +61,28 @@
     "dataSource": "MongoDB",
     "public": true
   },
+  "cart": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+  "order": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+  "notificationsContainer": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
+
+  "orderNotification": {
+    "dataSource": "MongoDB",
+    "public": true
+  },
   "Email": {
     "dataSource": "email"
   },
   "container": {
-    "dataSource": "storage",
-    "public": true
-  }
+   "dataSource": "storage",
+   "public": true
+ }
 }

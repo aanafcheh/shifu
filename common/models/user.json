@@ -26,6 +26,10 @@
     "zipcode": {
       "type": "number",
       "required": true
+    },
+    "username": {
+      "type": "string",
+      "required": true
     }
   },
   "validations": [],
@@ -58,6 +62,21 @@
     "feedbacks": {
       "type": "hasMany",
       "model": "feedback",
+      "foreignKey": "userId"
+    },
+    "cart": {
+      "type": "hasOne",
+      "model": "cart",
+      "foreignKey": "userId"
+    },
+    "notificationsContainer": {
+      "type": "hasOne",
+      "model": "notificationsContainer",
+      "foreignKey": "userId"
+    },
+    "order": {
+      "type": "hasMany",
+      "model": "order",
       "foreignKey": "userId"
     }
   },

@@ -9,7 +9,7 @@
         <i class="fa fa-bars fa-2x fa-fw" aria-hidden="true"></i>
       </button>
       <!-- profile -->
-      <a ui-sref="app.profile" class="navbar-btn navbar-toggle" style="padding:0;margin-right:10px;"><img class="img-circle" ng-src="{{profilePhoto}}"></a>
+      <a ui-sref="app.profile" class="navbar-btn navbar-toggle" style="padding:0;margin-right:10px;"><img height="50" width="50" class="img-circle" ng-src="{{profilePhoto}}"></a>
       <!-- notifications -->
       <a ui-sref="app.notifications" class="btn btn-info navbar-toggle navbar-btn">
         <span class="fa-stack">
@@ -18,14 +18,14 @@
         </span>
       </a>
       <!-- brand -->
-      <a class="navbar-brand" href="#">Shifu</a>
+      <a class="navbar-brand" ui-sref="app">Shifu</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="shifu-navbar-collapse">
       <ul class="nav navbar-nav">
         <li>
-          <a href="#">Home</a>
+          <a ui-sref="app">Home</a>
         </li>
         <li>
           <a href="">Getting Started</a>
@@ -84,7 +84,7 @@
           </ul>
         </li>
 
-
+        <!-- cart -->
         <li class="dropdown hidden-xs">
           <label class="btn btn-text" id="cart" style="margin-right:20px;margin-top:15px;" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-shopping-cart fa-2x" style="color:#ffffff;" aria-hidden="true"></i>
@@ -124,7 +124,7 @@
               <a ui-sref="app.application">Open a New Restaurant</a>
             </li>
             <li>
-              <a>Settings</a>
+              <a ui-sref="app.settings">Settings</a>
             </li>
             <li role="separator" class="divider"></li>
             <li>

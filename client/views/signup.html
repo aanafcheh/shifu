@@ -15,13 +15,13 @@
             </div>
 
             <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.username.$invalid && signup.username.$touched)}">
-              <label ng-if="error.username" class="control-label text-danger" for="username">{{error.username}}</label>
+              <label ng-if="error.username" class="control-label text-danger" for="username"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{error.username}}</label>
               <input type="text" class="form-control" name="username" id="username" placeholder="Username" ng-model="newUser.username" change-case  required>
               <span ng-show="(signup.username.$invalid && signup.username.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
             </div>
 
             <div class="form-group form-group-sm has-feedback" ng-class="{'has-error': (signup.email.$invalid && signup.email.$touched)}">
-              <label ng-if="error.email" class="control-label text-danger" for="email">{{error.email}}</label>
+              <label ng-if="error.email" class="control-label text-danger" for="email"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{error.email}}</label>
               <input type="email" class="form-control" name="email" id="email" placeholder="Email" ng-model="newUser.email" change-case required>
               <span ng-show="(signup.email.$invalid && signup.email.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
             </div>
@@ -55,6 +55,13 @@
               <span ng-show="(signup.zipcode.$invalid && signup.zipcode.$touched)" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
             </div>
 
+            <!-- form error in case some fields are not filled out -->
+            <div ng-if="signupError" class="alert alert-danger alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <strong>Please fill out all the fields.</strong>
+            </div>
 
             <button id="register" type="submit" class="btn btn-success btn-block"><span ng-if="signup.$submitted && signup.$valid"><i class="fa fa-circle-o-notch fa-spin fa-lg"></i> CREATING...</span><span ng-if="!signup.$submitted">CREATE ACCOUNT </span></button>
           </form>

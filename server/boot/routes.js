@@ -4,19 +4,11 @@ module.exports = function(app) {
 
   var User = app.models.user;
 
-  // if the user is logged in redirect to profile otherwise redirect to index
   app.get('/', function(req, res, next) {
-    if (req.isAuthenticated()) {
-      res.render('profile', {
-        user: req.user,
-        url: req.url,
-      });
-    } else {
       res.render('index', {
         user: req.user,
         url: req.url,
       });
-    }
   });
 
   // show when the user verified their email
@@ -45,8 +37,17 @@ module.exports = function(app) {
 
   // logout
   app.get('/logout', function(req, res, next) {
-    req.logout();
-    res.redirect('/');
+    if (!req.accessToken) {
+      req.logout();
+      res.redirect('/');
+    }
+    else {
+      User.logout(req.accessToken.id, function(err) {
+        if (err) return next(err);
+        req.logout();
+        res.redirect('/');
+      });
+    }
   });
 
 };

@@ -13,27 +13,17 @@
           <div class="row center-block text-center">
             <div class="col-xs-12">
               <!-- show if there is no logo -->
-              <button ng-if="!image && !logo" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="openImageModal('md')">
+              <button ng-if="!logo" type="button" class="btn btn-primary btn-circle btn-xl" ng-click="openImageModal('md', restaurant)">
                 <i class="fa fa-cutlery" aria-hidden="true"></i>
               </button>
-              <!-- show if a logo is added -->
-              <img ng-if="image && !logo" class="img-circle" height="64" width="64" ng-src="{{image}}" role="button" ng-click="openImageModal('md')"/>
               <!-- show if a logo already exists -->
-              <img ng-if="logo" class="img-circle" height="64" width="64" ng-src="/api/containers/me/download/{{logo}}" role="button" ng-click="openImageModal('md')"/>
+              <img ng-if="logo" class="img-circle" height="64" width="64" ng-src="/api/containers/{{restaurant.userId}}/download/{{restaurant.restaurantName +'-logo'}}" role="button" ng-click="openImageModal('md', restaurant)"/>
             </div>
           </div>
           <div class="row text-center">
 
             <div class="col-xs-12">
               <h4 class="media-heading">{{restaurant.restaurantName}}</h4>
-              <!-- <address class="text-capitalize">
-              <i class="fa fa-map-marker" aria-hidden="true"></i>
-              {{restaurant.address}}<br>
-              {{restaurant.zipcode}},
-              {{restaurant.city}}<br>
-              <i class="fa fa-mobile" aria-hidden="true"></i>
-              {{restaurant.phoneNumber}}
-            </address> -->
             </div>
           </div>
           <div class="row text-center">

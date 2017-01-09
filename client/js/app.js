@@ -9,11 +9,11 @@ angular
     'ngAnimate',
     'ui.router',
     'ui.bootstrap',
-    'angularFileUpload',
     'ngImgCrop',
     'angular.filter',
     'ui.select',
-    'ngCookies'
+    'ngCookies',
+    'ngFileUpload'
   ])
   .config(['$stateProvider', '$urlRouterProvider', '$resourceProvider', function($stateProvider,
     $urlRouterProvider, $resourceProvider) {
@@ -25,20 +25,73 @@ angular
       params: {
         noResults: null
       },
+      authenticate: true,
       views: {
         'header': {
-          templateUrl: 'views/header.html',
-          controller: 'HeaderController',
+          templateUrl: 'views/layouts/profile-header.html',
+          controller: 'HeaderController'
         },
         'view': {
           templateUrl: 'views/user.html',
           controller: 'UserController'
         },
         'footer': {
-          templateUrl: 'views/footer.html',
+          templateUrl: 'views/layouts/profile-footer.html'
         }
       }
 
+    })
+
+    .state('app.home', {
+      url: 'home',
+      params: {
+        verifyEmail: null,
+        userEmail: null
+      },
+      views: {
+        'header@': {
+          templateUrl: 'views/layouts/index-header.html',
+          controller: 'IndexController'
+        },
+        'view@': {
+          templateUrl: 'views/home.html',
+          controller: 'IndexController'
+        },
+        'footer@': {
+          templateUrl: 'views/layouts/index-footer.html'
+        }
+      }
+    })
+
+    .state('app.signup', {
+      url: 'signup',
+      views: {
+        'header@': {
+          templateUrl: 'views/layouts/index-header.html',
+        },
+        'view@': {
+          templateUrl: 'views/signup.html',
+          controller: 'SignupController'
+        },
+        'footer@': {
+          templateUrl: 'views/layouts/index-footer.html'
+        }
+      }
+    })
+
+    .state('app.login', {
+      url: 'login',
+      views: {
+        'header@': {
+          templateUrl: 'views/layouts/index-header.html',
+        },
+        'view@': {
+          templateUrl: 'views/login-error.html',
+        },
+        'footer@': {
+          templateUrl: 'views/layouts/index-footer.html'
+        }
+      }
     })
 
     .state('app.search', {
@@ -47,6 +100,16 @@ angular
         'view@': {
           templateUrl: 'views/search.html',
           controller: 'SearchController'
+        }
+      }
+    })
+
+    .state('app.settings', {
+      url: 'settings',
+      views: {
+        'view@': {
+          templateUrl: 'views/settings.html',
+          controller: 'UserSettingsController'
         }
       }
     })
@@ -96,24 +159,24 @@ angular
     })
 
     .state('app.owner.help', {
-      url: '/help',
-      views: {
-        'content@app.owner': {
-          templateUrl: 'views/restaurant/help.html',
-          controller: 'RestaurantHelpController'
+        url: '/help',
+        views: {
+          'content@app.owner': {
+            templateUrl: 'views/restaurant/help.html',
+            controller: 'RestaurantHelpController'
+          }
         }
-      }
-    })
-    //restaurant mobile states
-    .state('app.profile', {
-      url: 'profile',
-      views: {
-        'view@': {
-          templateUrl: 'views/mobile/profile.html',
-          controller: 'HeaderController'
+      })
+      //restaurant mobile states
+      .state('app.profile', {
+        url: 'profile',
+        views: {
+          'view@': {
+            templateUrl: 'views/mobile/profile.html',
+            controller: 'HeaderController'
+          }
         }
-      }
-    })
+      })
 
     .state('app.notifications', {
       url: 'notifications',
@@ -134,41 +197,19 @@ angular
           controller: 'RestaurantController'
         }
       }
+    })
+    .state('app.checkout', {
+      url: 'checkout',
+      views: {
+        'view@': {
+          templateUrl: 'views/customer/checkout.html',
+          controller: 'CheckoutController'
+        }
+      }
     });
 
     $urlRouterProvider.otherwise('/');
 
     // Don't strip trailing slashes from calculated URLs
     $resourceProvider.defaults.stripTrailingSlashes = false;
-  }]);
-
-// APP 2
-// This app is used when the user is not logged in, e.x. on the index page
-//
-angular
-  .module('shifu', [
-    'lbServices',
-    'ui.router'
-  ])
-  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider,
-    $urlRouterProvider) {
-    $stateProvider
-
-      .state('home', {
-      url: '/',
-      params: {
-        verifyEmail: null,
-        userEmail: null
-      },
-      templateUrl: 'views/home.html',
-      controller: 'IndexController'
-    })
-
-    .state('signup', {
-      url: '/signup',
-      templateUrl: 'views/signup.html',
-      controller: 'SignupController'
-    });
-
-    $urlRouterProvider.otherwise('/');
   }]);
