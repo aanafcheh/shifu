@@ -195,8 +195,9 @@ angular.module('shifuProfile')
 
 
   function notificationPolling(containerId){
+    console.log("request sent to server");
     $http.get('api/orderNotifications/notification/'+containerId).success(function(data){
-      console.log(JSON.stringify(data));
+      console.log("reply from server "+JSON.stringify(data) );
       notificationPolling(containerId);
     })
   }

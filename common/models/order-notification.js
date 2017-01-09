@@ -6,13 +6,9 @@ var eventEmitter = new events.EventEmitter();
 
 module.exports = function(Ordernotification) {
   Ordernotification.notificationPolling= function(containerId,cb){
-    var timeout=setTimeout(function(){
-      cb(null,"");
-      console.log("tiime out");
-    },30000);
+
     var listener=function(){
       eventEmitter.once('newOrder',function(newNotification){
-        //clearTimeout(timeout);
         console.log(newNotification.notificationsContainerId + " "+ containerId);
          cb(null,newNotification);
 
