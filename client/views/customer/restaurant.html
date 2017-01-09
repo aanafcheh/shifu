@@ -140,6 +140,19 @@
     </div>
 
   </div>
+
+
+ <div ng-if="menus">
+   <ul ng-repeat="menu in menus">
+
+       <ul>{{menu.item}}
+
+       <input type="number" id="{{menu.item}}" placeholder="Quantity" value="1" ng-model="quantity" />
+         <button class="btn btn-info btn-xs" ng-click="addTocart(menu,quantity)"><i class="fa fa-cart-plus" aria-hidden="true"></i></i>Add to Cart</button></ul>
+
+
+     </ul>
+ </div>
 </div>
 
 <!-- opening hours popover template -->
@@ -161,3 +174,4 @@
     </ul>
   </div>
 </script>
+

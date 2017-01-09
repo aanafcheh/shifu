@@ -5,9 +5,14 @@
 //TODO: change all the http requests to resource requests
 
 angular.module('shifuProfile')
-  .service('commonServices', function() {
-    function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
+  .service('commonServices',['User','Cart', function(User,Cart) {
 
+      this.newCartItem; //watch latest  item added to cart
+      this.deletedItem; //watch latest deleted item from cart
+      this.deletedItemIndex; //deletedItem index
+
+
+    function distanceCalculation(userLat, userLng, restaurantObj, resLat, resLng) {
       var R = 6371;
       var dLat = deg2rad(resLat - userLat); // deg2rad below
       var dLon = deg2rad(resLng - userLng);
@@ -22,7 +27,6 @@ angular.module('shifuProfile')
       if (restaurantObj !== "") {
         restaurantObj.distanceKm = d;
       }
-      console.log("The distance is " + d);
       return d;
     }
 
@@ -30,25 +34,185 @@ angular.module('shifuProfile')
 
       return deg * (Math.PI / 180);
     }
+
+    //function to deleteItem from cart and database
+    function removeCartItem(itemId){
+      User.cart({
+        'id':'me'
+      }).$promise.then(function(response){
+        for(var i=0; i<response.items.length; i++){
+          if(response.items[i].id===itemId){
+            response.items.splice(i,1);
+            response.$save();
+
+          }
+
+        }
+      });
+    }
+    function setDefault(){
+      this.newCartItem=null;
+      this.deletedItem=null;
+      this.deletedItemIndex=null;
+    }
+
     return {
-      distanceCalculation: distanceCalculation
+      distanceCalculation: distanceCalculation,
+      removeCartItem:removeCartItem,
+      setDefault:setDefault
     };
+  }])
+  .factory('AppAuth', function($cookies, User, LoopBackAuth, $http) {
+    var self = {
+      logout: function() {
+        LoopBackAuth.clearUser();
+        LoopBackAuth.clearStorage();
+        LoopBackAuth.save();
+      },
+      ensureHasCurrentUser: function(cb) {
+        if (!this.currentUser && $cookies.get('access_token')) {
+          LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId = null;
+          $http.get('/auth/current')
+            .then(function(response) {
+              if (response.data.id) {
+                LoopBackAuth.currentUserId = response.data.id;
+                LoopBackAuth.accessTokenId = $cookies.get('access_token').substring(
+                  2, 66);
+              }
+              if (LoopBackAuth.currentUserId === null) {
+                delete $cookies.get('access_token');
+                LoopBackAuth.accessTokenId = null;
+              }
+              LoopBackAuth.save();
+              self.currentUser = response.data;
+              var profile = self.currentUser && self.currentUser.profiles &&
+                self.currentUser.profiles.length && self.currentUser.profiles[
+                  0];
+              if (profile) {
+                self.currentUser.name = profile.profile.name;
+                self.currentUser.profilePhoto = profile.profile.photos[0].value;
+              }
+              cb(self.currentUser);
+            }, function() {
+              LoopBackAuth.currentUserId = LoopBackAuth.accessTokenId =
+                null;
+              LoopBackAuth.save();
+              cb({});
+            });
+        } else {
+          if (self.currentUser) {
+            console.log('Using cached current user.');
+          }
+          cb(self.currentUser);
+        }
+      }
+    };
+    return self;
   })
 
-.controller('HeaderController', ['$scope', '$state', '$stateParams', 'User', 'Restaurant', function($scope, $state, $stateParams, User, Restaurant) {
+
+.controller('HeaderController', ['$scope', '$http','commonServices','$state', '$stateParams', 'User', 'Restaurant', 'Cart','AppAuth','NotificationsContainer',function($scope,$http,commonServices, $state, $stateParams, User, Restaurant,Cart,AppAuth,NotificationsContainer) {
 
 
+  commonServices.setDefault();
+  // make sure the user is athenticated in angular
+  if (!User.isAuthenticated()) {
+    AppAuth.ensureHasCurrentUser(function() {
+      $scope.currentUser = AppAuth.currentUser;
+    });
+  }
 
-  // query all the needed information
-  $scope.profile = User.identities({
+
+  // logout function to clear logout user and clear local storage
+  $scope.logout = function() {
+    AppAuth.logout(function() {});
+  };
+
+
+  // query user info
+  User.identities({
     id: 'me'
-  });
+  }).$promise.then(function(response) {
+      if (response[0]) {
+        $scope.profilePhoto = response[0].profile.photos[0].value;
+      } else {
+        $scope.profilePhoto = "images/profile.svg";
+      }
+    },
+    function(error) {
+      $scope.profilePhoto = "images/profile.svg";
+    }
+  );
 
   $scope.restaurants = User.restaurants({
     id: 'me'
   }).$promise.then(function(response) {
     $scope.restaurants = response;
   });
+
+
+  //get all user cart items
+  User.cart({'id':'me'}).$promise.then(function(response){
+    $scope.allCartItems=response.items;
+    watchCartItem();
+    deleteFromCheckoutWatch();
+});
+
+  //watch any item added to cart from restaurant page
+  function watchCartItem(){
+  $scope.$watch(function(){
+    $scope.noOfItemsInCart=$scope.allCartItems.length;
+    return commonServices.newCartItem;
+  },function(newItem){
+    if(newItem!=null){
+    $scope.allCartItems.push(newItem);
+    }
+  });
+  }
+
+  //watch any item deleted from cart checkout page
+  function deleteFromCheckoutWatch(){
+    $scope.$watch(function(){
+      return commonServices.deletedItem;
+    },function($index){
+      if($index!=null && commonServices.deletedItemIndex!=null){
+      $scope.allCartItems.splice(commonServices.deletedItemIndex,1);
+      }
+    });
+  }
+
+
+  //delete items from cart from cart itself from header
+  $scope.deleteItemFromCart=function(itemId,$index){
+    commonServices.removeCartItem(itemId);
+    commonServices.deletedItem=itemId;
+    commonServices.deletedItemIndex=$index;
+
+  }
+  User.notificationsContainer({'id':'me'}).$promise.then(function(response){},function(err){
+     User.notificationsContainer.create({id:'me'},{});
+   });
+
+
+  function notificationPolling(containerId){
+    $http.get('api/orderNotifications/notification/'+containerId).success(function(data){
+      console.log(JSON.stringify(data));
+      notificationPolling(containerId);
+    })
+  }
+
+  $scope.notifications=User.notificationsContainer({'id':'me'}).$promise.then(function(response){
+      notificationPolling(response.id);
+    NotificationsContainer.orderNotifications({'id':response.id},function(res){
+      console.log(res);
+    },function(err){
+      console.log(err);
+    })
+    console.log(response);
+  },function(error){
+    console.log(error);
+  })
+
 
   // query all the restaurants for suggestions
   $scope.allRestaurants = Restaurant.find();
@@ -60,6 +224,75 @@ angular.module('shifuProfile')
       'noResults': $scope.noResults
     });
   };
+
+}])
+
+.controller('CheckoutController',['$scope','$http','User','commonServices','Cart','Order','OrderNotification','NotificationsContainer',function($scope,$http,User,commonServices,Cart,Order,OrderNotification,NotificationsContainer){
+  $scope.number=1;
+  commonServices.setDefault();
+  $scope.check=function(){
+    console.log($scope.number);
+  }
+  User.cart({'id':'me'},function(response){
+    $scope.itemsToOrder=response.items;
+    $scope.total=totalPrice();
+  })
+
+  //total sum of cart items
+  function totalPrice(){
+    var total=0;
+    for(var i=0; i<$scope.itemsToOrder.length; i++){
+      total=total+parseInt($scope.itemsToOrder[i].price * $scope.itemsToOrder[i].quantity);
+    }
+    return total;
+  }
+
+  //delete item from cart(calls service for it)
+  $scope.deleteItemFromCart=function(itemId,$index){
+    commonServices.removeCartItem(itemId);
+    commonServices.deletedItem=itemId;
+    commonServices.deletedItemIndex=$index;
+  };
+
+  //watcher of deleted item from cart
+  $scope.$watch(function(){
+    return commonServices.deletedItem;
+  },function($index){
+    if(commonServices.deletedItemIndex!=null){
+      $scope.total=$scope.total-parseInt($scope.itemsToOrder[commonServices.deletedItemIndex].price* $scope.itemsToOrder[commonServices.deletedItemIndex].quantity);
+      $scope.itemsToOrder.splice(commonServices.deletedItemIndex,1);
+    }
+    });
+
+  //post cart items as orders
+  $scope.checkout=function(){
+    User.notificationsContainer({id:'me'}).$promise.then(function(res){
+      angular.forEach($scope.itemsToOrder,function(obj){
+        User.order.create({id:'me'},{'restaurantId':obj.restaurantId,'itemId':obj.id,'quantity':obj.quantity}).$promise.then(function(obj1){
+          console.log("the object"+ obj);
+
+            $http.post('api/orderNotifications/notification',{"id":res.id,'quantity':obj.quantity,'itemId':obj.id,'customerId':res.userId,"restaurantId":obj.restaurantId}).success(function(data){
+              console.log(data);
+            });
+            // NotificationsContainer.orderNotifications.create({id:res.id},{'quantity':obj.quantity,'itemId':obj.id,'customerId':res.userId});
+        },function(error){
+        });
+      });
+      User.cart({id:'me'}).$promise.then(function(response){
+        response.items=[];
+        response.$save();
+        alert("Your order has been placed");
+
+      });
+
+    },function(err){
+      console.log(err);
+    });
+
+
+  };
+
+
 
 }])
 
@@ -151,6 +384,11 @@ angular.module('shifuProfile')
 
         }
       }
+      $scope.application.address=document.getElementById("route").value;
+      $scope.application.street_number=document.getElementById("street_number").value;
+      $scope.application.city=document.getElementById("locality").value;
+      $scope.application.zipcode=parseInt(document.getElementById("postal_code").value);
+
 
 
 
@@ -274,7 +512,7 @@ angular.module('shifuProfile')
 
   //radius selection dialog box
   $scope.openRadiusDialogBox = function(size, lat, lng) {
-    console.log("The lat and lng"+ lat + " sadasdas "+lng);
+    console.log("The lat and lng" + lat + " sadasdas " + lng);
     $scope.isCollapsed = false;
 
 
@@ -333,7 +571,7 @@ angular.module('shifuProfile')
     $scope.restaurantId = response[0].id;
     $scope.lat = response[0].lat;
     $scope.lng = response[0].lng;
-    console.log("lat and lffff"+ $scope.lat);
+    console.log("lat and lffff" + $scope.lat);
   });
 
   // time picker
@@ -398,7 +636,7 @@ angular.module('shifuProfile')
 
   //radius map for delivery zone
   var map, restaurantMarker, referenceAddressMarker, resLocationLatLng, boundary;
-  console.log(lat+ " "+ lng);
+  console.log(lat + " " + lng);
   $scope.getRadius = function() {
     if (!map) {
       resLocationLatLng = {
@@ -411,48 +649,48 @@ angular.module('shifuProfile')
         zoom: 14
       });
 
-       }
-
-
-      restaurantMarker = new google.maps.Marker({
-
-        position: resLocationLatLng,
-        map: map
-      });
     }
-    //monitor change in radius input
-    $scope.$watch('radius', function() {
 
-      if (referenceAddressMarker) {
-        referenceAddressMarker.setMap(null);
-      }
+
+    restaurantMarker = new google.maps.Marker({
+
+      position: resLocationLatLng,
+      map: map
+    });
+  };
+  //monitor change in radius input
+  $scope.$watch('radius', function() {
+
+    if (referenceAddressMarker) {
+      referenceAddressMarker.setMap(null);
+    }
+    if (boundary) {
+      boundary.setMap(null);
+    }
+    if ($scope.radius !== null) {
+      boundary = new google.maps.Circle({
+        map: map,
+        radius: $scope.radius * 1000,
+        fillColor: 'green',
+        fillOpacity: 0.3,
+        strokeColor: 'green',
+        strokeOpacity: 0.5,
+        center: resLocationLatLng
+      });
+
+      //fixing the zoom level
+      var bounds = new google.maps.LatLngBounds();
+      bounds.extend(boundary.getBounds().getNorthEast());
+      bounds.extend(boundary.getBounds().getSouthWest());
+      map.fitBounds(bounds);
+    }
+    if ($scope.radius === undefined) {
       if (boundary) {
         boundary.setMap(null);
       }
-      if ($scope.radius != null) {
-        boundary = new google.maps.Circle({
-          map: map,
-          radius: $scope.radius * 1000,
-          fillColor: 'green',
-          fillOpacity: 0.3,
-          strokeColor: 'green',
-          strokeOpacity: 0.5,
-          center: resLocationLatLng
-        });
+    }
 
-        //fixing the zoom level
-        var bounds = new google.maps.LatLngBounds();
-        bounds.extend(boundary.getBounds().getNorthEast());
-        bounds.extend(boundary.getBounds().getSouthWest());
-        map.fitBounds(bounds);
-      }
-      if ($scope.radius === undefined) {
-        if (boundary) {
-          boundary.setMap(null);
-        }
-      }
-
-    });
+  });
 
 
   $scope.done = function() {
@@ -668,7 +906,9 @@ angular.module('shifuProfile')
 
 }])
 
-.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant) {
+.controller('RestaurantController', ['$scope', 'commonServices', '$state', '$stateParams', '$filter', '$http', '$uibModal', 'User', 'Restaurant','Cart','OrderNotification', function($scope, commonServices, $state, $stateParams, $filter, $http, $uibModal, User, Restaurant,Cart,OrderNotification) {
+
+
 
   $scope.restaurant = {};
 
@@ -679,16 +919,12 @@ angular.module('shifuProfile')
   // get the name of today to show the working hours accordingly
   $scope.today = $filter('date')(new Date(), 'EEEE');
 
-  // query all the needed information
-  $scope.profile = User.identities({
-    id: 'me'
-  });
-
   // get the restaurant info
   $http.get('api/restaurants?filter[include]=menus&filter[where][restaurantName]=' + $stateParams.name + '&filter[where][city]=' + $stateParams.city).success(function(data) {
     $scope.restaurants = data;
     $scope.restaurantId = data[0].id;
     $scope.menus = data[0].menus;
+    console.log($scope.menus);
     // check if the restaurant has a menu
     // ng-if has a bug in showing an element if the opposite value of a variable is true (like !hasMenu). That is why in this case the values are exchanged and if the restaurant has a menu, then the value is false. So, this way, when showing an alert, we can write ng-if="hasMenu" meaning the restaurant doesn't have a menu, and we wouldn't have the issue with ng-if showing alerts for a second in situations where it should not.
     if ($scope.menus[0]) {
@@ -709,7 +945,6 @@ angular.module('shifuProfile')
         $scope.radius = data[0].radius;
         $scope.userLat = position.coords.latitude;
         $scope.userLng = position.coords.longitude;
-        console.log($scope.userLat + " " + $scope.userLng + " " + data[0].lat + " " + data[0].lng);
         $scope.currentLocDistanceToRes = commonServices.distanceCalculation($scope.userLat, $scope.userLng, "", data[0].lat, data[0].lng);
         console.log("The distance " + $scope.currentLocDistanceToRes);
         if (data[0].radius >= $scope.currentLocDistanceToRes) {
@@ -807,6 +1042,44 @@ angular.module('shifuProfile')
 
   });
 
+  //***** add to cart *****//
+
+  $scope.quantity=1;
+  $scope.addTocart=function(menuItem,quantity){
+    menuItem.quantity=quantity;
+    $scope.cart = User.cart({
+          "id":'me'
+      }
+    ).$promise.then(
+      function(response) {
+        //TODO: maybe use native for loop, since its faster and  can break the loop, angular for each does not provide loop break;
+        var toAdd = true;
+        for (var i = 0; i < response.items.length; i++) {
+          if (response.items[i].id === menuItem.id) {
+            toAdd = false;
+            break;
+          }
+        }
+
+        if (toAdd) {
+          response.items.push(menuItem);
+          response.$save();
+          commonServices.newCartItem = menuItem;
+        }
+      },
+      function(error) {
+        // create the restaurant
+        User.cart.create({
+          id:'me'
+        },{"items":[menuItem]});
+
+      }
+);
+  }
+
+
+
+
   // ****************
   // modals
   // *****************
@@ -858,7 +1131,7 @@ angular.module('shifuProfile')
       console.log(data);
       $scope.files = data;
       // TODO: add logo editing
-      // $scope.logo = data[0].logo;
+      $scope.logo = data[0].name;
     });
   };
 
@@ -995,7 +1268,11 @@ angular.module('shifuProfile')
 //
 angular.module('shifu')
 
-.controller('IndexController', ['$scope', '$state', 'User', function($scope, $state, User) {
+.controller('IndexController', ['$scope', '$state', '$stateParams', '$location', 'User', '$http', function($scope, $state, $stateParams, $location, User, $http) {
+
+  // check if the user just signed up
+  $scope.verifyEmail = $stateParams.verifyEmail;
+  $scope.newUserEmail = $stateParams.userEmail;
 
   //permission to trace user current location when user visit to landing page
   if (navigator.geolocation) {
@@ -1007,4 +1284,64 @@ angular.module('shifu')
     });
   }
 
-}]);
+  // function to sign a user locally
+  $scope.signinUser = function() {
+    User.login({
+      username: $scope.localUser.username,
+      password: $scope.localUser.password
+    });
+  };
+
+}])
+
+
+.controller('SignupController', ['$scope', '$state', '$http', function($scope, $state, $http) {
+
+  // store verification erros while signing up
+  $scope.error = {};
+
+  // function to register a new user
+  // TODO: check the email and username live
+  $scope.signupNewUser = function() {
+    // if the form is valid, register the user
+    if ($scope.signup.$valid) {
+      $http.post('/api/users', $scope.newUser).then(function successCallback(response) {
+
+        // redirect to this page if successful
+        $state.go('home', {
+          'verifyEmail': true,
+          'userEmail': $scope.newUser.email
+        });
+
+      }, function errorCallback(response) {
+
+        $scope.signup.$submitted = false;
+        console.log(response);
+        if (response.data) {
+          if (response.data.error.details.messages.email) {
+            $scope.error.email = response.data.error.details.messages.email[0];
+          }
+          if (response.data.error.details.messages.username) {
+            $scope.error.username = response.data.error.details.messages.username[0];
+          }
+        }
+      });
+    } else {
+      $scope.signup.$submitted = false;
+    }
+  };
+
+}])
+
+// parse ng-model data to lowercase
+.directive('changeCase', function() {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function(scope, element, attrs, ngModel) {
+      ngModel.$parsers.push(function(str) {
+        return str.toLowerCase();
+      });
+    }
+  };
+});
